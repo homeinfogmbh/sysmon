@@ -1,0 +1,18 @@
+#! /usr/bin/env python3
+"""System monitoring daemon."""
+
+from sysmon.daemon import run_checks
+
+
+def main():
+    """Runs the daemon."""
+
+    try:
+        while True:
+            run_checks()
+    except KeyboardInterrupt:
+        return
+
+
+if __name__ == '__main__':
+    main()
