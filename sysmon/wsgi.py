@@ -7,7 +7,7 @@ from wsgilib import JSON
 from sysmon.orm import ApplicationCheck, OnlineCheck, TypeAdmin
 
 
-__all__ = []
+__all__ = ['APPLICATION']
 
 
 APPLICATION = Application('sysmon')
