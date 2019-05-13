@@ -57,14 +57,10 @@ class OnlineCheck(SystemCheck):
     online = BooleanField(default=False)
 
     @classmethod
-    def run(cls, *systems):
+    def run(cls, system):
         """Runs the checks on the respective systems."""
-        if not systems:
-            systems = System
-
-        for system in systems:
-            record = cls(system=system, online=is_online(system))
-            record.save()
+        record = cls(system=system, online=is_online(system))
+        record.save()
 
 
 class ApplicationCheck(SystemCheck):
@@ -77,15 +73,11 @@ class ApplicationCheck(SystemCheck):
     running = BooleanField(null=True)
 
     @classmethod
-    def run(cls, *systems):
+    def run(cls, system):
         """Runs the checks on the respective systems."""
-        if not systems:
-            systems = System
-
-        for system in systems:
-            enabled, running = check_application(system)
-            record = cls(system=system, enabled=enabled, running=running)
-            record.save()
+        enabled, running = check_application(system)
+        record = cls(system=system, enabled=enabled, running=running)
+        record.save()
 
 
 CHECKS = (OnlineCheck, ApplicationCheck)
