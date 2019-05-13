@@ -10,5 +10,7 @@ setup(
     maintainer='Richard Neumann',
     maintainer_email='<r dot neumann at homeinfo priod de>',
     packages=['sysmon'],
+    scripts=['files/sysmond'],
+    data_files=[('/usr/lib/systemd/system', ['files/sysmon.service'])],
     license='GPLv3',
     description='A systems monitoring system.')

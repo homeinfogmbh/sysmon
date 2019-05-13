@@ -1,0 +1,11 @@
+[Unit]
+Description=HOMEINFO Digital Signage Systems Monitoring
+After=network.target mysql.service
+
+[Service]
+User=sysmon
+Group=sysmon
+ExecStart=/usr/local/bin/sysmond
+
+[Install]
+WantedBy=multi-user.target
