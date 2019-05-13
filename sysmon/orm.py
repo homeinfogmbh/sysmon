@@ -4,8 +4,9 @@ from datetime import datetime
 
 from peewee import BooleanField, DateTimeField, ForeignKeyField
 
-from peeweeplus import JSONModel, MySQLDatabase
-from terminallib import is_online, System
+from mdb import Customer
+from peeweeplus import EnumField, JSONModel, MySQLDatabase
+from terminallib import is_online, System, Type
 
 from sysmon.config import CONFIG
 from sysmon.checks import check_application
@@ -80,5 +81,14 @@ class ApplicationCheck(SystemCheck):
         record.save()
 
 
+class TypeAdmin(SysmonModel):
+    """Administrators of a certain type."""
+
+    type = EnumField(Type)
+    customer = ForeignKeyField(
+        Customer, column_name='customer', on_delete='CASCADE',
+        on_update='CASCADE')
+
+
 CHECKS = (OnlineCheck, ApplicationCheck)
-MODELS = CHECKS
+MODELS = (TypeAdmin,) + CHECKS
