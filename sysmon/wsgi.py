@@ -57,7 +57,8 @@ def get_checks(system, *, begin=None, end=None):
             selection &= model.timestamp <= end
 
         ordering = model.timestamp.desc()
-        json[key] = list(model.select().where(selection).order_by(ordering))
+        models = model.select().where(selection).order_by(ordering)
+        json[key] = [model.to_json() for model in models]
 
     return json
 
