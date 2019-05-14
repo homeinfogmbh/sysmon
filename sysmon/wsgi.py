@@ -63,7 +63,16 @@ def get_checks(system, *, begin=None, end=None):
     return json
 
 
-@APPLICATION.route('/checks', methods=['GET'], strict_slashes=False)
+def get_systems_checks(systems, *, begin=None, end=None):
+    """Yields JSON objects with system information and checks data."""
+
+    for system in systems:
+        json = system.to_json(brief=True, cascade=3)
+        json['checks'] = get_checks(system, begin=begin, end=end)
+        yield json
+
+
+@APPLICATION.route('/', methods=['GET'], strict_slashes=False)
 @authenticated
 def list_():
     """Lists all systems."""
@@ -73,24 +82,8 @@ def list_():
     if systems:
         systems = set(int(system) for system in systems.split(','))
 
+    systems = get_systems(systems=systems)
     begin = strpdatetime(request.headers.get('begin'))
     end = strpdatetime(request.headers.get('end'))
-    json = {
-        str(system.id): get_checks(system, begin=begin, end=end)
-        for system in get_systems()
-    }
-    return JSON(json)
-
-
-@APPLICATION.route('/system/<int:system>', methods=['GET'])
-@authenticated
-def get_system(system):
-    """Lists all systems."""
-
-    try:
-        system = get_systems(systems={system}).get()
-    except System.DoesNotExist:
-        return ('No such system.', 404)
-
-    json = system.to_json(brief=True, cascade=3)
+    json = list(get_systems_checks(systems, begin=begin, end=end))
     return JSON(json)
