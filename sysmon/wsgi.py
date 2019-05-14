@@ -49,6 +49,24 @@ def get_systems(*, systems=None, customers=None, types=None):
     return System.select().join(Deployment).where(condition)
 
 
+@coerce(set)
+def get_customers():
+    """Yields all allowed customers."""
+
+    for system in get_systems():
+        if system.deployment:
+            yield system.deployment.customer
+
+
+@coerce(set)
+def get_types():
+    """Yields all allowed types."""
+
+    for system in get_systems():
+        if system.deployment:
+            yield system.deployment.type
+
+
 def get_checks(system, *, begin=None, end=None):
     """Returns the checks for the respective system."""
 
@@ -121,10 +139,10 @@ def selected_systems():
                 raise Error('Invalid system ID: "%s".' % system)
 
 
-@APPLICATION.route('/', methods=['GET'], strict_slashes=False)
+@APPLICATION.route('/stats', methods=['GET'], strict_slashes=False)
 @authenticated
-def list_():
-    """Lists all systems."""
+def list_stats():
+    """Lists systems and their stats."""
 
     systems = get_systems(
         systems=selected_systems(), customers=selected_customers(),
@@ -132,4 +150,22 @@ def list_():
     begin = strpdatetime(request.headers.get('begin'))
     end = strpdatetime(request.headers.get('end'))
     json = list(get_systems_checks(systems, begin=begin, end=end))
+    return JSON(json)
+
+
+@APPLICATION.route('/customers', methods=['GET'], strict_slashes=False)
+@authenticated
+def list_customers():
+    """Lists all customers."""
+
+    json = [customer.to_json(cascade=2) for customer in get_customers()]
+    return JSON(json)
+
+
+@APPLICATION.route('/types', methods=['GET'], strict_slashes=False)
+@authenticated
+def list_types():
+    """Lists all types."""
+
+    json = [type.value for type in get_types()]
     return JSON(json)
