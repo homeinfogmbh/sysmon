@@ -11,5 +11,5 @@ def run_checks():
 
     for system in System.select().where(~(System.deployment >> None)):
         for check in CHECKS:
-            LOGGER.info('Running %s on #%i.', check, system.id)
+            LOGGER.info('Running %s on #%i.', check.__name__, system.id)
             check.run(system)
