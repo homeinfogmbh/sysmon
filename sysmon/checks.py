@@ -20,18 +20,22 @@ def check_application(system):
     application_service = CONFIG['checks']['application_service']
 
     try:
-        enabled = ctrl.execute('systemctl', 'is-enabled', application_service)
+        ctrl.execute('systemctl', 'is-enabled', application_service)
     except SystemOffline:
         return ApplicationState(None, None)
     except CalledProcessError:
         enabled = False
+    else:
+        enabled = True
 
     try:
-        running = ctrl.execute('systemctl', 'status', application_service)
+        ctrl.execute('systemctl', 'status', application_service)
     except SystemOffline:
         return ApplicationState(enabled, None)
     except CalledProcessError:
         running = False
+    else:
+        enabled = True
 
     return ApplicationState(enabled, running)
 
