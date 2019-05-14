@@ -67,7 +67,7 @@ def get_types():
             yield system.deployment.type
 
 
-def get_checks(system, *, begin=None, end=None):
+def get_stats(system, *, begin=None, end=None):
     """Returns the checks for the respective system."""
 
     json = {}
@@ -82,18 +82,25 @@ def get_checks(system, *, begin=None, end=None):
             selection &= model.timestamp <= end
 
         ordering = model.timestamp.desc()
-        models = model.select().where(selection).order_by(ordering)
-        json[key] = [model.to_json() for model in models]
+        query = model.select().where(selection).order_by(ordering)
+
+        try:
+            latest = query.limit(1).get()
+        except model.DoesNotExist:
+            continue
+
+        json[key] = latest.to_json()
 
     return json
 
 
+@coerce(list)
 def get_systems_checks(systems, *, begin=None, end=None):
     """Yields JSON objects with system information and checks data."""
 
     for system in systems:
         json = system.to_json(brief=True, cascade=3)
-        json['checks'] = get_checks(system, begin=begin, end=end)
+        json['checks'] = get_stats(system, begin=begin, end=end)
         yield json
 
 
@@ -149,7 +156,7 @@ def list_stats():
         types=selected_types())
     begin = strpdatetime(request.headers.get('begin'))
     end = strpdatetime(request.headers.get('end'))
-    json = list(get_systems_checks(systems, begin=begin, end=end))
+    json = get_systems_checks(systems, begin=begin, end=end)
     return JSON(json)
 
 
