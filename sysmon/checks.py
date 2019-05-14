@@ -36,7 +36,7 @@ def check_application(system):
     except CalledProcessError:
         running = False
     else:
-        enabled = True
+        running = True
 
     return ApplicationState(enabled, running)
 
