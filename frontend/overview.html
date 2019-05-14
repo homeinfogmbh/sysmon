@@ -21,27 +21,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Systemüberwachung</title>
   <link rel="stylesheet" href="css/w3.css">
+  <link rel="stylesheet" href="css/fontawesome.css">
   <link rel="stylesheet" href="css/sysmon.css">
   <script src="js/common.js"></script>
+  <script src="js/dom.js"></script>
   <script src="js/functions.js"></script>
-  <script src="js/login.js"></script>
+  <script src="js/filter.js"></script>
+  <script src="js/overview.js"></script>
 </head>
 
 <div class="w3-container w3-teal">
-  <h1>Login</h1>
+  <h1>Übersicht</h1>
 </div>
 
 <br/>
 
 <form class="w3-container">
-  <input id="account" type="text" class="w3-input" placeholder="Benutzername" required>
-  <input id="passwd" type="password" class="w3-input" placeholder="Passwort" required>
-  <input id="storeCredentials" class="w3-check" type="checkbox">
-  <label>Automatisch anmelden</label>
-  <br/>
-  <br/>
-  <button id="login" type="submit" class="w3-button w3-green">Anmelden</button>
+  <div class="w3-row">
+    <div class="w3-col s7">
+      <input type="text" class="w3-input" id="searchField" placeholder="Suchbegriff...">
+    </div>
+    <div class="w3-col s3">
+      <button id="filter" type="submit" class="w3-button w3-green">Filtern</button>
+    </div>
+    <div class="w3-col s2">
+      <button id="reload" class="w3-button w3-blue" title="Systeme neu laden">
+        <i class="fa fa-sync-alt"></i>
+      </button>
+    </div>
+  </div>
 </form>
+
+<br/>
+
+<div id="loader" class="loader"></div>
+<div id="target">
+  <div class="w3-container w3-teal">
+    <h1>Offline</h1>
+  </div>
+  <table class="w3-table w3-hoverable w3-table-centered">
+    <thead>
+      <tr>
+        <th>System ID</th>
+        <th>Adresse</th>
+        <th>Kunde</th>
+        <th>Online</th>
+        <th>Application aktiviert</th>
+        <th>Application aktiv</th>
+      </tr>
+    </thead>
+    <tbody id="offline"/>
+  </table>
+  <div class="w3-container w3-teal">
+    <h1>Schwarzbildmodus</h1>
+  </div>
+  <table class="w3-table w3-hoverable w3-table-centered">
+    <thead>
+      <tr>
+        <th>System ID</th>
+        <th>Adresse</th>
+        <th>Kunde</th>
+        <th>Online</th>
+        <th>Application aktiviert</th>
+        <th>Application aktiv</th>
+      </tr>
+    </thead>
+    <tbody id="blackmode"/>
+  </table>
+</div>
 
 <br/>
 
@@ -50,3 +97,4 @@
     <p>Umsetzung <a href="http://www.homeinfo.de" target="_blank">HOMEINFO GmbH</a> &copy; 2019</p>
   </footer>
 </div>
+

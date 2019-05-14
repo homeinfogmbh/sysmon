@@ -1,5 +1,5 @@
 /*
-    stats.js - Systems monitoring statistics.
+    overview.js - Systems monitoring overview.
 
     (C) 2019 HOMEINFO - Digitale Informationssysteme GmbH
 
@@ -29,23 +29,25 @@ var sysmon = sysmon || {};
 */
 function reload () {
     sysmon.startLoading();
-    return sysmon.getStats().then(filter).then(sysmon.stopLoading);
+    return sysmon.getStats().then(render).then(sysmon.stopLoading);
 }
 
 
 /*
     Filters, sorts and renders systems.
 */
-function filter (systems) {
+function render (systems) {
     if (systems == null) {
         sysmon.startLoading();
         systems = sysmon.loadSystems();
     }
 
-    systems = sysmon.filtered(systems);
-    const container = document.getElementById('stats');
-    sysmon.listSystems(systems, container);
-    sysmon.stopLoading();
+    const offlineSystems = sysmon.offline(systems);
+    const offlineContainer = document.getElementById('offline');
+    sysmon.render(offlineSystems, offlineContainer);
+    const blackmodeSystems = sysmon.blackmode(systems);
+    const blackmodeContainer = document.getElementById('blackmode');
+    sysmon.render(blackmodeSystems, blackmodeContainer);
 }
 
 
@@ -56,7 +58,7 @@ function init () {
     sysmon.startLoading();
     reload().then(sysmon.stopLoading);
     const btnFilter = document.getElementById('filter');
-    btnFilter.addEventListener('click', sysmon.partial(filter), false);
+    btnFilter.addEventListener('click', sysmon.partial(render), false);
     const btnReload = document.getElementById('reload');
     btnReload.addEventListener('click', sysmon.partial(reload), false);
 }

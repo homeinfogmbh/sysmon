@@ -105,3 +105,31 @@ sysmon.filtered = function (systems) {
     systems = sysmon.filterSystems(systems, keyword);
     return Array.from(systems);
 };
+
+
+/*
+    Yields offline systems.
+*/
+sysmon.offline = function* (systems) {
+    for (const system of systems) {
+        if (system.checks != null && system.checks.online != null) {
+            if (! system.checks.online.online) {
+                yield system;
+            }
+        }
+    }
+};
+
+
+/*
+    Yields systems in black mode.
+*/
+sysmon.blackmode = function* (systems) {
+    for (const system of systems) {
+        if (system.checks != null && system.checks.applicationStatus != null) {
+            if (system.checks.applicationStatus.enabled === false || system.checks.applicationStatus.running === false) {
+                yield system;
+            }
+        }
+    }
+};

@@ -128,8 +128,7 @@ sysmon.getTypes = function () {
 /*
     Lists the respective systems.
 */
-sysmon.listSystems = function (systems) {
-    const container = document.getElementById('stats');
+sysmon.render = function (systems, container) {
     container.innerHTML = '';
 
     for (const system of systems) {
