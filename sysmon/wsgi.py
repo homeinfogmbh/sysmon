@@ -28,8 +28,9 @@ def get_systems(systems=None):
     if systems is not None:
         selection &= System.id << systems
 
+    selection &= ~(System.deployment >> None)
+
     if ACCOUNT.root:
-        selection &= ~(System.deployment >> None)
         return System.select().where(selection)
 
     try:
@@ -44,13 +45,6 @@ def get_systems(systems=None):
 def get_checks(system, *, begin=None, end=None):
     """Returns the checks for the respective system."""
 
-    if system.deployment is not None:
-        customer = system.deployment.customer.to_json(cascade=1)
-        address = system.deployment.address.to_json()
-    else:
-        customer = None
-        address = None
-
     json = {}
 
     for key, model in CHECKS.items():
@@ -63,18 +57,12 @@ def get_checks(system, *, begin=None, end=None):
             selection &= model.timestamp <= end
 
         ordering = model.timestamp.desc()
-        records = model.select().where(selection).order_by(ordering)
-        entry = {
-            'checks': list(record.to_json() for record in records),
-            'customer': customer,
-            'address': address
-        }
-        json[key] = entry
+        json[key] = list(model.select().where(selection).order_by(ordering))
 
     return json
 
 
-@APPLICATION.route('/', methods=['GET'], strict_slashes=False)
+@APPLICATION.route('/checks', methods=['GET'], strict_slashes=False)
 @authenticated
 def list_():
     """Lists all systems."""
@@ -90,4 +78,18 @@ def list_():
         str(system.id): get_checks(system, begin=begin, end=end)
         for system in get_systems()
     }
+    return JSON(json)
+
+
+@APPLICATION.route('/system/<int:system>', methods=['GET'])
+@authenticated
+def get_system(system):
+    """Lists all systems."""
+
+    try:
+        system = get_systems(systems={system}).get()
+    except System.DoesNotExist:
+        return ('No such system.', 404)
+
+    json = system.to_json(brief=True, cascade=3)
     return JSON(json)
