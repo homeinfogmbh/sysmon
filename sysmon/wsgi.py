@@ -1,7 +1,10 @@
 """Monitoring web interface."""
 
+from flask import request
+
 from his import ACCOUNT, CUSTOMER, authenticated, Application
 from terminallib import Deployment, System
+from timelib import strpdatetime
 from wsgilib import JSON
 
 from sysmon.orm import ApplicationCheck, OnlineCheck, TypeAdmin
@@ -38,22 +41,24 @@ def get_systems(systems=None):
     return System.select().join(Deployment).where(selection)
 
 
-def get_checks(system):
+def get_checks(system, *, begin=None, end=None):
     """Returns the checks for the respective system."""
 
     json = system.to_json(brief=True, cascade=True)
 
-    for key, model in CHECKS.items():
-        try:
-            latest_check = model.select().where(
-                model.system == system).order_by(
-                    model.timestamp.desc()).limit(1).get()
-        except model.DoesNotExist:
-            check_json = None
-        else:
-            check_json = latest_check.to_json()
 
-        json[key] = check_json
+    for key, model in CHECKS.items():
+        selection = model.system == system
+
+        if begin:
+            selection &= model.timestamp >= begin
+
+        if end:
+            selection &= model.timestamp <= end
+
+        ordering = model.timestamp.desc()
+        records = model.select().where(selection).order_by(ordering)
+        json[key] = list(record.to_json() for record in records)
 
     return json
 
@@ -63,4 +68,15 @@ def get_checks(system):
 def list_():
     """Lists all systems."""
 
-    return JSON([get_checks(system) for system in get_systems()])
+    systems = request.headers.get('systems')
+
+    if systems:
+        systems = set(int(system) for system in systems.split(','))
+
+    begin = strpdatetime(request.headers.get('begin'))
+    end = strpdatetime(request.headers.get('end'))
+    json = {
+        str(system.id): get_checks(system, begin=begin, end=end)
+        for system in get_systems()
+    }
+    return JSON(json)
