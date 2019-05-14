@@ -5,4 +5,4 @@ After=network.target mysql.service
 [Service]
 User=sysmon
 Group=sysmon
-ExecStart=/usr/local/bin/sysmond
+ExecStart=/usr/local/bin/sysmon
