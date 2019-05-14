@@ -13,7 +13,8 @@ setup(
     scripts=['files/sysmond'],
     data_files=[
         ('/usr/lib/systemd/system',
-         ['files/sysmon.service', 'files/sysmon.timer'])
+         ['files/sysmon.service', 'files/sysmon.timer']
+        )
     ],
     license='GPLv3',
     description='A systems monitoring system.')
