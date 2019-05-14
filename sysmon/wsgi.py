@@ -63,7 +63,7 @@ def get_checks(system, *, begin=None, end=None):
     return json
 
 
-@APPLICATION.route('/', methods=['GET'])
+@APPLICATION.route('/', methods=['GET'], strict_slashes=False)
 @authenticated
 def list_():
     """Lists all systems."""
