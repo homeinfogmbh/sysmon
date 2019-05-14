@@ -16,7 +16,8 @@ def check_application(system):
     is eabled and running on the respective system.
     """
 
-    ctrl = RemoteController(CONFIG['checks']['user'], system)
+    ctrl = RemoteController(
+        CONFIG['checks']['user'], system, keyfile=CONFIG['checks']['keyfile'])
     application_service = CONFIG['checks']['application_service']
 
     try:
