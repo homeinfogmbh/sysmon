@@ -44,8 +44,14 @@ def get_systems(systems=None):
 def get_checks(system, *, begin=None, end=None):
     """Returns the checks for the respective system."""
 
-    json = system.to_json(brief=True, cascade=True)
+    if system.deployment is not None:
+        customer = system.deployment.customer.to_json(cascade=1)
+        address = system.deployment.address.to_json()
+    else:
+        customer = None
+        address = None
 
+    json = {}
 
     for key, model in CHECKS.items():
         selection = model.system == system
@@ -58,7 +64,12 @@ def get_checks(system, *, begin=None, end=None):
 
         ordering = model.timestamp.desc()
         records = model.select().where(selection).order_by(ordering)
-        json[key] = list(record.to_json() for record in records)
+        entry = {
+            'checks': list(record.to_json() for record in records),
+            'customer': customer,
+            'address': address
+        }
+        json[key] = entry
 
     return json
 
