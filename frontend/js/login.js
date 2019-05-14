@@ -43,7 +43,7 @@ sysmon.doLogin = function (event) {
 
     return sysmon.login(account, passwd).then(
         function () {
-            window.location = 'manage.html';
+            window.location = 'overview.html';
         },
         function () {
             alert('Ungültiger Benutzername und / oder Passwort.');
