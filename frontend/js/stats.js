@@ -43,7 +43,6 @@ function filter (systems) {
     }
 
     systems = sysmon.filtered(systems);
-    systems = sysmon.sorted(systems);
     sysmon.listSystems(systems);
     sysmon.stopLoading();
 }
@@ -59,16 +58,6 @@ function init () {
     btnFilter.addEventListener('click', sysmon.partial(filter), false);
     const btnReload = document.getElementById('reload');
     btnReload.addEventListener('click', sysmon.partial(reload), false);
-    const radioButtons = [
-        document.getElementById('sortAsc'),
-        document.getElementById('sortDesc'),
-        document.getElementById('sortById'),
-        document.getElementById('sortByAddress')
-    ];
-
-    for (const radioButton of radioButtons) {
-        radioButton.addEventListener('change', sysmon.partial(filter), false);
-    }
 }
 
 

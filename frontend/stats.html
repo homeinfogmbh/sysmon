@@ -27,7 +27,6 @@
   <script src="js/dom.js"></script>
   <script src="js/functions.js"></script>
   <script src="js/filter.js"></script>
-  <script src="js/sort.js"></script>
   <script src="js/stats.js"></script>
 </head>
 
@@ -65,15 +64,18 @@
 
 <div id="loader" class="loader"></div>
 <div id="target">
-  <table id="stats" class="w3-table w3-hoverable w3-table-centered">
-    <tr>
-      <th>System ID</th>
-      <th>Adresse</th>
-      <th>Kunde</th>
-      <th>Online</th>
-      <th>Application aktiviert</th>
-      <th>Application aktiv</th>
-    </tr>
+  <table class="w3-table w3-hoverable w3-table-centered">
+    <thead>
+      <tr>
+        <th>System ID</th>
+        <th>Adresse</th>
+        <th>Kunde</th>
+        <th>Online</th>
+        <th>Application aktiviert</th>
+        <th>Application aktiv</th>
+      </tr>
+    </thead>
+    <tbody id="stats"/>
   </table>
 </div>
 

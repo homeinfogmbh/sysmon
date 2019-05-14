@@ -129,12 +129,15 @@ sysmon.getTypes = function () {
     Lists the respective systems.
 */
 sysmon.listSystems = function (systems) {
-    const container = document.getElementById('systems');
+    const container = document.getElementById('stats');
     container.innerHTML = '';
 
     for (const system of systems) {
-        let entry = sysmon.systemEntry(system);
-        container.appendChild(entry);
+        let row = sysmon.systemCheckToDOM(system);
+
+        if (row != null) {
+            container.appendChild(row);
+        }
     }
 };
 
@@ -198,135 +201,4 @@ sysmon.partial = function (func, ...args) {
 
         return func(...args);
     };
-};
-
-
-/*
-    Lets the respective system beep.
-*/
-sysmon.beep = function (system) {
-    const payload = {'system': system};
-    const data = JSON.stringify(payload);
-    const headers = {'Content-Type': 'application/json'};
-    return sysmon.makeRequest('POST', sysmon.BASE_URL + '/administer/beep', data, headers).then(
-        function () {
-            alert('Das System sollte gepiept haben.');
-        },
-        sysmon.checkSession('Das System konnte nicht zum Piepen gebracht werden.')
-    );
-};
-
-
-/*
-    Actually performs a reboot of the respective system.
-*/
-sysmon.reboot = function (system) {
-    const payload = {'system': system};
-    const data = JSON.stringify(payload);
-    const headers = {'Content-Type': 'application/json'};
-    return sysmon.makeRequest('POST', sysmon.BASE_URL + '/administer/reboot', data, headers).then(
-        function () {
-            alert('Das System wurde wahrscheinlich neu gestartet.');
-        },
-        function (response) {
-            let message = 'Das System konnte nicht neu gestartet werden.';
-
-            if (response.status == 503) {
-                message = 'Auf dem System werden aktuell administrative Aufgaben ausgeführt.';
-            }
-
-            return sysmon.checkSession(message)(response);
-        }
-    );
-};
-
-
-/*
-    Navigates to the toggle application page.
-*/
-sysmon.toggleApplication = function (id) {
-    localStorage.setItem('sysmon.system', JSON.stringify(id));
-    window.location = 'application.html';
-};
-
-
-/*
-    Enables the application.
-*/
-sysmon.enableApplication = function (system) {
-    const payload = {'system': system};
-    const data = JSON.stringify(payload);
-    const headers = {'Content-Type': 'application/json'};
-    return sysmon.makeRequest('POST', sysmon.BASE_URL + '/administer/application', data, headers).then(
-        function () {
-            alert('Digital Signage Anwendung wurde aktiviert.');
-        },
-        sysmon.checkSession('Digital Signage Anwendung konnte nicht aktiviert werden.')
-    );
-};
-
-
-/*
-    Disables the application.
-*/
-sysmon.disableApplication = function (system) {
-    const payload = {'system': system, 'disable': true};
-    const data = JSON.stringify(payload);
-    const headers = {'Content-Type': 'application/json'};
-    return sysmon.makeRequest('POST', sysmon.BASE_URL + '/administer/application', data, headers).then(
-        function () {
-            alert('Digital Signage Anwendung wurde deaktiviert.');
-        },
-        sysmon.checkSession('Digital Signage Anwendung konnte nicht deaktiviert werden.')
-    );
-};
-
-
-/*
-    Synchronizes the respective system.
-*/
-sysmon.sync = function (system) {
-    const payload = {'system': system};
-    const data = JSON.stringify(payload);
-    const headers = {'Content-Type': 'application/json'};
-    return sysmon.makeRequest('POST', sysmon.BASE_URL + '/administer/sync', data, headers).then(
-        function () {
-            alert('Das System wurde synchronisiert.');
-        },
-        sysmon.checkSession('Das System konnte nicht synchronisiert werden.')
-    );
-};
-
-
-
-/*
-    Opens the deploying view.
-*/
-sysmon.deploySystem = function (id) {
-    localStorage.setItem('sysmon.system', JSON.stringify(id));
-    window.location = 'deploy.html';
-};
-
-
-/*
-    Deploys a system.
-*/
-sysmon.deploy = function (system, customer, address, connection, type, weather, annotation) {
-    const payload = {
-        system: system,
-        customer: customer,
-        address: address,
-        connection: connection,
-        type: type,
-        weather: weather,
-        annotation: annotation
-    };
-    const data = JSON.stringify(payload);
-    const headers = {'Content-Type': 'application/json'};
-    return sysmon.makeRequest('POST', sysmon.BASE_URL + '/administer/deploy', data, headers).then(
-        function () {
-            alert('Das System wurde als verbaut gekennzeichnet.');
-        },
-        sysmon.checkSession('Das System konnte nicht als verbaut gekennzeichnet werden.')
-    );
 };

@@ -25,16 +25,54 @@ var sysmon = sysmon || {};
 
 
 /*
+    Converts true, false and null into a string.
+*/
+sysmon.boolNaToString = function (boolean) {
+    if (boolean == null) {
+        return '?';
+    }
+
+    if (boolean) {
+        return '✓';
+    }
+
+    return '✗';
+};
+
+
+/*
     Generates a terminal DOM entry.
 */
 sysmon.systemCheckToDOM = function (systemCheck) {
+    if (systemCheck.checks == null) {
+        return null;
+    }
+
+    let online = null;
+
+    if (systemCheck.checks.online != null) {
+        online = systemCheck.checks.online.online;
+    }
+
+    let applicationEnabled = null;
+
+    if (systemCheck.checks.applicationStatus != null) {
+        applicationEnabled = systemCheck.checks.applicationStatus.enabled;
+    }
+
+    let applicationRunning = null;
+
+    if (systemCheck.checks.applicationStatus != null) {
+        applicationRunning = systemCheck.checks.applicationStatus.running;
+    }
+
     const deployment = systemCheck.deployment;
     let address = 'Keine Adresse';
     let customer = 'Kein Kunde';
 
     if (deployment != null) {
         address = sysmon.addressToString(deployment.address);
-        customer = '' + deployment.customer.id;
+        customer = deployment.customer.company.name + ' (' + deployment.customer.id + ')';
     }
 
     const tableRow = document.createElement('tr');
@@ -48,13 +86,13 @@ sysmon.systemCheckToDOM = function (systemCheck) {
     columnCustomer.textContent = customer;
     tableRow.appendChild(columnCustomer);
     const columnOnline = document.createElement('td');
-    columnOnline.textContent = systemCheck.checks.online ? '✓' : '✗';
+    columnOnline.textContent = sysmon.boolNaToString(online);
     tableRow.appendChild(columnOnline);
     const columnApplicationEnabled = document.createElement('td');
-    columnApplicationEnabled.textContent = systemCheck.checks.application.enabled ? '✓' : '✗';
+    columnApplicationEnabled.textContent = sysmon.boolNaToString(applicationEnabled);
     tableRow.appendChild(columnApplicationEnabled);
     const columnApplicationRunning = document.createElement('td');
-    columnApplicationRunning.textContent = systemCheck.checks.application.running ? '✓' : '✗';
+    columnApplicationRunning.textContent = sysmon.boolNaToString(applicationRunning);
     tableRow.appendChild(columnApplicationRunning);
     return tableRow;
 };
