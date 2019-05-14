@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 """System monitoring daemon."""
 
-from logging import INFO, basicConfig
+from logging import INFO, LOGGER, basicConfig
 
 from sysmon import run_checks
 from sysmon.config import LOG_FORMAT
@@ -13,10 +13,10 @@ def main():
     basicConfig(level=INFO, format=LOG_FORMAT)
 
     try:
-        while True:
-            run_checks()
+        run_checks()
     except KeyboardInterrupt:
-        return
+        LOGGER.error('Aborted by user.')
+        return 1
 
 
 if __name__ == '__main__':
