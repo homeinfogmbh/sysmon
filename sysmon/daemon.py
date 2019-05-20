@@ -15,4 +15,5 @@ def run_checks():
             LOGGER.info('Running %s on #%i.', check.__name__, system.id)
             check.run(system)
 
+    LOGGER.info('Notifying admins about state changes.')
     notify()
