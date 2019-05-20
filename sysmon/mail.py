@@ -3,6 +3,7 @@
 from xml.etree.ElementTree import tostring
 
 from emaillib import EMail, Mailer
+from functoolsplus import coerce
 
 from sysmon.config import CONFIG
 
@@ -17,11 +18,12 @@ def admins():
     return filter(None, map(lambda email: email.strip(), emails_))
 
 
+@coerce(tuple)
 def emails(html):
     """Send emails to admins."""
 
     subject = CONFIG['mail']['subject']
-    html = tostring(html, encoding='UTF-8', method='html')
+    html = tostring(html, encoding='unicode', method='html')
 
     for admin in admins():
         yield EMail(subject, CONFIG['mail']['email'], admin, html=html)
