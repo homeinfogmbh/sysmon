@@ -60,7 +60,7 @@ class SystemCheck(SysmonModel):
 
     def to_json(self, **kwargs):
         """Returns a JSON-ish dict."""
-        json = super().to_dict(**kwargs)
+        json = super().to_json(**kwargs)
         json['successful'] = self.successful
         return json
 
