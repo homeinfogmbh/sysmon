@@ -26,6 +26,8 @@ def state_changes():
                 continue
 
             if previous:
+                previous, *_ = previous
+
                 if last.successful and not previous.successful:
                     yield CheckState(system, check, State.RECOVERED)
                 elif previous.successful and not last.successful:
