@@ -1,12 +1,12 @@
 """ORM models."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from peewee import BooleanField, DateTimeField, ForeignKeyField
 
 from mdb import Customer
 from peeweeplus import EnumField, JSONModel, MySQLDatabase
-from terminallib import is_online, System, Type
+from terminallib import is_online, Synchronization, System, Type
 
 from sysmon.config import CONFIG
 from sysmon.checks import check_application
@@ -103,6 +103,40 @@ class ApplicationCheck(SystemCheck):
         return self.enabled and self.running
 
 
+class SyncCheck(SystemCheck):
+    """Checks the last synchronizations."""
+
+    last_sync = DateTimeField(null=True)
+
+    @classmethod
+    def run(cls, system):
+        """Runs the check on the respective system."""
+        try:
+            last_sync, = Synchronization.select().where(
+                (Synchronization.system == system)
+                & ~(Synchronization.finished >> None)).order_by(
+                    Synchronization.finished.desc()).limit(1)
+        except ValueError:
+            last_sync = None
+        else:
+            last_sync = last_sync.finished
+
+        record = cls(system=system, last_sync=last_sync)
+        record.save()
+        return record
+
+    @property
+    def successful(self):
+        """Determines whether the check was successful."""
+        if self.last_sync is None:
+            return False
+
+        if self.last_sync < datetime.now() + timedelta(days=2):
+            return False
+
+        return True
+
+
 class TypeAdmin(SysmonModel):
     """Administrators of a certain type."""
 
@@ -112,5 +146,5 @@ class TypeAdmin(SysmonModel):
         on_update='CASCADE')
 
 
-CHECKS = (OnlineCheck, ApplicationCheck)
+CHECKS = (OnlineCheck, ApplicationCheck, Synchronization)
 MODELS = (TypeAdmin,) + CHECKS
