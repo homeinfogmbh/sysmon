@@ -152,5 +152,5 @@ class TypeAdmin(SysmonModel):
         on_update='CASCADE')
 
 
-CHECKS = (OnlineCheck, ApplicationCheck, Synchronization)
+CHECKS = (OnlineCheck, ApplicationCheck, SyncCheck)
 MODELS = (TypeAdmin,) + CHECKS
