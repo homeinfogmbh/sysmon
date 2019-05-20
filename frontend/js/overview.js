@@ -48,6 +48,9 @@ function render (systems) {
     const blackmodeSystems = sysmon.blackmode(systems);
     const blackmodeContainer = document.getElementById('blackmode');
     sysmon.render(blackmodeSystems, blackmodeContainer);
+    const outdatedSystems = sysmon.outdated(systems);
+    const outdatedContainer = document.getElementById('outdated');
+    sysmon.render(outdatedSystems, outdatedContainer);
 }
 
 

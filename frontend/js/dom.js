@@ -50,20 +50,26 @@ sysmon.systemCheckToDOM = function (systemCheck) {
 
     let online = null;
 
-    if (systemCheck.checks.online != null) {
-        online = systemCheck.checks.online.online;
+    if (systemCheck.checks.OnlineCheck != null) {
+        online = systemCheck.checks.OnlineCheck.online;
     }
 
     let applicationEnabled = null;
 
-    if (systemCheck.checks.applicationStatus != null) {
-        applicationEnabled = systemCheck.checks.applicationStatus.enabled;
+    if (systemCheck.checks.CheckApplication != null) {
+        applicationEnabled = systemCheck.checks.CheckApplication.enabled;
     }
 
     let applicationRunning = null;
 
-    if (systemCheck.checks.applicationStatus != null) {
-        applicationRunning = systemCheck.checks.applicationStatus.running;
+    if (systemCheck.checks.CheckApplication != null) {
+        applicationRunning = systemCheck.checks.CheckApplication.running;
+    }
+
+    let lastSync = null;
+
+    if (systemCheck.checks.CheckSync != null) {
+        lastSync = systemCheck.checks.CheckSync.last_sync;
     }
 
     const deployment = systemCheck.deployment;
@@ -94,5 +100,8 @@ sysmon.systemCheckToDOM = function (systemCheck) {
     const columnApplicationRunning = document.createElement('td');
     columnApplicationRunning.textContent = sysmon.boolNaToString(applicationRunning);
     tableRow.appendChild(columnApplicationRunning);
+    const columnLastSync = document.createElement('td');
+    columnLastSync.textContent = lastSync || 'N/A';
+    tableRow.appendChild(columnLastSync);
     return tableRow;
 };

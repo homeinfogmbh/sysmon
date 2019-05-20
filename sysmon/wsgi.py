@@ -8,17 +8,13 @@ from terminallib import Deployment, System, Type
 from timelib import strpdatetime
 from wsgilib import Error, JSON
 
-from sysmon.orm import ApplicationCheck, OnlineCheck, TypeAdmin
+from sysmon.orm import CHECKS, TypeAdmin
 
 
 __all__ = ['APPLICATION']
 
 
 APPLICATION = Application('sysmon')
-CHECKS = {
-    'online': OnlineCheck,
-    'applicationStatus': ApplicationCheck
-}
 
 
 def get_systems(*, systems=None, customers=None, types=None):
@@ -72,7 +68,7 @@ def get_stats(system, *, begin=None, end=None):
 
     json = {}
 
-    for key, model in CHECKS.items():
+    for model in CHECKS:
         selection = model.system == system
 
         if begin:
@@ -89,7 +85,7 @@ def get_stats(system, *, begin=None, end=None):
         except model.DoesNotExist:
             continue
 
-        json[key] = latest.to_json()
+        json[model.__name__] = latest.to_json()
 
     return json
 

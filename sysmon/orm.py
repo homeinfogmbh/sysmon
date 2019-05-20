@@ -58,6 +58,12 @@ class SystemCheck(SysmonModel):
         """Checks whether the check was successful."""
         raise NotImplementedError()
 
+    def to_json(self, **kwargs):
+        """Returns a JSON-ish dict."""
+        json = super().to_dict(**kwargs)
+        json['successful'] = self.successful
+        return json
+
 
 class OnlineCheck(SystemCheck):
     """List of online checks of systems."""

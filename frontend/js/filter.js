@@ -112,8 +112,8 @@ sysmon.filtered = function (systems) {
 */
 sysmon.offline = function* (systems) {
     for (const system of systems) {
-        if (system.checks != null && system.checks.online != null) {
-            if (! system.checks.online.online) {
+        if (system.checks != null && system.checks.OnlineCheck != null) {
+            if (! system.checks.OnlineCheck.successful) {
                 yield system;
             }
         }
@@ -126,8 +126,22 @@ sysmon.offline = function* (systems) {
 */
 sysmon.blackmode = function* (systems) {
     for (const system of systems) {
-        if (system.checks != null && system.checks.applicationStatus != null) {
-            if (system.checks.applicationStatus.enabled === false || system.checks.applicationStatus.running === false) {
+        if (system.checks != null && system.checks.ApplicationCheck != null) {
+            if (! system.checks.ApplicationCheck.successful) {
+                yield system;
+            }
+        }
+    }
+};
+
+
+/*
+    Yields systems out of sync.
+*/
+sysmon.outdated = function* (systems) {
+    for (const system of systems) {
+        if (system.checks != null && system.checks.SyncCheck != null) {
+            if (! system.checks.SyncCheck.successful) {
                 yield system;
             }
         }
