@@ -128,7 +128,10 @@ sysmon.blackmode = function* (systems) {
     for (const system of systems) {
         if (system.checks != null && system.checks.ApplicationCheck != null) {
             if (! system.checks.ApplicationCheck.successful) {
-                yield system;
+                // Exclude unknown states if system was offline.
+                if (system.checks.ApplicationCheck.enabled != null && system.checks.ApplicationCheck.running != null) {
+                    yield system;
+                }
             }
         }
     }
