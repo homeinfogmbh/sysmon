@@ -48,6 +48,16 @@ class SystemCheck(SysmonModel):
     system = ForeignKeyField(
         System, column_name='system', on_delete='CASCADE', on_update='CASCADE')
 
+    @classmethod
+    def run(cls, system):
+        """Runs the checks on the respective systems."""
+        raise NotImplementedError()
+
+    @property
+    def successful(self):
+        """Checks whether the check was successful."""
+        raise NotImplementedError()
+
 
 class OnlineCheck(SystemCheck):
     """List of online checks of systems."""
@@ -62,6 +72,12 @@ class OnlineCheck(SystemCheck):
         """Runs the checks on the respective systems."""
         record = cls(system=system, online=is_online(system))
         record.save()
+        return record
+
+    @property
+    def successful(self):
+        """Checks whether the check was successful."""
+        return self.online
 
 
 class ApplicationCheck(SystemCheck):
@@ -79,6 +95,12 @@ class ApplicationCheck(SystemCheck):
         enabled, running = check_application(system)
         record = cls(system=system, enabled=enabled, running=running)
         record.save()
+        return record
+
+    @property
+    def successful(self):
+        """Checks whether the check was successful."""
+        return self.enabled and self.running
 
 
 class TypeAdmin(SysmonModel):
