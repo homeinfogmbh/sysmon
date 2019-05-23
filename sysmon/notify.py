@@ -118,5 +118,12 @@ class CheckState(NamedTuple):
         header = SubElement(row, 'th')
         header.text = str(self.system.id)
         column = SubElement(row, 'td')
-        column.text = self.check.__name__
+
+        if self.system.deployment is None:
+            column.text = '-'
+        else:
+            column.text = str(self.system.deployment)
+
+        column = SubElement(row, 'td')
+        column.text = self.check.message
         return row

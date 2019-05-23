@@ -58,6 +58,11 @@ class SystemCheck(SysmonModel):
         """Checks whether the check was successful."""
         raise NotImplementedError()
 
+    @property
+    def message(self):
+        """Returns the state message."""
+        raise NotImplementedError()
+
     def to_json(self, **kwargs):
         """Returns a JSON-ish dict."""
         json = super().to_json(**kwargs)
@@ -85,6 +90,11 @@ class OnlineCheck(SystemCheck):
         """Checks whether the check was successful."""
         return self.online
 
+    @property
+    def message(self):
+        """Returns the state message."""
+        return 'is online' if self.online else 'is offline'
+
 
 class ApplicationCheck(SystemCheck):
     """List of application status checks for systems."""
@@ -107,6 +117,20 @@ class ApplicationCheck(SystemCheck):
     def successful(self):
         """Checks whether the check was successful."""
         return self.enabled and self.running
+
+    @property
+    def message(self):
+        """Returns the state message."""
+        if self.enabled and self.running:
+            return 'Application is up and running'
+
+        if self.enabled and not self.running:
+            return 'Application enabled but not running'
+
+        if not self.enabled and self.running:
+            return 'Application is disabled but running'
+
+        return 'Application is disabled and not running'
 
 
 class SyncCheck(SystemCheck):
@@ -141,6 +165,14 @@ class SyncCheck(SystemCheck):
             return False
 
         return True
+
+    @property
+    def message(self):
+        """Returns the state message."""
+        if self.self.last_sync is None:
+            return 'System was never synced'
+
+        return 'Last sync: ' + self.sync.isoformat()
 
 
 class TypeAdmin(SysmonModel):
