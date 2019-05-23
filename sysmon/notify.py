@@ -120,7 +120,7 @@ class CheckState(NamedTuple):
         column = SubElement(row, 'td')
 
         if self.system.deployment is None:
-            column.text = '-'
+            column.text = 'Not deployed'
         else:
             column.text = str(self.system.deployment)
 
