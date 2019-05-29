@@ -169,10 +169,10 @@ class SyncCheck(SystemCheck):
     @property
     def message(self):
         """Returns the state message."""
-        if self.self.last_sync is None:
+        if self.last_sync is None:
             return 'System was never synced'
 
-        return 'Last sync: ' + self.sync.isoformat()
+        return 'Last sync: ' + self.last_sync.isoformat()
 
 
 class TypeAdmin(SysmonModel):
