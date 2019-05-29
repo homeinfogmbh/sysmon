@@ -29,16 +29,16 @@ def state_changes():
                 previous, *_ = previous
 
                 if last.successful and not previous.successful:
-                    yield CheckState(system, check, State.RECOVERED)
+                    yield CheckState(system, last, State.RECOVERED)
                 elif previous.successful and not last.successful:
-                    yield CheckState(system, check, State.FAILED)
+                    yield CheckState(system, last, State.FAILED)
                 else:
-                    yield CheckState(system, check, State.UNCHANGED)
+                    yield CheckState(system, last, State.UNCHANGED)
             else:
                 if last.successful:
-                    yield CheckState(system, check, State.RECOVERED)
+                    yield CheckState(system, last, State.RECOVERED)
                 else:
-                    yield CheckState(system, check, State.FAILED)
+                    yield CheckState(system, last, State.FAILED)
 
 
 def mk_html_table(check_states):
