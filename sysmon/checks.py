@@ -14,7 +14,7 @@ def check_application(system):
     """
 
     try:
-        response = system.execute('application')
+        response = system.exec('application')
     except SystemOffline:
         return ApplicationState(None, None)
 
