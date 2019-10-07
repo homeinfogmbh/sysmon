@@ -6,7 +6,7 @@ from peewee import BooleanField, DateTimeField, ForeignKeyField
 
 from mdb import Customer
 from peeweeplus import EnumField, JSONModel, MySQLDatabase
-from terminallib import is_online, Synchronization, System, Type
+from terminallib import Synchronization, System, Type
 
 from sysmon.config import CONFIG
 from sysmon.checks import check_application
@@ -81,7 +81,7 @@ class OnlineCheck(SystemCheck):
     @classmethod
     def run(cls, system):
         """Runs the checks on the respective systems."""
-        record = cls(system=system, online=is_online(system))
+        record = cls(system=system, online=system.online)
         record.save()
         return record
 
