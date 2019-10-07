@@ -1,11 +1,8 @@
 """Checking functions."""
 
-from subprocess import CalledProcessError
 from typing import NamedTuple
 
-from terminallib import SystemOffline, RemoteController
-
-from sysmon.config import CONFIG
+from terminallib import SystemOffline
 
 
 __all__ = ['check_application']
@@ -16,29 +13,17 @@ def check_application(system):
     is eabled and running on the respective system.
     """
 
-    ctrl = RemoteController(
-        CONFIG['checks']['user'], system, keyfile=CONFIG['checks']['keyfile'])
-    application_service = CONFIG['checks']['application_service']
-
     try:
-        ctrl.execute('systemctl', 'is-enabled', application_service)
+        response = system.execute('application')
     except SystemOffline:
         return ApplicationState(None, None)
-    except CalledProcessError:
-        enabled = False
-    else:
-        enabled = True
 
-    try:
-        ctrl.execute('systemctl', 'status', application_service)
-    except SystemOffline:
-        return ApplicationState(enabled, None)
-    except CalledProcessError:
-        running = False
-    else:
-        running = True
+    json = response.json()
 
-    return ApplicationState(enabled, running)
+    if json:
+        return ApplicationState(json.enabled, json.running)
+
+    return ApplicationState(None, None)
 
 
 class ApplicationState(NamedTuple):
