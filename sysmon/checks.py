@@ -21,7 +21,7 @@ def check_application(system):
     json = response.json()
 
     if json:
-        return ApplicationState(json.enabled, json.running)
+        return ApplicationState(json.get('enabled'), json.get('running'))
 
     return ApplicationState(None, None)
 
