@@ -1,5 +1,6 @@
 """Checking functions."""
 
+from json import JSONDecodeError
 from typing import NamedTuple
 
 from terminallib import SystemOffline
@@ -18,12 +19,12 @@ def check_application(system):
     except SystemOffline:
         return ApplicationState(None, None)
 
-    json = response.json()
+    try:
+        json = response.json()
+    except JSONDecodeError:
+        return ApplicationState(None, None)
 
-    if json:
-        return ApplicationState(json.get('enabled'), json.get('running'))
-
-    return ApplicationState(None, None)
+    return ApplicationState(json.get('enabled'), json.get('running'))
 
 
 class ApplicationState(NamedTuple):
