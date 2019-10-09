@@ -1,7 +1,8 @@
 """Checking functions."""
 
-from json import JSONDecodeError
 from typing import NamedTuple
+
+from simplejson.errors import JSONDecodeError
 
 from terminallib import SystemOffline
 
