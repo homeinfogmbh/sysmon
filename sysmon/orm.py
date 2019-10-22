@@ -6,7 +6,7 @@ from peewee import BooleanField, DateTimeField, ForeignKeyField
 
 from mdb import Customer
 from peeweeplus import EnumField, JSONModel, MySQLDatabase
-from terminallib import Synchronization, System, Type
+from terminallib import System, Type
 
 from sysmon.config import CONFIG
 from sysmon.checks import check_application
@@ -20,7 +20,8 @@ __all__ = [
     'SysmonModel',
     'SystemCheck',
     'OnlineCheck',
-    'ApplicationCheck']
+    'ApplicationCheck'
+]
 
 
 DATABASE = MySQLDatabase.from_config(CONFIG['db'])
@@ -133,48 +134,6 @@ class ApplicationCheck(SystemCheck):
         return 'Application is disabled and not running'
 
 
-class SyncCheck(SystemCheck):
-    """Checks the last synchronizations."""
-
-    last_sync = DateTimeField(null=True)
-
-    @classmethod
-    def run(cls, system):
-        """Runs the check on the respective system."""
-        try:
-            last_sync, = Synchronization.select().where(
-                (Synchronization.system == system)
-                & ~(Synchronization.finished >> None)).order_by(
-                    Synchronization.finished.desc()).limit(1)
-        except ValueError:
-            last_sync = None
-        else:
-            last_sync = last_sync.finished
-
-        record = cls(system=system, last_sync=last_sync)
-        record.save()
-        return record
-
-    @property
-    def successful(self):
-        """Determines whether the check was successful."""
-        if self.last_sync is None:
-            return False
-
-        if self.last_sync < datetime.now() + timedelta(days=2):
-            return False
-
-        return True
-
-    @property
-    def message(self):
-        """Returns the state message."""
-        if self.last_sync is None:
-            return 'System was never synced'
-
-        return 'Last sync: ' + self.last_sync.isoformat()
-
-
 class TypeAdmin(SysmonModel):
     """Administrators of a certain type."""
 
@@ -184,5 +143,5 @@ class TypeAdmin(SysmonModel):
         on_update='CASCADE')
 
 
-CHECKS = (OnlineCheck, ApplicationCheck, SyncCheck)
+CHECKS = (OnlineCheck, ApplicationCheck)
 MODELS = (TypeAdmin,) + CHECKS
