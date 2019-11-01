@@ -25,7 +25,7 @@ def check_application(system):
     except JSONDecodeError:
         return ApplicationState(None, None)
 
-    return ApplicationState(json.get('enabled'), json.get('running'))
+    return ApplicationState.from_json(json)
 
 
 class ApplicationState(NamedTuple):
@@ -33,3 +33,8 @@ class ApplicationState(NamedTuple):
 
     enabled: bool
     running: bool
+
+    @classmethod
+    def from_json(cls, json):
+        """Returns an application state from a JSON-ish dict."""
+        return cls(json.get('enabled'), json.get('running'))
