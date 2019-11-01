@@ -2,6 +2,7 @@
 
 from typing import NamedTuple
 
+from requests import Timeout
 from simplejson.errors import JSONDecodeError
 
 from terminallib import SystemOffline
@@ -18,6 +19,8 @@ def check_application(system):
     try:
         response = system.exec('application')
     except SystemOffline:
+        return ApplicationState(None, None)
+    except Timeout:
         return ApplicationState(None, None)
 
     try:
