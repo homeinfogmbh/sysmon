@@ -10,4 +10,5 @@ __all__ = [
     'run_checks',
     'SystemCheck',
     'OnlineCheck',
-    'ApplicationCheck']
+    'ApplicationCheck'
+]

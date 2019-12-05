@@ -1,15 +1,17 @@
 """ORM models."""
 
-from datetime import datetime, timedelta
+from datetime import datetime
+
+from requests import Timeout
+from simplejson.errors import JSONDecodeError
 
 from peewee import BooleanField, DateTimeField, ForeignKeyField
 
 from mdb import Customer
 from peeweeplus import EnumField, JSONModel, MySQLDatabase
-from terminallib import System, Type
+from terminallib import SystemOffline, System, Type
 
 from sysmon.config import CONFIG
-from sysmon.checks import check_application
 
 
 __all__ = [
@@ -107,9 +109,24 @@ class ApplicationCheck(SystemCheck):
     running = BooleanField(null=True)
 
     @classmethod
+    def _get_states(cls, system):
+        """Gets the application states from the respective system."""
+        try:
+            response = system.exec('application', state=None)
+        except (Timeout, SystemOffline):
+            return (None, None)
+
+        try:
+            json = response.json()
+        except JSONDecodeError:
+            return (None, None)
+
+        return (json.get('enabled'), json.get('running'))
+
+    @classmethod
     def run(cls, system):
         """Runs the checks on the respective systems."""
-        enabled, running = check_application(system)
+        enabled, running = cls._get_states(system)
         record = cls(system=system, enabled=enabled, running=running)
         record.save()
         return record
