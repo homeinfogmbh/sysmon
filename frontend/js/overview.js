@@ -47,16 +47,20 @@ function render (systems) {
     systems = sysmon.filtered(systems);
     const onlineSystems = sysmon.online(systems);
     const onlineContainer = document.getElementById('online');
-    sysmon.render(onlineSystems, onlineContainer);
+    const onlineCounter = document.getElementById('onlineCount');
+    sysmon.render(onlineSystems, onlineContainer, onlineCounter);
     const offlineSystems = sysmon.offline(systems);
     const offlineContainer = document.getElementById('offline');
-    sysmon.render(offlineSystems, offlineContainer);
+    const offlineCounter = document.getElementById('offlineCount');
+    sysmon.render(offlineSystems, offlineContainer, offlineCounter);
     const blackmodeSystems = sysmon.blackmode(systems);
     const blackmodeContainer = document.getElementById('blackmode');
-    sysmon.render(blackmodeSystems, blackmodeContainer);
+    const blackmodeCounter = document.getElementById('blackmodeCount');
+    sysmon.render(blackmodeSystems, blackmodeContainer, blackmodeCounter);
     const outdatedSystems = sysmon.outdated(systems);
     const outdatedContainer = document.getElementById('outdated');
-    sysmon.render(outdatedSystems, outdatedContainer);
+    const outdatedCounter = document.getElementById('outdatedCount');
+    sysmon.render(outdatedSystems, outdatedContainer, outdatedCounter);
     sysmon.stopLoading();
 }
 

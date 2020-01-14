@@ -128,16 +128,21 @@ sysmon.getTypes = function () {
 /*
     Lists the respective systems.
 */
-sysmon.render = function (systems, container) {
+sysmon.render = function (systems, container, counter) {
     container.innerHTML = '';
+    counter.innerHTML = '';
+    let count = 0;
 
     for (const system of systems) {
+        count += 1;
         let row = sysmon.systemCheckToDOM(system);
 
         if (row != null) {
             container.appendChild(row);
         }
     }
+
+    counter.innerHTML = '(' + count + ')';
 };
 
 
