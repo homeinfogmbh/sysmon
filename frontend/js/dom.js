@@ -48,28 +48,10 @@ sysmon.systemCheckToDOM = function (systemCheck) {
         return null;
     }
 
-    let online = null;
-
-    if (systemCheck.checks.OnlineCheck != null) {
-        online = systemCheck.checks.OnlineCheck.online;
-    }
-
-    let applicationEnabled = null;
-
-    if (systemCheck.checks.CheckApplication != null) {
-        applicationEnabled = systemCheck.checks.CheckApplication.enabled;
-    }
-
-    let applicationRunning = null;
-
-    if (systemCheck.checks.CheckApplication != null) {
-        applicationRunning = systemCheck.checks.CheckApplication.running;
-    }
-
     let lastSync = null;
 
     if (systemCheck.checks.CheckSync != null) {
-        lastSync = systemCheck.checks.CheckSync.last_sync;
+        lastSync = systemCheck.checks.CheckSync.lastSync;
     }
 
     const deployment = systemCheck.deployment;
@@ -91,15 +73,6 @@ sysmon.systemCheckToDOM = function (systemCheck) {
     const columnCustomer = document.createElement('td');
     columnCustomer.textContent = customer;
     tableRow.appendChild(columnCustomer);
-    const columnOnline = document.createElement('td');
-    columnOnline.textContent = sysmon.boolNaToString(online);
-    tableRow.appendChild(columnOnline);
-    const columnApplicationEnabled = document.createElement('td');
-    columnApplicationEnabled.textContent = sysmon.boolNaToString(applicationEnabled);
-    tableRow.appendChild(columnApplicationEnabled);
-    const columnApplicationRunning = document.createElement('td');
-    columnApplicationRunning.textContent = sysmon.boolNaToString(applicationRunning);
-    tableRow.appendChild(columnApplicationRunning);
     const columnLastSync = document.createElement('td');
     columnLastSync.textContent = lastSync || 'N/A';
     tableRow.appendChild(columnLastSync);
