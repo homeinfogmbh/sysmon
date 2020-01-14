@@ -45,6 +45,9 @@ function render (systems) {
     }
 
     systems = sysmon.filtered(systems);
+    const onlineSystems = sysmon.online(systems);
+    const onlineContainer = document.getElementById('online');
+    sysmon.render(onlineSystems, onlineContainer);
     const offlineSystems = sysmon.offline(systems);
     const offlineContainer = document.getElementById('offline');
     sysmon.render(offlineSystems, offlineContainer);

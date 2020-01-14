@@ -108,6 +108,20 @@ sysmon.filtered = function (systems) {
 
 
 /*
+    Yields online systems.
+*/
+sysmon.online = function* (systems) {
+    for (const system of systems) {
+        if (system.checks != null && system.checks.OnlineCheck != null) {
+            if (system.checks.OnlineCheck.successful) {
+                yield system;
+            }
+        }
+    }
+};
+
+
+/*
     Yields offline systems.
 */
 sysmon.offline = function* (systems) {
