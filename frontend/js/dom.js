@@ -48,12 +48,6 @@ sysmon.systemCheckToDOM = function (systemCheck) {
         return null;
     }
 
-    let lastSync = null;
-
-    if (systemCheck.checks.CheckSync != null) {
-        lastSync = systemCheck.checks.CheckSync.lastSync;
-    }
-
     const deployment = systemCheck.deployment;
     let address = 'Keine Adresse';
     let customer = 'Kein Kunde';
@@ -74,7 +68,7 @@ sysmon.systemCheckToDOM = function (systemCheck) {
     columnCustomer.textContent = customer;
     tableRow.appendChild(columnCustomer);
     const columnLastSync = document.createElement('td');
-    columnLastSync.textContent = lastSync || 'N/A';
+    columnLastSync.textContent = systemCheck.lastSync || 'N/A';
     tableRow.appendChild(columnLastSync);
     return tableRow;
 };
