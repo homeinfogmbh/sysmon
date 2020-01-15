@@ -31,7 +31,7 @@ sysmon.renderDiagram = function (records) {
         points.push([record.timestamp, record.online ? 1 : -1]);
     }
 
-    const context = document.getElementById('myChart').getContext('2d');
+    const context = document.getElementById('uptime').getContext('2d');
     const chart = new Chart(context, {
         type: 'line',
         data: {
