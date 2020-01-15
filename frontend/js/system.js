@@ -33,15 +33,12 @@ sysmon.renderDiagram = function (records) {
     }
 
     const context = document.getElementById('uptime').getContext('2d');
-    const color = Chart.helpers.color;
     const chart = new Chart(context, {
         type: 'line',
         data: {
             datasets: [
                 {
                     label: 'Dataset with string point data',
-                    backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-                    borderColor: window.chartColors.red,
                     fill: false,
                     data: data
                 }
