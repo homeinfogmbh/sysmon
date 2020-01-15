@@ -1,5 +1,5 @@
 /*
-    login.js - Systems monitoring login handling.
+    navigation.js - Systems monitoring navigation.
 
     (C) 2019 HOMEINFO - Digitale Informationssysteme GmbH
 
