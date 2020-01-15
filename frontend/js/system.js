@@ -28,7 +28,7 @@ sysmon.renderDiagram = function (records) {
     const data = [];
 
     for (const record of records) {
-        const item = {x: new Date(record.timestamp), y: record.online ? 1 : -1};
+        let item = {x: new Date(record.timestamp), y: record.online ? 1 : -1};
         data.push(item);
     }
 
