@@ -80,9 +80,7 @@ sysmon.renderDiagram = function (records) {
     const data = [];
 
     for (const record of records) {
-        let timestamp = new Date(record.timestamp);
-        timestamp = timestamp.toLocaleDateString('de-DE', {month:'short', year:'numeric'});
-        let item = {x: timestamp, y: record.online ? 1 : 0};
+        let item = {x: record.timestamp, y: record.online ? 1 : 0};
         data.push(item);
     }
 
