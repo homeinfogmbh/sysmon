@@ -49,7 +49,7 @@ sysmon.getConfig = function (data) {
                     display: true,
                     scaleLabel: {
                         display: true,
-                        labelString: 'Date'
+                        labelString: 'Datum'
                     },
                     ticks: {
                         major: {
@@ -62,13 +62,18 @@ sysmon.getConfig = function (data) {
                     display: true,
                     scaleLabel: {
                         display: true,
-                        labelString: 'value'
+                        labelString: 'Online'
+                    },
+                    ticks: {
+                        max: 1,
+                        min: 0,
+                        stepSize: 1
                     }
                 }]
             }
         }
     };
-}
+};
 
 
 sysmon.renderDiagram = function (records) {
@@ -81,8 +86,6 @@ sysmon.renderDiagram = function (records) {
 
     var ctx = document.getElementById('uptime').getContext('2d');
     window.myLine = new Chart(ctx, sysmon.getConfig(data));
-    console.log('Data: ' + data);
-    console.log('JSON: ' + JSON.stringify(data));
     sysmon.stopLoading();
 };
 
