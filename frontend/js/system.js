@@ -30,7 +30,7 @@ sysmon.getConfig = function (data) {
         type: 'line',
         data: {
             datasets: [{
-                label: 'Dataset with string point data',
+                label: 'Historie',
                 backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
                 borderColor: window.chartColors.red,
                 fill: false,
@@ -41,7 +41,7 @@ sysmon.getConfig = function (data) {
             responsive: true,
             title: {
                 display: true,
-                text: 'Chart.js Time Point Data'
+                text: 'System Up- und Downtime'
             },
             scales: {
                 xAxes: [{
@@ -80,7 +80,8 @@ sysmon.renderDiagram = function (records) {
     const data = [];
 
     for (const record of records) {
-        let item = {x: record.timestamp, y: record.online ? 1 : 0};
+        let timestamp = record.timestamp.toLocaleDateString('de-DE', {month:'short', year:'numeric'})
+        let item = {x: timestamp, y: record.online ? 1 : 0};
         data.push(item);
     }
 
