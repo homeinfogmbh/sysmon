@@ -68,6 +68,7 @@ sysmon.renderDiagram = function (records) {
         }
     });
     chart.render();
+    sysmon.stopLoading();
 };
 
 
