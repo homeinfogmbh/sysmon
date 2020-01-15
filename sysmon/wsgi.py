@@ -125,4 +125,5 @@ def system_details(system):
         return ('No such system.', 404)
 
     online_checks = OnlineCheck.select().where(OnlineCheck.system == system)
+    online_checks = online_checks.order_by(OnlineCheck.timestamp)
     return JSON([online_check.to_json() for online_check in online_checks])
