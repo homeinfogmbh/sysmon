@@ -29,12 +29,12 @@ sysmon.openTab = function (event, id) {
         tab.style.display = 'none';
     }
 
+    const highlightColor = 'w3-light-grey';
+
     for (const tabButton of document.getElementsByClassName('tabButton')) {
-        console.log('Class name before: ' + tabButton.className);
-        tabButton.classList.remove('w3-red');
-        console.log('Class name after: ' + tabButton.className);
+        tabButton.classList.remove(highlightColor);
     }
 
     document.getElementById(id).style.display = 'block';
-    event.currentTarget.className += ' w3-red';
+    event.currentTarget.classList.add(highlightColor);
 };
