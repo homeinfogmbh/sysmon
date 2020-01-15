@@ -37,6 +37,8 @@ sysmon.renderDiagram = function (records) {
         type: 'line',
         data: data
     });
+    console.log('Data: ' + data);
+    console.log('JSON: ' + JSON.stringify(data));
     chart.render();
     sysmon.stopLoading();
 };
