@@ -80,7 +80,7 @@ sysmon.renderDiagram = function (records) {
     }
 
     var ctx = document.getElementById('uptime').getContext('2d');
-    window.myLine = new Chart(ctx, config);
+    window.myLine = new Chart(ctx, sysmon.getConfig(data));
     console.log('Data: ' + data);
     console.log('JSON: ' + JSON.stringify(data));
     sysmon.stopLoading();
