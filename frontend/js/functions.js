@@ -108,7 +108,10 @@ sysmon.getStats = function () {
     Retrieves system details from the API.
 */
 sysmon.getSystemDetails = function (system) {
-    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/details/' + system).catch(
+    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/details/' + system).then(
+        function (response) {
+            return response.json;
+        },
         sysmon.checkSession('Die Systemdetails konnten nicht abgefragt werden.')
     );
 };
