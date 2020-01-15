@@ -24,25 +24,18 @@
 var sysmon = sysmon || {};
 
 
-sysmon.renderDiagram = function (records) {
-    const data = [];
-
-    for (const record of records) {
-        let item = {x: record.timestamp, y: record.online ? 1 : 0};
-        data.push(item);
-    }
-
-    const context = document.getElementById('uptime').getContext('2d');
-    const chart = new Chart(context, {
+sysmon.getConfig = function (data) {
+    const color = Chart.helpers.color;
+    return {
         type: 'line',
         data: {
-            datasets: [
-                {
-                    label: 'Dataset with string point data',
-                    fill: false,
-                    data: data
-                }
-            ]
+            datasets: [{
+                label: 'Dataset with string point data',
+                backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                borderColor: window.chartColors.red,
+                fill: false,
+                data: data
+            }]
         },
         options: {
             responsive: true,
@@ -74,10 +67,22 @@ sysmon.renderDiagram = function (records) {
                 }]
             }
         }
-    });
+    };
+}
+
+
+sysmon.renderDiagram = function (records) {
+    const data = [];
+
+    for (const record of records) {
+        let item = {x: record.timestamp, y: record.online ? 1 : 0};
+        data.push(item);
+    }
+
+    var ctx = document.getElementById('uptime').getContext('2d');
+    window.myLine = new Chart(ctx, config);
     console.log('Data: ' + data);
     console.log('JSON: ' + JSON.stringify(data));
-    chart.render();
     sysmon.stopLoading();
 };
 
