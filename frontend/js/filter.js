@@ -156,6 +156,7 @@ sysmon.blackmode = function* (systems) {
     Yields systems out of sync.
 */
 sysmon.outdated = function* (systems) {
+    const outdated = 3 * 24 * 3600 * 100;   // Three days in milliseconds.
     const now = Date.now();
 
     for (const system of systems) {
@@ -164,7 +165,7 @@ sysmon.outdated = function* (systems) {
             const timedelta = now - lastSync;
             console.log('Time delta: ', timedelta);
 
-            if (! system.checks.SyncCheck.successful) {
+            if (timedelta >= outdated) {
                 yield system;
             }
         }
