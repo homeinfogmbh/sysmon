@@ -29,5 +29,10 @@ sysmon.openTab = function (id) {
         tab.style.display = 'none';
     }
 
+    for (const tabButton of document.getElementsByClassName('tabButton')) {
+        tabButton.className.replace(' w3-red', '');
+    }
+
     document.getElementById(id).style.display = 'block';
+    document.getElementById(id + 'Button').style.className += ' w3-red';
 };

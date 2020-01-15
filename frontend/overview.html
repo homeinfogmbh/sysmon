@@ -58,10 +58,10 @@
 <div id="loader" class="loader"></div>
 <div id="target">
   <div class="w3-bar w3-black">
-    <button class="w3-bar-item w3-button" onclick="sysmon.openTab('offlineTab')">Offline <span id="offlineCount"></span></button>
-    <button class="w3-bar-item w3-button" onclick="sysmon.openTab('onlineTab')">Online <span id="onlineCount"></span></button>
-    <button class="w3-bar-item w3-button" onclick="sysmon.openTab('blackmodeTab')">Schwarzbildmodus <span id="blackmodeCount"></span></button>
-    <button class="w3-bar-item w3-button" onclick="sysmon.openTab('outdatedTab')">Nicht synchronisiert <span id="outdatedCount"></span></button>
+    <button id="offlineTabButton" class="w3-bar-item w3-button tabButton w3-red" onclick="sysmon.openTab('offlineTab')">Offline <span id="offlineCount"></span></button>
+    <button id="onlineTabButton" class="w3-bar-item w3-button tabButton" onclick="sysmon.openTab('onlineTab')">Online <span id="onlineCount"></span></button>
+    <button id="blackmodeTabButton" class="w3-bar-item w3-button tabButton" onclick="sysmon.openTab('blackmodeTab')">Schwarzbildmodus <span id="blackmodeCount"></span></button>
+    <button id="outdatedTabButton" class="w3-bar-item w3-button tabButton" onclick="sysmon.openTab('outdatedTab')">Nicht synchronisiert <span id="outdatedCount"></span></button>
   </div>
   <table id="offlineTab" class="w3-table w3-hoverable w3-table-centered tab">
     <thead>
