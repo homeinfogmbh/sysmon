@@ -4,11 +4,11 @@ from flask import request
 
 from functoolsplus import coerce
 from his import ACCOUNT, authenticated, Application
-from terminallib import Deployment, System, Type
+from terminallib import Deployment, System
 from timelib import strpdatetime
-from wsgilib import Error, JSON
+from wsgilib import JSON
 
-from sysmon.orm import CHECKS, TypeAdmin
+from sysmon.orm import CHECKS, TypeAdmin, OnlineCheck
 
 
 __all__ = ['APPLICATION']
@@ -17,27 +17,33 @@ __all__ = ['APPLICATION']
 APPLICATION = Application('sysmon')
 
 
-def get_systems(*, systems=None, customers=None, types=None):
+@coerce(set)
+def get_authorized_types():
+    """Yields authorized types."""
+
+    for admin in TypeAdmin.select().where(TypeAdmin.account == ACCOUNT.id):
+        yield admin.type
+
+
+def get_systems():
     """Yields the systems which the current user may monitor."""
 
-    condition = True
+    if ACCOUNT.root:
+        return System.select().where(True)
 
-    if systems:
-        condition &= System.id << systems
+    condition = Deployment.type << get_authorized_types()
+    return System.select().join(Deployment).where(condition)
 
-    if customers:
-        condition &= Deployment.customer << customers
 
-    if types:
-        condition &= Deployment.type << types
+def get_system(system):
+    """Returns a system by its ID."""
 
     if ACCOUNT.root:
-        return System.select().where(condition)
+        return System[system]
 
-    type_admins = TypeAdmin.select().where(TypeAdmin.account == ACCOUNT.id)
-    authorized_types = {type_admin.type for type_admin in type_admins}
-    condition &= Deployment.type << authorized_types
-    return System.select().join(Deployment).where(condition)
+    condition = System.id == system
+    condition &= Deployment.type << get_authorized_types()
+    return System.select().join(Deployment).where(condition).get()
 
 
 @coerce(set)
@@ -95,75 +101,28 @@ def get_systems_checks(systems, *, begin=None, end=None):
         yield json
 
 
-@coerce(set)
-def selected_customers():
-    """Yields the selected customers."""
-
-    customers = request.headers.get('customers')
-
-    if customers:
-        for customer in customers.split(','):
-            try:
-                yield int(customer)
-            except ValueError:
-                raise Error('Invalid customer ID: "%s".' % customer)
-
-
-@coerce(set)
-def selected_types():
-    """Yields the selected types."""
-
-    types = request.headers.get('types')
-
-    if types:
-        for type_ in types.split(','):
-            try:
-                yield Type(type_)
-            except ValueError:
-                raise Error('Invalid system type: "%s".' % type_)
-
-
-@coerce(set)
-def selected_systems():
-    """Yields the selected systems."""
-
-    systems = request.headers.get('systems')
-
-    if systems:
-        for system in systems.split(','):
-            try:
-                yield int(system)
-            except ValueError:
-                raise Error('Invalid system ID: "%s".' % system)
-
-
 @APPLICATION.route('/stats', methods=['GET'], strict_slashes=False)
 @authenticated
 def list_stats():
     """Lists systems and their stats."""
 
-    systems = get_systems(
-        systems=selected_systems(), customers=selected_customers(),
-        types=selected_types())
+    systems = get_systems()
     begin = strpdatetime(request.headers.get('begin'))
     end = strpdatetime(request.headers.get('end'))
     json = get_systems_checks(systems, begin=begin, end=end)
     return JSON(json)
 
 
-@APPLICATION.route('/customers', methods=['GET'], strict_slashes=False)
+@APPLICATION.route(
+    '/details/<int:system>', methods=['GET'], strict_slashes=False)
 @authenticated
-def list_customers():
-    """Lists all customers."""
+def system_details(system):
+    """Lists uptime details of a system."""
 
-    json = [customer.to_json(cascade=2) for customer in get_customers()]
-    return JSON(json)
+    try:
+        system = get_system(system)
+    except System.DoesNotExist:
+        return ('No such system.', 404)
 
-
-@APPLICATION.route('/types', methods=['GET'], strict_slashes=False)
-@authenticated
-def list_types():
-    """Lists all types."""
-
-    json = [type.value for type in get_types()]
-    return JSON(json)
+    online_checks = OnlineCheck.select().where(OnlineCheck.system == system)
+    return JSON([online_check.to_json() for online_check in online_checks])
