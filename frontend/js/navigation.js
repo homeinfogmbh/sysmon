@@ -30,7 +30,9 @@ sysmon.openTab = function (event, id) {
     }
 
     for (const tabButton of document.getElementsByClassName('tabButton')) {
+        console.log('Class name before: ' + tabButton.className);
         tabButton.className.replace(' w3-red', '');
+        console.log('Class name after: ' + tabButton.className);
     }
 
     document.getElementById(id).style.display = 'block';
