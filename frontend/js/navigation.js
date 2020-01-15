@@ -24,7 +24,7 @@
 var sysmon = sysmon || {};
 
 
-sysmon.openTab = function (id) {
+sysmon.openTab = function (event, id) {
     for (const tab of document.getElementsByClassName('tab')) {
         tab.style.display = 'none';
     }
@@ -34,5 +34,5 @@ sysmon.openTab = function (id) {
     }
 
     document.getElementById(id).style.display = 'block';
-    document.getElementById(id + 'Button').style.className += ' w3-red';
+    event.currentTarget.className += ' w3-red';
 };
