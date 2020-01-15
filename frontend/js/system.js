@@ -48,7 +48,7 @@ sysmon.renderDiagram = function (records) {
     Initialize manage.html.
 */
 function init () {
-    sysmon.getSystemDetails(12).then(sysmon.renderDiagram);
+    sysmon.getSystemDetails(88).then(sysmon.renderDiagram);
 }
 
 
