@@ -163,7 +163,6 @@ sysmon.outdated = function* (systems) {
         if (system.lastSync != null) {
             const lastSync = new Date(system.lastSync);
             const timedelta = now - lastSync;
-            console.log('Time delta: ', timedelta);
 
             if (timedelta >= outdated) {
                 yield system;
