@@ -33,9 +33,50 @@ sysmon.renderDiagram = function (records) {
     }
 
     const context = document.getElementById('uptime').getContext('2d');
+    const color = Chart.helpers.color;
     const chart = new Chart(context, {
         type: 'line',
-        data: data
+        data: {
+            datasets: [
+                {
+                    label: 'Dataset with string point data',
+                    backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+                    borderColor: window.chartColors.red,
+                    fill: false,
+                    data: data
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'Chart.js Time Point Data'
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    },
+                    ticks: {
+                        major: {
+                            fontStyle: 'bold',
+                            fontColor: '#FF0000'
+                        }
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'value'
+                    }
+                }]
+            }
+        }
     });
     console.log('Data: ' + data);
     console.log('JSON: ' + JSON.stringify(data));
