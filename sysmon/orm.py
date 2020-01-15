@@ -7,7 +7,7 @@ from simplejson.errors import JSONDecodeError
 
 from peewee import BooleanField, DateTimeField, ForeignKeyField
 
-from mdb import Customer
+from his import Account
 from peeweeplus import EnumField, JSONModel, MySQLDatabase
 from terminallib import SystemOffline, System, Type
 
@@ -154,9 +154,12 @@ class ApplicationCheck(SystemCheck):
 class TypeAdmin(SysmonModel):
     """Administrators of a certain type."""
 
+    class Meta:     # pylint: disable=C0111,R0903
+        table_name = 'type_admin'
+
     type = EnumField(Type)
-    customer = ForeignKeyField(
-        Customer, column_name='customer', on_delete='CASCADE',
+    account = ForeignKeyField(
+        Account, column_name='account', on_delete='CASCADE',
         on_update='CASCADE')
 
 

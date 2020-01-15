@@ -3,7 +3,7 @@
 from flask import request
 
 from functoolsplus import coerce
-from his import ACCOUNT, CUSTOMER, authenticated, Application
+from his import ACCOUNT, authenticated, Application
 from terminallib import Deployment, System, Type
 from timelib import strpdatetime
 from wsgilib import Error, JSON
@@ -34,13 +34,8 @@ def get_systems(*, systems=None, customers=None, types=None):
     if ACCOUNT.root:
         return System.select().where(condition)
 
-    try:
-        type_admins = TypeAdmin.select().where(
-            TypeAdmin.customer == CUSTOMER.id)
-    except TypeAdmin.DoesNotExist:
-        return ()
-
-    authorized_types = set(type_admin.type for type_admin in type_admins)
+    type_admins = TypeAdmin.select().where(TypeAdmin.account == ACCOUNT.id)
+    authorized_types = {type_admin.type for type_admin in type_admins}
     condition &= Deployment.type << authorized_types
     return System.select().join(Deployment).where(condition)
 
