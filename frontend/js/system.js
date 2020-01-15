@@ -30,7 +30,7 @@ sysmon.getConfig = function (data) {
         type: 'line',
         data: {
             datasets: [{
-                label: 'Historie',
+                label: 'Systemstatus',
                 backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
                 borderColor: window.chartColors.red,
                 fill: false,
