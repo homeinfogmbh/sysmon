@@ -29,7 +29,7 @@ sysmon.openTab = function (event, id) {
         tab.style.display = 'none';
     }
 
-    const highlightColor = 'w3-light-grey';
+    const highlightColor = 'w3-grey';
 
     for (const tabButton of document.getElementsByClassName('tabButton')) {
         tabButton.classList.remove(highlightColor);
