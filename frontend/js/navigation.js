@@ -24,6 +24,9 @@
 var sysmon = sysmon || {};
 
 
+/*
+    Opens a certain tab in the overview menu.
+*/
 sysmon.openTab = function (event, id) {
     for (const tab of document.getElementsByClassName('tab')) {
         tab.style.display = 'none';
@@ -37,4 +40,13 @@ sysmon.openTab = function (event, id) {
 
     document.getElementById(id).style.display = 'block';
     event.currentTarget.classList.add(highlightColor);
+};
+
+
+/*
+    Show system details page.
+*/
+sysmon.showSystemDetails = function (system) {
+    const url = 'system.html=system=' + system;
+    window.open(url, '_blank');
 };

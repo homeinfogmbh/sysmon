@@ -94,7 +94,9 @@ sysmon.renderDiagram = function (records) {
     Initialize manage.html.
 */
 function init () {
-    sysmon.getSystemDetails(88).then(sysmon.renderDiagram);
+    const urlParams = new URLSearchParams(window.location.search);
+    const system = urlParams.get('system');
+    sysmon.getSystemDetails(system).then(sysmon.renderDiagram);
 }
 
 
