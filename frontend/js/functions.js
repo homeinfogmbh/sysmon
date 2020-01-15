@@ -105,22 +105,11 @@ sysmon.getStats = function () {
 
 
 /*
-    Retrieves customers from the backend,
-    which the current user is allowed to deploy to.
+    Retrieves system details from the API.
 */
-sysmon.getCustomers = function () {
-    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/customers').catch(
-        sysmon.checkSession('Die Liste der Kunden konnte nicht abgefragt werden.')
-    );
-};
-
-
-/*
-    Retrieves types from the backend.
-*/
-sysmon.getTypes = function () {
-    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/types').catch(
-        sysmon.checkSession('Die Liste der Terminal-Typen konnte nicht abgefragt werden.')
+sysmon.getSystemDetails = function (system) {
+    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/details/' + system).catch(
+        sysmon.checkSession('Die Systemdetails konnten nicht abgefragt werden.')
     );
 };
 
@@ -143,54 +132,6 @@ sysmon.render = function (systems, container, counter) {
     }
 
     counter.innerHTML = '(' + count + ')';
-};
-
-
-/*
-    Renders the respective customers.
-*/
-sysmon.renderCustomers = function (customers) {
-    const select = document.getElementById('customer');
-    select.innerHTML = '';
-
-    for (const customer of customers) {
-        let option = document.createElement('option');
-        option.setAttribute('value', customer.id);
-        option.textContent = customer.company.name;
-        select.appendChild(option);
-    }
-};
-
-
-/*
-    Renders the respective connections.
-*/
-sysmon.renderConnections = function (connections) {
-    const select = document.getElementById('connection');
-    select.innerHTML = '';
-
-    for (const connection of connections) {
-        let option = document.createElement('option');
-        option.setAttribute('value', connection);
-        option.textContent = connection;
-        select.appendChild(option);
-    }
-};
-
-
-/*
-    Renders the respective types.
-*/
-sysmon.renderTypes = function (types) {
-    const select = document.getElementById('type');
-    select.innerHTML = '';
-
-    for (const type of types) {
-        let option = document.createElement('option');
-        option.setAttribute('value', type);
-        option.textContent = type;
-        select.appendChild(option);
-    }
 };
 
 
