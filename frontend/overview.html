@@ -27,6 +27,7 @@
   <script src="js/dom.js"></script>
   <script src="js/functions.js"></script>
   <script src="js/filter.js"></script>
+  <script src="js/navigation.js"></script>
   <script src="js/overview.js"></script>
 </head>
 
@@ -56,10 +57,13 @@
 
 <div id="loader" class="loader"></div>
 <div id="target">
-  <div class="w3-container w3-red">
-    <h1>Offline <span id="offlineCount"></span></h1>
+  <div class="w3-bar w3-black">
+    <button class="w3-bar-item w3-button" onclick="sysmon.openTab('offlineTab')">Offline <span id="offlineCount"></span></button>
+    <button class="w3-bar-item w3-button" onclick="sysmon.openTab('onlineTab')">Online <span id="onlineCount"></span></button>
+    <button class="w3-bar-item w3-button" onclick="sysmon.openTab('blackmodeTab')">Schwarzbildmodus <span id="blackmodeCount"></span></button>
+    <button class="w3-bar-item w3-button" onclick="sysmon.openTab('outdatedTab')">Nicht synchronisiert <span id="outdatedCount"></span></button>
   </div>
-  <table class="w3-table w3-hoverable w3-table-centered">
+  <table id="offlineTab" class="w3-table w3-hoverable w3-table-centered tab">
     <thead>
       <tr>
         <th>System ID</th>
@@ -70,10 +74,7 @@
     </thead>
     <tbody id="offline"/>
   </table>
-  <div class="w3-container w3-green">
-    <h1>Online <span id="onlineCount"></span></h1>
-  </div>
-  <table class="w3-table w3-hoverable w3-table-centered">
+  <table id="onlineTab" class="w3-table w3-hoverable w3-table-centered tab" style="display:none">
     <thead>
       <tr>
         <th>System ID</th>
@@ -84,10 +85,7 @@
     </thead>
     <tbody id="online"/>
   </table>
-  <div class="w3-container w3-orange">
-    <h1>Schwarzbildmodus <span id="blackmodeCount"></span></h1>
-  </div>
-  <table class="w3-table w3-hoverable w3-table-centered">
+  <table id="blackmodeTab" class="w3-table w3-hoverable w3-table-centered tab" style="display:none">
     <thead>
       <tr>
         <th>System ID</th>
@@ -98,10 +96,7 @@
     </thead>
     <tbody id="blackmode"/>
   </table>
-  <div class="w3-container w3-blue">
-    <h1>Nicht synchronisiert <span id="outdatedCount"></span></h1>
-  </div>
-  <table class="w3-table w3-hoverable w3-table-centered">
+  <table id="outdatedTab" class="w3-table w3-hoverable w3-table-centered tab" style="display:none">
     <thead>
       <tr>
         <th>System ID</th>
@@ -121,4 +116,3 @@
     <p>Umsetzung <a href="http://www.homeinfo.de" target="_blank">HOMEINFO GmbH</a> &copy; 2019</p>
   </footer>
 </div>
-
