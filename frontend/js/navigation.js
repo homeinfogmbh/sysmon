@@ -47,6 +47,6 @@ sysmon.openTab = function (event, id) {
     Show system details page.
 */
 sysmon.showSystemDetails = function (system) {
-    const url = 'system.html=system=' + system;
+    const url = 'system.html?system=' + system;
     window.open(url, '_blank');
 };
