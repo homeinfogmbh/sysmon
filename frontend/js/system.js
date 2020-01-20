@@ -91,12 +91,43 @@ sysmon.renderDiagram = function (records) {
 
 
 /*
+    Queries the backend and render the diagram.
+*/
+function render() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const system = urlParams.get('system');
+    const dateFrom = document.getElementById('from');
+    const dateUntil = document.getElementById('until');
+    const headers = {
+        'from': dateFrom.value(),
+        'until': dateUntil.value() + (24 * 3600 * 1000)
+    };
+    return sysmon.getSystemDetails(system, headers).then(sysmon.renderDiagram);
+}
+
+
+/*
+    Initializes the date input fields.
+*/
+function initDateInputs () {
+    const today = new Date();
+    const defaultTimespan = 30 * 24 * 3600 * 1000;  // 30 days.
+    const startDate = today - defaultTimespan;
+    const dateFrom = document.getElementById('from');
+    dateFrom.value = startDate.toISOString().split('T')[0];
+    dateFrom.setAttribute('onchange', render);
+    const dateUntil = document.getElementById('until');
+    dateUntil.value = today.toISOString().split('T')[0];
+    dateUntil.setAttribute('onchange', render);
+}
+
+
+/*
     Initialize manage.html.
 */
 function init () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const system = urlParams.get('system');
-    sysmon.getSystemDetails(system).then(sysmon.renderDiagram);
+    initDateInputs();
+    render();
 }
 
 

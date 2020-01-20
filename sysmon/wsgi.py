@@ -124,6 +124,17 @@ def system_details(system):
     except System.DoesNotExist:
         return ('No such system.', 404)
 
-    online_checks = OnlineCheck.select().where(OnlineCheck.system == system)
+    select = OnlineCheck.system == system
+    start = strpdatetime(request.headers.get('from'))
+    end = strpdatetime(request.headers.get('until'))
+
+    if start:
+        select &= OnlineCheck.timestamp >= start
+
+    if end:
+        end += timedelta(days=1)    # Compensate for rest of day.
+        select &= OnlineCheck.timestamp <= end
+
+    online_checks = OnlineCheck.select().where(select)
     online_checks = online_checks.order_by(OnlineCheck.timestamp)
     return JSON([online_check.to_json() for online_check in online_checks])
