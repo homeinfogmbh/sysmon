@@ -59,6 +59,7 @@ sysmon.systemCheckToDOM = function (systemCheck) {
 
     const tableRow = document.createElement('tr');
     tableRow.setAttribute('onclick', 'sysmon.showSystemDetails(' + systemCheck.id + ');');
+    tableRow.style.cursor = 'pointer';
     const columnSystem = document.createElement('td');
     columnSystem.textContent = '' + systemCheck.id;
     tableRow.appendChild(columnSystem);
