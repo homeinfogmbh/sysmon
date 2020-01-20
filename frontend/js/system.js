@@ -24,6 +24,9 @@
 var sysmon = sysmon || {};
 
 
+sysmon.chart = null;
+
+
 sysmon.getConfig = function (data) {
     const color = Chart.helpers.color;
     return {
@@ -90,9 +93,8 @@ sysmon.renderDiagram = function (records) {
         data.push(item);
     }
 
-    var ctx = document.getElementById('uptime').getContext('2d');
     console.log('Rendering chart.');
-    window.myLine = new Chart(ctx, sysmon.getConfig(data));
+    sysmon.chart.update(sysmon.getConfig(data));
     sysmon.stopLoading();
 };
 
@@ -164,6 +166,8 @@ function initDateInputs () {
 function init () {
     initDateInputs();
     console.log('Setting locales.');
+    const ctx = document.getElementById('uptime').getContext('2d');
+    sysmon.chart = new Chart(ctx);
     render();
 }
 
