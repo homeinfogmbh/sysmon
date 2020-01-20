@@ -115,10 +115,8 @@ function initDateInputs () {
     const startDate = new Date(today - defaultTimespan);
     const dateFrom = document.getElementById('from');
     dateFrom.value = startDate.toISOString().split('T')[0];
-    dateFrom.setAttribute('onchange', render);
     const dateUntil = document.getElementById('until');
     dateUntil.value = today.toISOString().split('T')[0];
-    dateUntil.setAttribute('onchange', render);
 }
 
 
