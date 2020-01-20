@@ -80,7 +80,8 @@ sysmon.renderDiagram = function (records) {
     const data = [];
 
     for (const record of records) {
-        let item = {x: record.timestamp, y: record.online ? 1 : 0};
+        const timestamp = Date(record.timestamp).toLocaleString();
+        const item = {x: timestamp, y: record.online ? 1 : 0};
         data.push(item);
     }
 
@@ -127,7 +128,6 @@ function initDateInputs () {
 function init () {
     initDateInputs();
     console.log('Setting locales.');
-    moment.locale('de');    // Set german locale on moment.js for German date and time.
     render();
 }
 
