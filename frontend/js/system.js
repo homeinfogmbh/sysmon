@@ -93,14 +93,15 @@ sysmon.renderDiagram = function (records) {
         data.push(item);
     }
 
-    const config = sysmon.getConfig(data);
     console.log('Rendering chart.');
 
-    if (window.myLine == null) {
+    if (sysmon.chart == null) {
+        const config = sysmon.getConfig(data);
         const ctx = document.getElementById('uptime').getContext('2d');
-        window.myLine = new Chart(ctx, config);
+        sysmon.chart = new Chart(ctx, config);
     } else {
-        window.myLine.update(config);
+        sysmon.chart.data.datasets[0].data = data;
+        sysmon.chart.update();
     }
 
     sysmon.stopLoading();
