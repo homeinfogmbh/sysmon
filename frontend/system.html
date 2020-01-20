@@ -41,10 +41,10 @@
 <form class="w3-container">
   <div class="w3-row">
     <div class="w3-col m5">
-      <input id="from" type="date" class="w3-input" placeholder="Von...">
+      <input id="from" type="date" class="w3-input" onchange="render();" placeholder="Von...">
     </div>
     <div class="w3-col m5">
-      <input id="until" type="date" class="w3-input" placeholder="Bis...">
+      <input id="until" type="date" class="w3-input" onchange="render();" placeholder="Bis...">
     </div>
     <div class="w3-col m2">
       <button id="filter" class="w3-button w3-green" onclick="render();">Filtern</button>
