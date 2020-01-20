@@ -1,5 +1,7 @@
 """Monitoring web interface."""
 
+from datetime import timedelta
+
 from flask import request
 
 from functoolsplus import coerce
