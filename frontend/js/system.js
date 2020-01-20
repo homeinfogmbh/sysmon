@@ -132,9 +132,15 @@ function checkSystem (event) {
         function (json) {
             const state = json.online ? 'online' : 'offline';
             target.disabled = false;
+            sysmon.stopLoading();
             alert('Das System #' + system + ' ist aktuell ' + state + '.');
         }
-    ).finally(sysmon.stopLoading);
+    ).finally(
+        function () {
+            target.disabled = false;
+            sysmon.stopLoading();
+        }
+    );
 }
 
 
