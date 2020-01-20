@@ -124,18 +124,17 @@ function render() {
     Issues a live system check.
 */
 function checkSystem (event) {
-    event.currentTarget.disabled = true;
+    const target = event.currentTarget;
+    target.disabled = true;
+    sysmon.startLoading();
     const system = getSystem();
     return sysmon.checkSystem(system).then(
         function (json) {
             const state = json.online ? 'online' : 'offline';
+            target.disabled = false;
             alert('Das System #' + system + ' ist aktuell ' + state + '.');
         }
-    ).finally(
-        function () {
-            event.currentTarget.disabled = false;
-        }
-    );
+    ).finally(sysmon.stopLoading);
 }
 
 
