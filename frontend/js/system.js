@@ -51,8 +51,8 @@ sysmon.getConfig = function (data) {
                         displayFormats: {
                             millisecond: 'HH:mm:ss.SSS',
                             second: 'HH:mm:ss',
-                            minute: 'HH:mm',
-                            hour: 'HH'
+                            minute: 'HH:mm:ss',
+                            hour: 'HH:mm:ss'
                         }
                     },
                     display: true,
