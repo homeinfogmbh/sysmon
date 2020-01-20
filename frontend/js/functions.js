@@ -107,8 +107,8 @@ sysmon.getStats = function () {
 /*
     Retrieves system details from the API.
 */
-sysmon.getSystemDetails = function (system) {
-    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/details/' + system).then(
+sysmon.getSystemDetails = function (system, headers = {}) {
+    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/details/' + system, null, headers).then(
         function (response) {
             return response.json;
         },
