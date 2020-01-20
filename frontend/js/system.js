@@ -158,7 +158,9 @@ function checkSystem (event) {
 /*
     Initializes the date input fields.
 */
-function initDateInputs () {
+function initUI () {
+    const systemId = document.getElementById('systemId');
+    systemId.innerHTML = getSystem();
     const today = new Date();
     const defaultTimespan = 30 * 24 * 3600 * 1000;  // 30 days.
     const startDate = new Date(today - defaultTimespan);
@@ -173,8 +175,7 @@ function initDateInputs () {
     Initialize manage.html.
 */
 function init () {
-    initDateInputs();
-    console.log('Setting locales.');
+    initUI();
     render();
 }
 
