@@ -99,8 +99,8 @@ function render() {
     const dateFrom = document.getElementById('from');
     const dateUntil = document.getElementById('until');
     const headers = {
-        'from': dateFrom.value(),
-        'until': dateUntil.value() + (24 * 3600 * 1000)
+        'from': dateFrom.value.toISOString(),
+        'until': dateUntil.value.toISOString()
     };
     return sysmon.getSystemDetails(system, headers).then(sysmon.renderDiagram);
 }
