@@ -47,12 +47,9 @@ sysmon.getConfig = function (data) {
                 xAxes: [{
                     type: 'time',
                     time: {
-                        tooltipFormat: 'YYYY-MM-DD HH:mm',
+                        tooltipFormat: 'DD.MM.YYYY HH:mm',
                         displayFormats: {
-                            millisecond: 'HH:mm:ss.SSS',
-                            second: 'HH:mm:ss',
-                            minute: 'HH:mm:ss',
-                            hour: 'HH:mm:ss'
+                            hour: 'HH:mm'
                         }
                     },
                     display: true,
