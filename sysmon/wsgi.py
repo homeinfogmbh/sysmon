@@ -115,8 +115,8 @@ def list_stats():
     return JSON(json)
 
 
-@APPLICATION.route(
-    '/details/<int:system>', methods=['GET'], strict_slashes=False)
+@APPLICATION.route('/details/<int:system>', methods=['GET'],
+                   strict_slashes=False)
 @authenticated
 def system_details(system):
     """Lists uptime details of a system."""
@@ -140,3 +140,18 @@ def system_details(system):
     online_checks = OnlineCheck.select().where(select)
     online_checks = online_checks.order_by(OnlineCheck.timestamp)
     return JSON([online_check.to_json() for online_check in online_checks])
+
+
+@APPLICATION.route('/check/<int:system>', methods=['GET'],
+                   strict_slashes=False)
+@authenticated
+def check_system(system):
+    """Performs a system check."""
+
+    try:
+        system = get_system(system)
+    except System.DoesNotExist:
+        return ('No such system.', 404)
+
+    online_check = OnlineCheck.run(system)
+    return JSON(online_check.to_json())

@@ -40,12 +40,16 @@
 
 <form class="w3-container">
   <div class="w3-row">
-    <div class="w3-col m6">
+    <div class="w3-col m5">
       <input id="from" type="date" class="w3-input" onchange="render();" title="Von...">
     </div>
-    <div class="w3-col m6">
+    <div class="w3-col m5">
       <input id="until" type="date" class="w3-input" onchange="render();" title="Bis...">
     </div>
+    <div class="w3-col m2">
+      <button class="w3-button w3-blue" onclick="checkSystem();" title="System prüfen">
+        <i class="fa fa-sync-alt"></i>
+      </button>
   </div>
 </form>
 

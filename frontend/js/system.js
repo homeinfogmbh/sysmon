@@ -98,18 +98,39 @@ sysmon.renderDiagram = function (records) {
 
 
 /*
+    Returns the current system ID.
+*/
+function getSystem() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('system');
+}
+
+
+/*
     Queries the backend and render the diagram.
 */
 function render() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const system = urlParams.get('system');
     const dateFrom = document.getElementById('from');
     const dateUntil = document.getElementById('until');
     const headers = {
         'from': dateFrom.value,
         'until': dateUntil.value
     };
-    return sysmon.getSystemDetails(system, headers).then(sysmon.renderDiagram);
+    return sysmon.getSystemDetails(getSystem(), headers).then(sysmon.renderDiagram);
+}
+
+
+/*
+    Issues a live system check.
+*/
+function checkSystem () {
+    const system = getSystem();
+    return sysmon.checkSystem(system).then(
+        function (json) {
+            const state = json.online ? 'online' : 'offline';
+            alert('Das System #' + system + ' ist aktuell ' + state + '.');
+        }
+    );
 }
 
 

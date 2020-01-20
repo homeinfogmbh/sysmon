@@ -118,6 +118,19 @@ sysmon.getSystemDetails = function (system, headers = {}) {
 
 
 /*
+    Issues a system check.
+*/
+sysmon.checkSystem = function (system) {
+    return sysmon.makeRequest('POST', sysmon.BASE_URL + '/check/' + system).then(
+        function (response) {
+            return response.json;
+        },
+        sysmon.checkSession('Ein Systemcheck konnte nicht durchgeführt werden.')
+    );
+};
+
+
+/*
     Lists the respective systems.
 */
 sysmon.render = function (systems, container, counter) {
