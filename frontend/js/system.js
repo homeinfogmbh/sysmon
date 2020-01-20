@@ -25,6 +25,7 @@ var sysmon = sysmon || {};
 
 
 sysmon.getConfig = function (data) {
+    moment.locale('de');
     const color = Chart.helpers.color;
     return {
         type: 'line',
