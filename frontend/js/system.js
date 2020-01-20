@@ -46,6 +46,15 @@ sysmon.getConfig = function (data) {
             scales: {
                 xAxes: [{
                     type: 'time',
+                    time: {
+                        tooltipFormat: 'YYYY-MM-DD HH:mm',
+                        displayFormats: {
+                            millisecond: 'HH:mm:ss.SSS',
+                            second: 'HH:mm:ss',
+                            minute: 'HH:mm',
+                            hour: 'HH'
+                        }
+                    },
                     display: true,
                     scaleLabel: {
                         display: true,
