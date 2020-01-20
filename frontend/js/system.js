@@ -85,6 +85,7 @@ sysmon.renderDiagram = function (records) {
     }
 
     var ctx = document.getElementById('uptime').getContext('2d');
+    console.log('Rendering chart.');
     window.myLine = new Chart(ctx, sysmon.getConfig(data));
     sysmon.stopLoading();
 };
@@ -125,6 +126,7 @@ function initDateInputs () {
 */
 function init () {
     initDateInputs();
+    console.log('Setting locales.');
     moment.locale('de');    // Set german locale on moment.js for German date and time.
     render();
 }
