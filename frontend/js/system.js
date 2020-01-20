@@ -112,7 +112,7 @@ function render() {
 function initDateInputs () {
     const today = new Date();
     const defaultTimespan = 30 * 24 * 3600 * 1000;  // 30 days.
-    const startDate = today - defaultTimespan;
+    const startDate = new Date(today - defaultTimespan);
     const dateFrom = document.getElementById('from');
     dateFrom.value = startDate.toISOString().split('T')[0];
     dateFrom.setAttribute('onchange', render);
