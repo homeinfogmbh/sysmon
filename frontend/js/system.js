@@ -123,12 +123,17 @@ function render() {
 /*
     Issues a live system check.
 */
-function checkSystem () {
+function checkSystem (event) {
+    event.currentTarget.disabled = true;
     const system = getSystem();
     return sysmon.checkSystem(system).then(
         function (json) {
             const state = json.online ? 'online' : 'offline';
             alert('Das System #' + system + ' ist aktuell ' + state + '.');
+        }
+    ).finally(
+        function () {
+            event.currentTarget.disabled = false;
         }
     );
 }
