@@ -121,7 +121,7 @@ sysmon.getSystemDetails = function (system, headers = {}) {
     Issues a system check.
 */
 sysmon.checkSystem = function (system) {
-    return sysmon.makeRequest('POST', sysmon.BASE_URL + '/check/' + system).then(
+    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/check/' + system).then(
         function (response) {
             return response.json;
         },
