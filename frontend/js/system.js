@@ -95,7 +95,7 @@ sysmon.renderDiagram = function (records) {
 
     const config = sysmon.getConfig(data);
     console.log('Rendering chart.');
-    window.chart.update(config);
+    window.myLine.update(config);
     sysmon.stopLoading();
 };
 
@@ -168,7 +168,7 @@ function init () {
     initDateInputs();
     console.log('Setting locales.');
     const ctx = document.getElementById('uptime').getContext('2d');
-    window.chart = new Chart(ctx);
+    window.myLine = new Chart(ctx);
     render();
 }
 
