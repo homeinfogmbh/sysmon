@@ -25,7 +25,6 @@ var sysmon = sysmon || {};
 
 
 sysmon.getConfig = function (data) {
-    moment.locale('de');
     const color = Chart.helpers.color;
     return {
         type: 'line',
@@ -126,6 +125,7 @@ function initDateInputs () {
 */
 function init () {
     initDateInputs();
+    moment.locale('de');    // Set german locale on moment.js for German date and time.
     render();
 }
 
