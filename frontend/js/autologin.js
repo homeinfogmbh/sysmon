@@ -36,7 +36,7 @@ function init () {
     } else {
         sysmon.login(account, passwd).then(
             function () {
-                window.location = 'manage.html';
+                window.location = 'overview.html';
             },
             function () {
                 window.location = 'login.html';
