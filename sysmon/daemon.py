@@ -5,7 +5,6 @@ from logging import INFO, basicConfig
 from terminallib import System
 
 from sysmon.config import LOG_FORMAT, LOGGER
-from sysmon.notify import notify
 from sysmon.orm import CHECKS
 
 
@@ -19,8 +18,6 @@ def run_checks():
         for check in CHECKS:
             LOGGER.info('Running %s on #%i.', check.__name__, system.id)
             check.run(system)
-
-    notify()
 
 
 def spawn():

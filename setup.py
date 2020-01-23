@@ -10,7 +10,11 @@ setup(
     maintainer='Richard Neumann',
     maintainer_email='<r dot neumann at homeinfo priod de>',
     packages=['sysmon'],
-    scripts=['files/sysmon'],
-    data_files=[('/usr/lib/systemd/system', ['files/sysmon.service'])],
+    scripts=['files/sysmon', 'files/sysmon-notify'],
+    data_files=[
+        ('/usr/lib/systemd/system', [
+            'files/sysmon.service',
+            'files/sysmon-notify.service',
+            'files/sysmon-notify.timer'])],
     license='GPLv3',
     description='A systems monitoring system.')
