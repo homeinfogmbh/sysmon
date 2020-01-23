@@ -41,11 +41,11 @@ function init () {
         sysmon.login(account, passwd).then(
             function () {
                 console.log('Autologin succeeded.');
-                window.location = 'overview.html';
+                //window.location = 'overview.html';
             },
             function () {
                 console.log('Autologin failed.');
-                window.location = 'login.html';
+                //window.location = 'login.html';
             }
         );
     }
