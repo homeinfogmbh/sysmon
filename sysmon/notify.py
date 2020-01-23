@@ -3,6 +3,7 @@
 from xml.etree.ElementTree import Element, SubElement
 
 from sysmon.changes import State, state_changes
+from sysmon.config import LOGGER
 from sysmon.mail import email
 
 
@@ -62,4 +63,5 @@ def notify():
             failed.append(check_state)
 
     html = mk_html_msg(recovered, failed)
+    LOGGER.info('Notifying admins about state changes.')
     email(html)
