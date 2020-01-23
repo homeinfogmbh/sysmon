@@ -28,8 +28,8 @@ var sysmon = sysmon || {};
     Initialize index.html.
 */
 function init () {
-    const account = localStorage.getItem('termgr.account');
-    const passwd = localStorage.getItem('termgr.passwd');
+    const account = localStorage.getItem('sysmon.account');
+    const passwd = localStorage.getItem('sysmon.passwd');
 
     if (account == null || passwd == null) {
         window.location = 'login.html';
