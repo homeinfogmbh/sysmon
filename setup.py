@@ -11,8 +11,6 @@ setup(
     maintainer_email='<r dot neumann at homeinfo priod de>',
     packages=['sysmon'],
     scripts=['files/sysmon'],
-    data_files=[
-        ('/usr/lib/systemd/system',
-         ['files/sysmon.service', 'files/sysmon.timer'])],
+    data_files=[('/usr/lib/systemd/system', ['files/sysmon.service'])],
     license='GPLv3',
     description='A systems monitoring system.')
