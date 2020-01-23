@@ -32,17 +32,12 @@ sysmon.doLogin = function (event) {
     const account = document.getElementById('account').value;
     const passwd = document.getElementById('passwd').value;
     const storeCredentials = document.getElementById('storeCredentials').checked;
-    console.log('Store credentials: ' + storeCredentials);
 
     if (storeCredentials) {
-        console.log('Storing account: ' + account);
         localStorage.setItem('sysmon.account', account);
-        console.log('Storing password: ' + typeof passwd);
         localStorage.setItem('sysmon.passwd', passwd);
     } else {
-        console.log('Deleting account.');
         localStorage.removeItem('sysmon.account');
-        console.log('Deleting password.');
         localStorage.removeItem('sysmon.passwd');
     }
 

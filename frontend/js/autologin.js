@@ -30,22 +30,16 @@ var sysmon = sysmon || {};
 function init () {
     const account = localStorage.getItem('sysmon.account');
     const passwd = localStorage.getItem('sysmon.passwd');
-    console.log('Account: ' + account);
-    console.log('Password: ' + typeof passwd);
 
     if (account == null || passwd == null) {
-        console.log('Account and password are null.');
         window.location = 'login.html';
     } else {
-        console.log('Attempting auto login.');
         sysmon.login(account, passwd).then(
             function () {
-                console.log('Autologin succeeded.');
-                //window.location = 'overview.html';
+                window.location = 'overview.html';
             },
             function () {
-                console.log('Autologin failed.');
-                //window.location = 'login.html';
+                window.location = 'login.html';
             }
         );
     }
