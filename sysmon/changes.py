@@ -66,7 +66,6 @@ def check_state_change(system, check):
         if previous.successful and not last.successful:
             return CheckState(system, last, State.FAILED)
 
-
         return CheckState(system, last, State.UNCHANGED)
 
     if last.successful:
