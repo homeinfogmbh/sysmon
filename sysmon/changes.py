@@ -58,7 +58,7 @@ def check_state_change(system, check):
         raise NotChecked(system, check)
 
     if previous:
-        previous, *_ = previous
+        previous, = previous
 
         if last.successful and not previous.successful:
             return CheckState(system, last, State.RECOVERED)
