@@ -6,11 +6,12 @@ from flask import request
 
 from functoolsplus import coerce
 from his import ACCOUNT, authenticated, Application
-from terminallib import Deployment, System
+from termacls import get_administerable_systems
+from terminallib import System
 from timelib import strpdatetime
 from wsgilib import JSON
 
-from sysmon.orm import CHECKS, TypeAdmin, OnlineCheck
+from sysmon.orm import CHECKS, OnlineCheck
 
 
 __all__ = ['APPLICATION']
@@ -19,40 +20,21 @@ __all__ = ['APPLICATION']
 APPLICATION = Application('sysmon')
 
 
-@coerce(set)
-def get_authorized_types():
-    """Yields authorized types."""
-
-    for admin in TypeAdmin.select().where(TypeAdmin.account == ACCOUNT.id):
-        yield admin.type
-
-
-def get_systems():
-    """Yields the systems which the current user may monitor."""
-
-    if ACCOUNT.root:
-        return System.select().where(True)
-
-    condition = Deployment.type << get_authorized_types()
-    return System.select().join(Deployment).where(condition)
-
-
 def get_system(system):
     """Returns a system by its ID."""
 
     if ACCOUNT.root:
         return System[system]
 
-    condition = System.id == system
-    condition &= Deployment.type << get_authorized_types()
-    return System.select().join(Deployment).where(condition).get()
+    systems = get_administerable_systems(ACCOUNT.id)
+    return systems.select().where(System.id == system).get()
 
 
 @coerce(set)
 def get_customers():
     """Yields all allowed customers."""
 
-    for system in get_systems():
+    for system in get_administerable_systems(ACCOUNT.id):
         if system.deployment:
             yield system.deployment.customer
 
@@ -61,7 +43,7 @@ def get_customers():
 def get_types():
     """Yields all allowed types."""
 
-    for system in get_systems():
+    for system in get_administerable_systems(ACCOUNT.id):
         if system.deployment:
             yield system.deployment.type
 
@@ -108,7 +90,7 @@ def get_systems_checks(systems, *, begin=None, end=None):
 def list_stats():
     """Lists systems and their stats."""
 
-    systems = get_systems()
+    systems = get_administerable_systems(ACCOUNT.id)
     begin = strpdatetime(request.headers.get('begin'))
     end = strpdatetime(request.headers.get('end'))
     json = get_systems_checks(systems, begin=begin, end=end)
