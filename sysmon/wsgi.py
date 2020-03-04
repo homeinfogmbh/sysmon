@@ -26,7 +26,7 @@ def get_system(system):
     if ACCOUNT.root:
         return System[system]
 
-    systems = get_administerable_systems(ACCOUNT.id)
+    systems = get_administerable_systems(ACCOUNT)
     return systems.select().where(System.id == system).get()
 
 
@@ -34,7 +34,7 @@ def get_system(system):
 def get_customers():
     """Yields all allowed customers."""
 
-    for system in get_administerable_systems(ACCOUNT.id):
+    for system in get_administerable_systems(ACCOUNT):
         if system.deployment:
             yield system.deployment.customer
 
@@ -43,7 +43,7 @@ def get_customers():
 def get_types():
     """Yields all allowed types."""
 
-    for system in get_administerable_systems(ACCOUNT.id):
+    for system in get_administerable_systems(ACCOUNT):
         if system.deployment:
             yield system.deployment.type
 
