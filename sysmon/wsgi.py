@@ -90,7 +90,7 @@ def get_systems_checks(systems, *, begin=None, end=None):
 def list_stats():
     """Lists systems and their stats."""
 
-    systems = get_administerable_systems(ACCOUNT.id)
+    systems = get_administerable_systems(ACCOUNT)
     begin = strpdatetime(request.headers.get('begin'))
     end = strpdatetime(request.headers.get('end'))
     json = get_systems_checks(systems, begin=begin, end=end)
