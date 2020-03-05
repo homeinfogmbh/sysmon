@@ -20,13 +20,25 @@ __all__ = ['APPLICATION']
 APPLICATION = Application('sysmon')
 
 
+def get_systems():
+    """Yields systems that are deployed."""
+
+    if 'all' in request.args:
+        condition = True
+    else:
+        condition = System.monitor == 1
+        condition |= ~ (System.deployment >> None)
+
+    return get_administerable_systems(ACCOUNT).where(condition)
+
+
 def get_system(system):
     """Returns a system by its ID."""
 
     if ACCOUNT.root:
         return System[system]
 
-    systems = get_administerable_systems(ACCOUNT)
+    systems = get_systems()
     return systems.select().where(System.id == system).get()
 
 
@@ -34,7 +46,7 @@ def get_system(system):
 def get_customers():
     """Yields all allowed customers."""
 
-    for system in get_administerable_systems(ACCOUNT):
+    for system in get_systems():
         if system.deployment:
             yield system.deployment.customer
 
@@ -43,7 +55,7 @@ def get_customers():
 def get_types():
     """Yields all allowed types."""
 
-    for system in get_administerable_systems(ACCOUNT):
+    for system in get_systems():
         if system.deployment:
             yield system.deployment.type
 
@@ -90,7 +102,7 @@ def get_systems_checks(systems, *, begin=None, end=None):
 def list_stats():
     """Lists systems and their stats."""
 
-    systems = get_administerable_systems(ACCOUNT)
+    systems = get_systems()
     begin = strpdatetime(request.headers.get('begin'))
     end = strpdatetime(request.headers.get('end'))
     json = get_systems_checks(systems, begin=begin, end=end)
