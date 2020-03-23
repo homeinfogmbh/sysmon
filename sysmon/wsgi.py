@@ -76,7 +76,7 @@ def check_system(system):
     return JSON(online_check.to_json())
 
 
-@APPLICATION.route('/enduser-stats', methods=['GET'], strict_slashes=False)
+@APPLICATION.route('/enduser', methods=['GET'], strict_slashes=False)
 @authenticated
 @authorized('sysmon')
 def endsuser_states():
