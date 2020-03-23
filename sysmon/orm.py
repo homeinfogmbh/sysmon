@@ -1,15 +1,16 @@
 """ORM models."""
 
-from datetime import datetime, timedelta
+from datetime import datetime
+
+from requests import Timeout
+from simplejson.errors import JSONDecodeError
 
 from peewee import BooleanField, DateTimeField, ForeignKeyField
 
-from mdb import Customer
-from peeweeplus import EnumField, JSONModel, MySQLDatabase
-from terminallib import is_online, Synchronization, System, Type
+from peeweeplus import JSONModel, MySQLDatabase
+from terminallib import SystemOffline, System
 
 from sysmon.config import CONFIG
-from sysmon.checks import check_application
 
 
 __all__ = [
@@ -20,7 +21,8 @@ __all__ = [
     'SysmonModel',
     'SystemCheck',
     'OnlineCheck',
-    'ApplicationCheck']
+    'ApplicationCheck'
+]
 
 
 DATABASE = MySQLDatabase.from_config(CONFIG['db'])
@@ -81,7 +83,7 @@ class OnlineCheck(SystemCheck):
     @classmethod
     def run(cls, system):
         """Runs the checks on the respective systems."""
-        record = cls(system=system, online=is_online(system))
+        record = cls(system=system, online=system.online)
         record.save()
         return record
 
@@ -106,9 +108,24 @@ class ApplicationCheck(SystemCheck):
     running = BooleanField(null=True)
 
     @classmethod
+    def _get_states(cls, system):
+        """Gets the application states from the respective system."""
+        try:
+            response = system.exec('application', state=None)
+        except (Timeout, SystemOffline):
+            return (None, None)
+
+        try:
+            json = response.json()
+        except JSONDecodeError:
+            return (None, None)
+
+        return (json.get('enabled'), json.get('running'))
+
+    @classmethod
     def run(cls, system):
         """Runs the checks on the respective systems."""
-        enabled, running = check_application(system)
+        enabled, running = cls._get_states(system)
         record = cls(system=system, enabled=enabled, running=running)
         record.save()
         return record
@@ -133,56 +150,4 @@ class ApplicationCheck(SystemCheck):
         return 'Application is disabled and not running'
 
 
-class SyncCheck(SystemCheck):
-    """Checks the last synchronizations."""
-
-    last_sync = DateTimeField(null=True)
-
-    @classmethod
-    def run(cls, system):
-        """Runs the check on the respective system."""
-        try:
-            last_sync, = Synchronization.select().where(
-                (Synchronization.system == system)
-                & ~(Synchronization.finished >> None)).order_by(
-                    Synchronization.finished.desc()).limit(1)
-        except ValueError:
-            last_sync = None
-        else:
-            last_sync = last_sync.finished
-
-        record = cls(system=system, last_sync=last_sync)
-        record.save()
-        return record
-
-    @property
-    def successful(self):
-        """Determines whether the check was successful."""
-        if self.last_sync is None:
-            return False
-
-        if self.last_sync < datetime.now() + timedelta(days=2):
-            return False
-
-        return True
-
-    @property
-    def message(self):
-        """Returns the state message."""
-        if self.self.last_sync is None:
-            return 'System was never synced'
-
-        return 'Last sync: ' + self.sync.isoformat()
-
-
-class TypeAdmin(SysmonModel):
-    """Administrators of a certain type."""
-
-    type = EnumField(Type)
-    customer = ForeignKeyField(
-        Customer, column_name='customer', on_delete='CASCADE',
-        on_update='CASCADE')
-
-
-CHECKS = (OnlineCheck, ApplicationCheck, SyncCheck)
-MODELS = (TypeAdmin,) + CHECKS
+MODELS = CHECKS = (OnlineCheck, ApplicationCheck)

@@ -6,3 +6,6 @@ After=network.target mysql.service
 User=sysmon
 Group=sysmon
 ExecStart=/usr/local/bin/sysmon
+
+[Install]
+WantedBy=multi-user.target

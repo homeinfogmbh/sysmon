@@ -108,6 +108,20 @@ sysmon.filtered = function (systems) {
 
 
 /*
+    Yields online systems.
+*/
+sysmon.online = function* (systems) {
+    for (const system of systems) {
+        if (system.checks != null && system.checks.OnlineCheck != null) {
+            if (system.checks.OnlineCheck.successful) {
+                yield system;
+            }
+        }
+    }
+};
+
+
+/*
     Yields offline systems.
 */
 sysmon.offline = function* (systems) {
@@ -142,9 +156,15 @@ sysmon.blackmode = function* (systems) {
     Yields systems out of sync.
 */
 sysmon.outdated = function* (systems) {
+    const outdated = 3 * 24 * 3600 * 1000;  // Three days in milliseconds.
+    const now = Date.now();
+
     for (const system of systems) {
-        if (system.checks != null && system.checks.SyncCheck != null) {
-            if (! system.checks.SyncCheck.successful) {
+        if (system.lastSync != null) {
+            const lastSync = new Date(system.lastSync);
+            const timedelta = now - lastSync;
+
+            if (timedelta >= outdated) {
                 yield system;
             }
         }

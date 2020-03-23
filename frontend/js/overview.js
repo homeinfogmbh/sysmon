@@ -29,7 +29,7 @@ var sysmon = sysmon || {};
 */
 function reload () {
     sysmon.startLoading();
-    return sysmon.getStats().then(render).then(sysmon.stopLoading);
+    return sysmon.getStats().then(render);
 }
 
 
@@ -37,20 +37,31 @@ function reload () {
     Filters, sorts and renders systems.
 */
 function render (systems) {
+    sysmon.startLoading();
+
     if (systems == null) {
         sysmon.startLoading();
         systems = sysmon.loadSystems();
     }
 
+    systems = sysmon.filtered(systems);
+    const onlineSystems = sysmon.online(systems);
+    const onlineContainer = document.getElementById('online');
+    const onlineCounter = document.getElementById('onlineCount');
+    sysmon.render(onlineSystems, onlineContainer, onlineCounter);
     const offlineSystems = sysmon.offline(systems);
     const offlineContainer = document.getElementById('offline');
-    sysmon.render(offlineSystems, offlineContainer);
+    const offlineCounter = document.getElementById('offlineCount');
+    sysmon.render(offlineSystems, offlineContainer, offlineCounter);
     const blackmodeSystems = sysmon.blackmode(systems);
     const blackmodeContainer = document.getElementById('blackmode');
-    sysmon.render(blackmodeSystems, blackmodeContainer);
+    const blackmodeCounter = document.getElementById('blackmodeCount');
+    sysmon.render(blackmodeSystems, blackmodeContainer, blackmodeCounter);
     const outdatedSystems = sysmon.outdated(systems);
     const outdatedContainer = document.getElementById('outdated');
-    sysmon.render(outdatedSystems, outdatedContainer);
+    const outdatedCounter = document.getElementById('outdatedCount');
+    sysmon.render(outdatedSystems, outdatedContainer, outdatedCounter);
+    sysmon.stopLoading();
 }
 
 
@@ -58,8 +69,7 @@ function render (systems) {
     Initialize manage.html.
 */
 function init () {
-    sysmon.startLoading();
-    reload().then(sysmon.stopLoading);
+    reload();
     const btnFilter = document.getElementById('filter');
     btnFilter.addEventListener('click', sysmon.partial(render), false);
     const btnReload = document.getElementById('reload');

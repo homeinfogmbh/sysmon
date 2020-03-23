@@ -27,6 +27,7 @@
   <script src="js/dom.js"></script>
   <script src="js/functions.js"></script>
   <script src="js/filter.js"></script>
+  <script src="js/navigation.js"></script>
   <script src="js/overview.js"></script>
 </head>
 
@@ -42,7 +43,7 @@
       <input type="text" class="w3-input" id="searchField" placeholder="Suchbegriff...">
     </div>
     <div class="w3-col s3">
-      <button id="filter" type="submit" class="w3-button w3-green">Filtern</button>
+      <button id="filter" class="w3-button w3-green">Filtern</button>
     </div>
     <div class="w3-col s2">
       <button id="reload" class="w3-button w3-blue" title="Systeme neu laden">
@@ -56,48 +57,51 @@
 
 <div id="loader" class="loader"></div>
 <div id="target">
-  <div class="w3-container w3-red">
-    <h1>Offline</h1>
+  <div class="w3-bar w3-teal">
+    <button class="w3-bar-item w3-button tabButton w3-grey" onclick="sysmon.openTab(event, 'offlineTab')">Offline <span id="offlineCount"></span></button>
+    <button class="w3-bar-item w3-button tabButton" onclick="sysmon.openTab(event, 'onlineTab')">Online <span id="onlineCount"></span></button>
+    <button class="w3-bar-item w3-button tabButton" onclick="sysmon.openTab(event, 'blackmodeTab')">Schwarzbildmodus <span id="blackmodeCount"></span></button>
+    <button class="w3-bar-item w3-button tabButton" onclick="sysmon.openTab(event, 'outdatedTab')">Nicht synchronisiert <span id="outdatedCount"></span></button>
   </div>
-  <table class="w3-table w3-hoverable w3-table-centered">
+  <table id="offlineTab" class="w3-table w3-hoverable w3-table-centered tab">
     <thead>
       <tr>
         <th>System ID</th>
         <th>Adresse</th>
         <th>Kunde</th>
-        <th>Online</th>
-        <th>Application aktiviert</th>
-        <th>Application aktiv</th>
+        <th>Letzte Synchronisation</th>
       </tr>
     </thead>
     <tbody id="offline"/>
   </table>
-  <div class="w3-container w3-orange">
-    <h1>Schwarzbildmodus</h1>
-  </div>
-  <table class="w3-table w3-hoverable w3-table-centered">
+  <table id="onlineTab" class="w3-table w3-hoverable w3-table-centered tab" style="display:none">
     <thead>
       <tr>
         <th>System ID</th>
         <th>Adresse</th>
         <th>Kunde</th>
-        <th>Online</th>
-        <th>Application aktiviert</th>
-        <th>Application aktiv</th>
+        <th>Letzte Synchronisation</th>
+      </tr>
+    </thead>
+    <tbody id="online"/>
+  </table>
+  <table id="blackmodeTab" class="w3-table w3-hoverable w3-table-centered tab" style="display:none">
+    <thead>
+      <tr>
+        <th>System ID</th>
+        <th>Adresse</th>
+        <th>Kunde</th>
+        <th>Letzte Synchronisation</th>
       </tr>
     </thead>
     <tbody id="blackmode"/>
   </table>
-  <div class="w3-container w3-blue">
-    <h1>Nicht synchronisiert</h1>
-  </div>
-  <table class="w3-table w3-hoverable w3-table-centered">
+  <table id="outdatedTab" class="w3-table w3-hoverable w3-table-centered tab" style="display:none">
     <thead>
       <tr>
         <th>System ID</th>
         <th>Adresse</th>
         <th>Kunde</th>
-        <th>Online</th>
         <th>Letzte Synchronisation</th>
       </tr>
     </thead>
@@ -112,4 +116,3 @@
     <p>Umsetzung <a href="http://www.homeinfo.de" target="_blank">HOMEINFO GmbH</a> &copy; 2019</p>
   </footer>
 </div>
-

@@ -1,13 +1,16 @@
 """HOMEINFO digital signage systems monitoring."""
 
-from sysmon.daemon import run_checks
+from sysmon.daemon import spawn
+from sysmon.notify import notify
 from sysmon.orm import SystemCheck, OnlineCheck, ApplicationCheck
 from sysmon.wsgi import APPLICATION
 
 
 __all__ = [
     'APPLICATION',
-    'run_checks',
+    'spawn',
+    'notify',
     'SystemCheck',
     'OnlineCheck',
-    'ApplicationCheck']
+    'ApplicationCheck'
+]

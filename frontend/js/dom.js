@@ -48,30 +48,6 @@ sysmon.systemCheckToDOM = function (systemCheck) {
         return null;
     }
 
-    let online = null;
-
-    if (systemCheck.checks.OnlineCheck != null) {
-        online = systemCheck.checks.OnlineCheck.online;
-    }
-
-    let applicationEnabled = null;
-
-    if (systemCheck.checks.CheckApplication != null) {
-        applicationEnabled = systemCheck.checks.CheckApplication.enabled;
-    }
-
-    let applicationRunning = null;
-
-    if (systemCheck.checks.CheckApplication != null) {
-        applicationRunning = systemCheck.checks.CheckApplication.running;
-    }
-
-    let lastSync = null;
-
-    if (systemCheck.checks.CheckSync != null) {
-        lastSync = systemCheck.checks.CheckSync.last_sync;
-    }
-
     const deployment = systemCheck.deployment;
     let address = 'Keine Adresse';
     let customer = 'Kein Kunde';
@@ -82,6 +58,8 @@ sysmon.systemCheckToDOM = function (systemCheck) {
     }
 
     const tableRow = document.createElement('tr');
+    tableRow.setAttribute('onclick', 'sysmon.showSystemDetails(' + systemCheck.id + ');');
+    tableRow.style.cursor = 'pointer';
     const columnSystem = document.createElement('td');
     columnSystem.textContent = '' + systemCheck.id;
     tableRow.appendChild(columnSystem);
@@ -91,17 +69,8 @@ sysmon.systemCheckToDOM = function (systemCheck) {
     const columnCustomer = document.createElement('td');
     columnCustomer.textContent = customer;
     tableRow.appendChild(columnCustomer);
-    const columnOnline = document.createElement('td');
-    columnOnline.textContent = sysmon.boolNaToString(online);
-    tableRow.appendChild(columnOnline);
-    const columnApplicationEnabled = document.createElement('td');
-    columnApplicationEnabled.textContent = sysmon.boolNaToString(applicationEnabled);
-    tableRow.appendChild(columnApplicationEnabled);
-    const columnApplicationRunning = document.createElement('td');
-    columnApplicationRunning.textContent = sysmon.boolNaToString(applicationRunning);
-    tableRow.appendChild(columnApplicationRunning);
     const columnLastSync = document.createElement('td');
-    columnLastSync.textContent = lastSync || 'N/A';
+    columnLastSync.textContent = systemCheck.lastSync || 'N/A';
     tableRow.appendChild(columnLastSync);
     return tableRow;
 };

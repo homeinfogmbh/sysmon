@@ -1,10 +1,14 @@
 """Monitoring daemon."""
 
+from logging import INFO, basicConfig
+
 from terminallib import System
 
-from sysmon.config import LOGGER
-from sysmon.notify import notify
+from sysmon.config import LOG_FORMAT, LOGGER
 from sysmon.orm import CHECKS
+
+
+__all__ = ['spawn']
 
 
 def run_checks():
@@ -15,5 +19,14 @@ def run_checks():
             LOGGER.info('Running %s on #%i.', check.__name__, system.id)
             check.run(system)
 
-    LOGGER.info('Notifying admins about state changes.')
-    notify()
+
+def spawn():
+    """Runs the daemon."""
+
+    basicConfig(level=INFO, format=LOG_FORMAT)
+
+    while True:
+        try:
+            run_checks()
+        except KeyboardInterrupt:
+            return

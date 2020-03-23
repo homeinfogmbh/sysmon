@@ -1,5 +1,5 @@
 /*
-    autologin.js - Systems monitoring automatic login.
+    navigation.js - Systems monitoring navigation.
 
     (C) 2019 HOMEINFO - Digitale Informationssysteme GmbH
 
@@ -25,25 +25,28 @@ var sysmon = sysmon || {};
 
 
 /*
-    Initialize index.html.
+    Opens a certain tab in the overview menu.
 */
-function init () {
-    const account = localStorage.getItem('sysmon.account');
-    const passwd = localStorage.getItem('sysmon.passwd');
-
-    if (account == null || passwd == null) {
-        window.location = 'login.html';
-    } else {
-        sysmon.login(account, passwd).then(
-            function () {
-                window.location = 'overview.html';
-            },
-            function () {
-                window.location = 'login.html';
-            }
-        );
+sysmon.openTab = function (event, id) {
+    for (const tab of document.getElementsByClassName('tab')) {
+        tab.style.display = 'none';
     }
-}
+
+    const highlightColor = 'w3-grey';
+
+    for (const tabButton of document.getElementsByClassName('tabButton')) {
+        tabButton.classList.remove(highlightColor);
+    }
+
+    document.getElementById(id).style.display = 'block';
+    event.currentTarget.classList.add(highlightColor);
+};
 
 
-document.addEventListener('DOMContentLoaded', init);
+/*
+    Show system details page.
+*/
+sysmon.showSystemDetails = function (system) {
+    const url = 'system.html?system=' + system;
+    window.open(url, '_blank');
+};

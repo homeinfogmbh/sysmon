@@ -105,22 +105,27 @@ sysmon.getStats = function () {
 
 
 /*
-    Retrieves customers from the backend,
-    which the current user is allowed to deploy to.
+    Retrieves system details from the API.
 */
-sysmon.getCustomers = function () {
-    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/customers').catch(
-        sysmon.checkSession('Die Liste der Kunden konnte nicht abgefragt werden.')
+sysmon.getSystemDetails = function (system, headers = {}) {
+    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/details/' + system, null, headers).then(
+        function (response) {
+            return response.json;
+        },
+        sysmon.checkSession('Die Systemdetails konnten nicht abgefragt werden.')
     );
 };
 
 
 /*
-    Retrieves types from the backend.
+    Issues a system check.
 */
-sysmon.getTypes = function () {
-    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/types').catch(
-        sysmon.checkSession('Die Liste der Terminal-Typen konnte nicht abgefragt werden.')
+sysmon.checkSystem = function (system) {
+    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/check/' + system).then(
+        function (response) {
+            return response.json;
+        },
+        sysmon.checkSession('Ein Systemcheck konnte nicht durchgeführt werden.')
     );
 };
 
@@ -128,64 +133,21 @@ sysmon.getTypes = function () {
 /*
     Lists the respective systems.
 */
-sysmon.render = function (systems, container) {
+sysmon.render = function (systems, container, counter) {
     container.innerHTML = '';
+    counter.innerHTML = '';
+    let count = 0;
 
     for (const system of systems) {
+        count += 1;
         let row = sysmon.systemCheckToDOM(system);
 
         if (row != null) {
             container.appendChild(row);
         }
     }
-};
 
-
-/*
-    Renders the respective customers.
-*/
-sysmon.renderCustomers = function (customers) {
-    const select = document.getElementById('customer');
-    select.innerHTML = '';
-
-    for (const customer of customers) {
-        let option = document.createElement('option');
-        option.setAttribute('value', customer.id);
-        option.textContent = customer.company.name;
-        select.appendChild(option);
-    }
-};
-
-
-/*
-    Renders the respective connections.
-*/
-sysmon.renderConnections = function (connections) {
-    const select = document.getElementById('connection');
-    select.innerHTML = '';
-
-    for (const connection of connections) {
-        let option = document.createElement('option');
-        option.setAttribute('value', connection);
-        option.textContent = connection;
-        select.appendChild(option);
-    }
-};
-
-
-/*
-    Renders the respective types.
-*/
-sysmon.renderTypes = function (types) {
-    const select = document.getElementById('type');
-    select.innerHTML = '';
-
-    for (const type of types) {
-        let option = document.createElement('option');
-        option.setAttribute('value', type);
-        option.textContent = type;
-        select.appendChild(option);
-    }
+    counter.innerHTML = '(' + count + ')';
 };
 
 

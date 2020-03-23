@@ -1,19 +1,19 @@
 """Administrative systems monitoring."""
 
+from datetime import timedelta
+
 from flask import request
 
 from his import authenticated, authorized, Application
+from terminallib import System
 from timelib import strpdatetime
 from wsgilib import JSON
 
 from sysmon.functions import check_customer_systems
-from sysmon.functions import get_customers
+from sysmon.functions import get_system
 from sysmon.functions import get_systems
 from sysmon.functions import get_systems_checks
-from sysmon.functions import get_types
-from sysmon.functions import selected_customers
-from sysmon.functions import selected_systems
-from sysmon.functions import selected_types
+from sysmon.orm import OnlineCheck
 
 
 __all__ = ['APPLICATION']
@@ -27,31 +27,53 @@ APPLICATION = Application('sysmon')
 def list_stats():
     """Lists systems and their stats."""
 
-    systems = get_systems(
-        systems=selected_systems(), customers=selected_customers(),
-        types=selected_types())
+    systems = get_systems()
     begin = strpdatetime(request.headers.get('begin'))
     end = strpdatetime(request.headers.get('end'))
     json = get_systems_checks(systems, begin=begin, end=end)
     return JSON(json)
 
 
-@APPLICATION.route('/customers', methods=['GET'], strict_slashes=False)
+@APPLICATION.route('/details/<int:system>', methods=['GET'],
+                   strict_slashes=False)
 @authenticated
-def list_customers():
-    """Lists all customers."""
+def system_details(system):
+    """Lists uptime details of a system."""
 
-    json = [customer.to_json(cascade=2) for customer in get_customers()]
-    return JSON(json)
+    try:
+        system = get_system(system)
+    except System.DoesNotExist:
+        return ('No such system.', 404)
+
+    select = OnlineCheck.system == system
+    start = strpdatetime(request.headers.get('from'))
+    end = strpdatetime(request.headers.get('until'))
+
+    if start:
+        select &= OnlineCheck.timestamp >= start
+
+    if end:
+        end += timedelta(days=1)    # Compensate for rest of day.
+        select &= OnlineCheck.timestamp <= end
+
+    online_checks = OnlineCheck.select().where(select)
+    online_checks = online_checks.order_by(OnlineCheck.timestamp)
+    return JSON([online_check.to_json() for online_check in online_checks])
 
 
-@APPLICATION.route('/types', methods=['GET'], strict_slashes=False)
+@APPLICATION.route('/check/<int:system>', methods=['GET'],
+                   strict_slashes=False)
 @authenticated
-def list_types():
-    """Lists all types."""
+def check_system(system):
+    """Performs a system check."""
 
-    json = [type.value for type in get_types()]
-    return JSON(json)
+    try:
+        system = get_system(system)
+    except System.DoesNotExist:
+        return ('No such system.', 404)
+
+    online_check = OnlineCheck.run(system)
+    return JSON(online_check.to_json())
 
 
 @APPLICATION.route('/enduser', methods=['GET'], strict_slashes=False)

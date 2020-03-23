@@ -1,44 +1,13 @@
 """System state notification."""
 
-from enum import Enum
 from xml.etree.ElementTree import Element, SubElement
-from typing import NamedTuple
 
-from terminallib import System
-
+from sysmon.changes import State, state_changes
+from sysmon.config import LOGGER
 from sysmon.mail import email
-from sysmon.orm import CHECKS, SystemCheck
 
 
 __all__ = ['notify']
-
-
-def state_changes():
-    """Yields state changes."""
-
-    for system in System.monitored():
-        for check in CHECKS:
-            try:
-                last, *previous = check.select().where(
-                    check.system == system).order_by(
-                        check.timestamp.desc()).limit(2)
-            except ValueError:
-                continue
-
-            if previous:
-                previous, *_ = previous
-
-                if last.successful and not previous.successful:
-                    yield CheckState(system, check, State.RECOVERED)
-                elif previous.successful and not last.successful:
-                    yield CheckState(system, check, State.FAILED)
-                else:
-                    yield CheckState(system, check, State.UNCHANGED)
-            else:
-                if last.successful:
-                    yield CheckState(system, check, State.RECOVERED)
-                else:
-                    yield CheckState(system, check, State.FAILED)
 
 
 def mk_html_table(check_states):
@@ -94,36 +63,5 @@ def notify():
             failed.append(check_state)
 
     html = mk_html_msg(recovered, failed)
+    LOGGER.info('Notifying admins about state changes.')
     email(html)
-
-
-class State(Enum):
-    """State change of a system check."""
-
-    RECOVERED = 'recovered'
-    FAILED = 'failed'
-    UNCHANGED = 'unchanged'
-
-
-class CheckState(NamedTuple):
-    """A system's service check state."""
-
-    system: System
-    check: SystemCheck
-    state: State
-
-    def to_xml(self):
-        """Returns an XML element."""
-        row = Element('tr')
-        header = SubElement(row, 'th')
-        header.text = str(self.system.id)
-        column = SubElement(row, 'td')
-
-        if self.system.deployment is None:
-            column.text = 'Not deployed'
-        else:
-            column.text = str(self.system.deployment)
-
-        column = SubElement(row, 'td')
-        column.text = self.check.message
-        return row

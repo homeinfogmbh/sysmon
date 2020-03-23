@@ -6,21 +6,21 @@ from flask import request
 
 from functoolsplus import coerce
 from his import ACCOUNT, CUSTOMER
-from terminallib import Deployment, Type, System
+from termacls import get_administerable_systems
+from terminallib import Deployment, System
 from wsgilib import Error
 
-from sysmon.orm import CHECKS, OnlineCheck, TypeAdmin
+from sysmon.exceptions import NotChecked
+from sysmon.orm import CHECKS, OnlineCheck
 
 
 __all__ = [
+    'get_system',
     'get_systems',
     'get_customers',
     'get_types',
     'get_stats',
     'get_systems_checks',
-    'selected_customers',
-    'selected_types',
-    'selected_systems',
     'get_customer_systems',
     'check_customer_system',
     'check_customer_systems'
@@ -31,32 +31,26 @@ CUSTOMER_INTERVAL = timedelta(hours=48)
 CUSTOMER_MAX_OFFLINE = 0.2
 
 
-def get_systems(*, systems=None, customers=None, types=None):
-    """Yields the systems which the current user may monitor."""
-
-    condition = True
-
-    if systems:
-        condition &= System.id << systems
-
-    if customers:
-        condition &= Deployment.customer << customers
-
-    if types:
-        condition &= Deployment.type << types
+def get_system(system):
+    """Returns a system by its ID."""
 
     if ACCOUNT.root:
-        return System.select().where(condition)
+        return System[system]
 
-    try:
-        type_admins = TypeAdmin.select().where(
-            TypeAdmin.customer == CUSTOMER.id)
-    except TypeAdmin.DoesNotExist:
-        return ()
+    systems = get_systems()
+    return systems.select().where(System.id == system).get()
 
-    authorized_types = set(type_admin.type for type_admin in type_admins)
-    condition &= Deployment.type << authorized_types
-    return System.select().join(Deployment).where(condition)
+
+def get_systems():
+    """Yields systems that are deployed."""
+
+    if 'all' in request.args:
+        condition = True
+    else:
+        condition = System.monitor == 1
+        condition |= ~ (System.deployment >> None)
+
+    return get_administerable_systems(ACCOUNT).where(condition)
 
 
 @coerce(set)
@@ -114,48 +108,6 @@ def get_systems_checks(systems, *, begin=None, end=None):
         yield json
 
 
-@coerce(set)
-def selected_customers():
-    """Yields the selected customers."""
-
-    customers = request.headers.get('customers')
-
-    if customers:
-        for customer in customers.split(','):
-            try:
-                yield int(customer)
-            except ValueError:
-                raise Error('Invalid customer ID: "%s".' % customer)
-
-
-@coerce(set)
-def selected_types():
-    """Yields the selected types."""
-
-    types = request.headers.get('types')
-
-    if types:
-        for type_ in types.split(','):
-            try:
-                yield Type(type_)
-            except ValueError:
-                raise Error('Invalid system type: "%s".' % type_)
-
-
-@coerce(set)
-def selected_systems():
-    """Yields the selected systems."""
-
-    systems = request.headers.get('systems')
-
-    if systems:
-        for system in systems.split(','):
-            try:
-                yield int(system)
-            except ValueError:
-                raise Error('Invalid system ID: "%s".' % system)
-
-
 def get_customer_systems():
     """Reuturns systems of the current customer."""
 
@@ -175,7 +127,7 @@ def check_customer_system(system):
     try:
         OnlineCheck.get(selection)
     except OnlineCheck.DoesNotExist:
-        return None     # System is not checked yet.
+        raise NotChecked(system, OnlineCheck)
 
     # Select all systems within the CUSTOMER_INTERVAL.
     selection = OnlineCheck.system == system
@@ -195,10 +147,13 @@ def check_customer_systems():
     systems = 0
 
     for systems, system in enumerate(get_customer_systems(), start=1):
-        states[system.id] = state = check_customer_system(system)
-
-        if state is False:  # False but not None.
-            failures += 1
+        try:
+            states[system.id] = state = check_customer_system(system)
+        except NotChecked:
+            states[system.id] = None
+        else:
+            if not state:
+                failures += 1
 
     if failures >= systems * CUSTOMER_MAX_OFFLINE:
         raise Error('Failure limit exceeded.')
