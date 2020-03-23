@@ -136,7 +136,7 @@ def check_customer_system(system):
     # System is deemed OK, iff any check
     # within CUSTOMER_INTERVAL was successful.
     query = OnlineCheck.select().where(selection)
-    return any(check.success for check in query)
+    return any(online_check.online for online_check in query)
 
 
 def check_customer_systems():
