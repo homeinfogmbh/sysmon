@@ -5,7 +5,7 @@ from enum import Enum
 from typing import NamedTuple
 from xml.etree.ElementTree import Element, SubElement
 
-from terminallib import System
+from hwdb import System
 
 from sysmon.exceptions import NotChecked
 from sysmon.orm import CHECKS, SystemCheck

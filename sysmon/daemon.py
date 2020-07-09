@@ -2,7 +2,7 @@
 
 from logging import INFO, basicConfig
 
-from terminallib import System
+from hwdb import System
 
 from sysmon.config import LOG_FORMAT, LOGGER
 from sysmon.orm import CHECKS

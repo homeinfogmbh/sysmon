@@ -6,8 +6,8 @@ from flask import request
 
 from functoolsplus import coerce
 from his import ACCOUNT, CUSTOMER
+from hwdb import Deployment, System
 from termacls import get_administerable_systems
-from terminallib import Deployment, System
 from wsgilib import Error
 
 from sysmon.exceptions import NotChecked

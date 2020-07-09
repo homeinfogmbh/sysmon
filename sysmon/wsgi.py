@@ -5,7 +5,7 @@ from datetime import timedelta
 from flask import request
 
 from his import authenticated, authorized, Application
-from terminallib import System
+from hwdb import System
 from timelib import strpdatetime
 from wsgilib import JSON
 

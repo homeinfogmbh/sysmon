@@ -7,8 +7,8 @@ from simplejson.errors import JSONDecodeError
 
 from peewee import BooleanField, DateTimeField, ForeignKeyField
 
+from hwdb import SystemOffline, System
 from peeweeplus import JSONModel, MySQLDatabase
-from terminallib import SystemOffline, System
 
 from sysmon.config import CONFIG
 
