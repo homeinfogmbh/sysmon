@@ -10,7 +10,7 @@ setup(
     maintainer='Richard Neumann',
     maintainer_email='<r dot neumann at homeinfo priod de>',
     packages=['sysmon'],
-    scripts=['files/sysmon', 'files/sysmon-notify'],
+    scripts=['files/sysmon', 'files/sysmon-cleanup', 'files/sysmon-notify'],
     data_files=[
         ('/usr/lib/systemd/system', [
             'files/sysmon.service',
