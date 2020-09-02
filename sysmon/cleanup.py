@@ -15,12 +15,6 @@ LOGGER = getLogger('sysmon-cleanup')
 TABLES = {table.__name__: table for table in CHECKS}
 
 
-def days(string):
-    """Returns a timedelta with the given days."""
-
-    return timedelta(days=int(string))
-
-
 def table(string):
     """Returns the respective type by its name."""
 
