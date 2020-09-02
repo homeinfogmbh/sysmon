@@ -37,7 +37,7 @@ def main():
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=INFO)
     timestamp = datetime.now() - timedelta(days=args.days)
-    LOGGER.info('Starting cleanup before %i days.', args.days)
+    LOGGER.info('Deleting records older than %i days.', args.days)
 
     for table in args.tables:
         LOGGER.info('Cleaning up table: %s', table.__name__)
