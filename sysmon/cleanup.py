@@ -11,7 +11,6 @@ from sysmon.orm import CHECKS
 __all__ = ['main']
 
 
-DAYS = timedelta(days=30)
 LOGGER = getLogger('sysmon-cleanup')
 
 
@@ -27,7 +26,7 @@ def get_args():
     parser = ArgumentParser(description='cleans old records')
     parser.add_argument('-t', '--tables', nargs='*',
                         default=CHECKS, help='tables to clean')
-    parser.add_argument('-d', '--days', type=days, default=DAYS,
+    parser.add_argument('-d', '--days', type=int, default=30,
                         help='days of records to keep')
     return parser.parse_args()
 
@@ -37,7 +36,8 @@ def main():
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=INFO)
-    timestamp = datetime.now - args.days
+    timestamp = datetime.now() - timedelta(days=args.days)
+    LOGGER.info('Starting cleanup before %i days.', args.days)
 
     for table in args.tables:
         LOGGER.info('Cleaning up table: %s', table.__name__)
