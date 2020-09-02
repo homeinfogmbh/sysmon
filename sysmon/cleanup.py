@@ -41,10 +41,5 @@ def main():
 
     for table in args.tables:
         LOGGER.info('Cleaning up table: %s', table.__name__)
-        records = table.select().where(table.timestamp < timestamp).iterator()
-        count = 0
-
-        for count, record in enumerate(records, start=1):
-            record.delete_instance()
-
+        count = table.delete().where(table.timestamp < timestamp).execute()
         LOGGER.info('Deleted %i records.', count)
