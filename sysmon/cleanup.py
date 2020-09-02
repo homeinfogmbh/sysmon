@@ -12,6 +12,7 @@ __all__ = ['main']
 
 
 LOGGER = getLogger('sysmon-cleanup')
+TABLES = {table.__name__: table for table in CHECKS}
 
 
 def days(string):
@@ -20,11 +21,20 @@ def days(string):
     return timedelta(days=int(string))
 
 
+def table(string):
+    """Returns the respective type by its name."""
+
+    try:
+        return TABLES[string]
+    except KeyError:
+        raise ValueError(f'No such table: {string}')
+
+
 def get_args():
     """Parses the CLI arguments."""
 
     parser = ArgumentParser(description='cleans old records')
-    parser.add_argument('-t', '--tables', nargs='*',
+    parser.add_argument('-t', '--tables', nargs='*', type=table,
                         default=CHECKS, help='tables to clean')
     parser.add_argument('-d', '--days', type=int, default=30,
                         help='days of records to keep')
@@ -39,7 +49,7 @@ def main():
     timestamp = datetime.now() - timedelta(days=args.days)
     LOGGER.info('Deleting records older than %i days.', args.days)
 
-    for table in args.tables:
+    for table in args.tables:   # pylint: disable=W0621
         LOGGER.info('Cleaning up table: %s', table.__name__)
         count = table.delete().where(table.timestamp < timestamp).execute()
         LOGGER.info('Deleted %i records.', count)
