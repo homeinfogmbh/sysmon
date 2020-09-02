@@ -1,0 +1,10 @@
+[Unit]
+Description=HOMEINFO Digital Signage Systems Monitoring Records Cleanup
+After=network.target mysql.service
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=2h
+
+[Install]
+WantedBy=timers.target

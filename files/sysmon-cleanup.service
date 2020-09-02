@@ -1,0 +1,8 @@
+[Unit]
+Description=HOMEINFO Digital Signage Systems Monitoring Records Cleanup
+After=network.target mysql.service
+
+[Service]
+User=sysmon
+Group=sysmon
+ExecStart=/usr/local/bin/sysmon-cleanup

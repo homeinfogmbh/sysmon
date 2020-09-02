@@ -14,7 +14,11 @@ setup(
     data_files=[
         ('/usr/lib/systemd/system', [
             'files/sysmon.service',
+            'files/sysmon-cleanup.service',
+            'files/sysmon-cleanup.timer',
             'files/sysmon-notify.service',
-            'files/sysmon-notify.timer'])],
+            'files/sysmon-notify.timer'
+        ])
+    ],
     license='GPLv3',
     description='A systems monitoring system.')
