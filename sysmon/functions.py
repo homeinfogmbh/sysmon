@@ -111,9 +111,7 @@ def get_systems_checks(systems, *, begin=None, end=None):
 def get_customer_systems():
     """Reuturns systems of the current customer."""
 
-    predicate = System.deployment == Deployment.id
-    condition = Deployment.customer == CUSTOMER.id
-    return System.select().join(Deployment, on=predicate).where(condition)
+    return System.depjoin().where(Deployment.customer == CUSTOMER.id)
 
 
 def check_customer_system(system):
