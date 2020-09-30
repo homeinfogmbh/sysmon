@@ -117,25 +117,17 @@ def get_customer_systems():
 def check_customer_system(system):
     """Returns the customer online check for the respective system."""
 
-    until = datetime.now()
-    start = until - CUSTOMER_INTERVAL
-    # Check whether the system has been checked CUSTOMER_INTERVAL ago.
-    selection = OnlineCheck.system == system
-    selection &= OnlineCheck.timestamp <= start
+    end = datetime.now()
+    start = end - CUSTOMER_INTERVAL
+    condition = OnlineCheck.system == system
+    condition &= OnlineCheck.timestamp >= start
+    condition &= OnlineCheck.timestamp <= end
+    query = OnlineCheck.select().where(condition)
 
-    try:
-        OnlineCheck.get(selection)
-    except OnlineCheck.DoesNotExist:
-        raise NotChecked(system, OnlineCheck) from None
+    if query:
+        return any(online_check.online for online_check in query)
 
-    # Select all systems within the CUSTOMER_INTERVAL.
-    selection = OnlineCheck.system == system
-    selection &= OnlineCheck.timestamp >= start
-    selection &= OnlineCheck.timestamp <= until
-    # System is deemed OK, iff any check
-    # within CUSTOMER_INTERVAL was successful.
-    query = OnlineCheck.select().where(selection)
-    return any(online_check.online for online_check in query)
+    raise NotChecked(system, OnlineCheck)
 
 
 def check_customer_systems():
