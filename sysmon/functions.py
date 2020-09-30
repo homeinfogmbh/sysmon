@@ -126,7 +126,7 @@ def check_customer_system(system):
     try:
         OnlineCheck.get(selection)
     except OnlineCheck.DoesNotExist:
-        raise NotChecked(system, OnlineCheck)
+        raise NotChecked(system, OnlineCheck) from None
 
     # Select all systems within the CUSTOMER_INTERVAL.
     selection = OnlineCheck.system == system
@@ -151,8 +151,7 @@ def check_customer_systems():
         except NotChecked:
             states[system.id] = None
         else:
-            if not state:
-                failures += 1
+            failures += not state
 
     if failures >= systems * CUSTOMER_MAX_OFFLINE:
         raise Error('Failure limit exceeded.')
