@@ -45,12 +45,9 @@ def get_systems():
     """Yields systems that are deployed."""
 
     if 'all' in request.args:
-        condition = True
-    else:
-        condition = System.monitor == 1
-        condition |= ~ (System.deployment >> None)
+        return get_administerable_systems(ACCOUNT)
 
-    return get_administerable_systems(ACCOUNT).where(condition)
+    return get_administerable_systems(ACCOUNT).where(System.monitoring_cond())
 
 
 @coerce(set)
