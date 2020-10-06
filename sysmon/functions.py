@@ -106,9 +106,9 @@ def get_systems_checks(systems, *, begin=None, end=None):
 
 
 def get_customer_systems():
-    """Reuturns systems of the current customer."""
+    """Reuturns monitored systems of the current customer."""
 
-    return System.depjoin().where(Deployment.customer == CUSTOMER.id)
+    return System.monitored().where(Deployment.customer == CUSTOMER.id)
 
 
 def check_customer_system(system):
