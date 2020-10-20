@@ -25,25 +25,9 @@ var sysmon = sysmon || {};
 
 
 /*
-    Reloads the systems.
-*/
-function reload () {
-    sysmon.startLoading();
-    return sysmon.getStats().then(render);
-}
-
-
-/*
     Filters, sorts and renders systems.
 */
 function render (systems) {
-    sysmon.startLoading();
-
-    if (systems == null) {
-        sysmon.startLoading();
-        systems = sysmon.loadSystems();
-    }
-
     systems = sysmon.filtered(systems);
     const onlineSystems = sysmon.online(systems);
     const onlineContainer = document.getElementById('online');
@@ -61,7 +45,15 @@ function render (systems) {
     const outdatedContainer = document.getElementById('outdated');
     const outdatedCounter = document.getElementById('outdatedCount');
     sysmon.render(outdatedSystems, outdatedContainer, outdatedCounter);
-    sysmon.stopLoading();
+}
+
+
+/*
+    Reloads the systems.
+*/
+function load (force = false) {
+    sysmon.startLoading();
+    return sysmon.systemd.getValue(force).then(render).then(sysmon.stopLoading);
 }
 
 
@@ -69,11 +61,11 @@ function render (systems) {
     Initialize manage.html.
 */
 function init () {
-    reload();
+    load();
     const btnFilter = document.getElementById('filter');
-    btnFilter.addEventListener('click', sysmon.partial(render), false);
+    btnFilter.addEventListener('click', sysmon.partial(load), false);
     const btnReload = document.getElementById('reload');
-    btnReload.addEventListener('click', sysmon.partial(reload), false);
+    btnReload.addEventListener('click', sysmon.partial(load, true), false);
 }
 
 

@@ -28,15 +28,13 @@ var sysmon = sysmon || {};
     Opens a certain tab in the overview menu.
 */
 sysmon.openTab = function (event, id) {
-    for (const tab of document.getElementsByClassName('tab')) {
+    for (const tab of document.getElementsByClassName('tab'))
         tab.style.display = 'none';
-    }
 
     const highlightColor = 'w3-grey';
 
-    for (const tabButton of document.getElementsByClassName('tabButton')) {
+    for (const tabButton of document.getElementsByClassName('tabButton'))
         tabButton.classList.remove(highlightColor);
-    }
 
     document.getElementById(id).style.display = 'block';
     event.currentTarget.classList.add(highlightColor);

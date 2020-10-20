@@ -22,7 +22,6 @@
 
 
 var sysmon = sysmon || {};
-sysmon.STORAGE_KEY = 'sysmon.systems';
 
 
 /*
@@ -48,30 +47,6 @@ sysmon.stopLoading = function () {
 
 
 /*
-    Stores the systems in local storage.
-*/
-sysmon.storeSystems = function (systems) {
-    systems = Array.from(systems);
-    const json = JSON.stringify(systems);
-    return localStorage.setItem(sysmon.STORAGE_KEY, json);
-};
-
-
-/*
-    Loads the systems from local storage.
-*/
-sysmon.loadSystems = function () {
-    const raw = localStorage.getItem(sysmon.STORAGE_KEY);
-
-    if (raw == null) {
-        return [];
-    }
-
-    return JSON.parse(raw);
-};
-
-
-/*
     Performs a login.
 */
 sysmon.login = function (account, passwd) {
@@ -92,11 +67,7 @@ sysmon.login = function (account, passwd) {
 */
 sysmon.getStats = function () {
     return homeinfo.requests.get(sysmon.BASE_URL + '/stats').then(
-        function (response) {
-            const systems = response.json;
-            sysmon.storeSystems(systems);
-            return systems;
-        },
+        response => response.json,
         sysmon.checkSession('Die Liste der Systeme konnte nicht abgefragt werden.')
     );
 };
@@ -107,9 +78,7 @@ sysmon.getStats = function () {
 */
 sysmon.getSystemDetails = function (system, headers = {}) {
     return homeinfo.requetsts.get(sysmon.BASE_URL + '/details/' + system, null, headers).then(
-        function (response) {
-            return response.json;
-        },
+        response => response.json,
         sysmon.checkSession('Die Systemdetails konnten nicht abgefragt werden.')
     );
 };
@@ -120,9 +89,7 @@ sysmon.getSystemDetails = function (system, headers = {}) {
 */
 sysmon.checkSystem = function (system) {
     return homeinfo.requests.get(sysmon.BASE_URL + '/check/' + system).then(
-        function (response) {
-            return response.json;
-        },
+        response => response.json,
         sysmon.checkSession('Ein Systemcheck konnte nicht durchgeführt werden.')
     );
 };
@@ -140,9 +107,8 @@ sysmon.render = function (systems, container, counter) {
         count += 1;
         let row = sysmon.systemCheckToDOM(system);
 
-        if (row != null) {
+        if (row != null)
             container.appendChild(row);
-        }
     }
 
     counter.innerHTML = '(' + count + ')';
@@ -154,10 +120,15 @@ sysmon.render = function (systems, container, counter) {
 */
 sysmon.partial = function (func, ...args) {
     return function (event) {
-        if (event != null) {
+        if (event != null)
             event.preventDefault();
-        }
 
         return func(...args);
     };
 };
+
+
+/*
+    Systems cache.
+*/
+sysmon.systems = new homeinfo.caching.Cache('sysmon.systems', sysmon.getStats);

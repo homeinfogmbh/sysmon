@@ -28,13 +28,11 @@ var sysmon = sysmon || {};
     Converts true, false and null into a string.
 */
 sysmon.boolNaToString = function (boolean) {
-    if (boolean == null) {
+    if (boolean == null)
         return '?';
-    }
 
-    if (boolean) {
+    if (boolean)
         return '✓';
-    }
 
     return '✗';
 };
@@ -44,9 +42,8 @@ sysmon.boolNaToString = function (boolean) {
     Generates a terminal DOM entry.
 */
 sysmon.systemCheckToDOM = function (systemCheck) {
-    if (systemCheck.checks == null) {
+    if (systemCheck.checks == null)
         return null;
-    }
 
     const deployment = systemCheck.deployment;
     let address = 'Keine Adresse';

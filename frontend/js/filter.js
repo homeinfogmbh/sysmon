@@ -28,9 +28,8 @@ var sysmon = sysmon || {};
     Case-insensitively returns the index of the substring.
 */
 sysmon.includesIgnoreCase = function (haystack, needle) {
-    if (! haystack) {
+    if (! haystack)
         return false;
-    }
 
     return haystack.toLowerCase().includes(needle.toLowerCase());
 };
@@ -60,18 +59,16 @@ sysmon.filterSystems = function* (systems, keyword) {
             let fragments = keyword.split('#');
             let id = parseInt(fragments[1]);
 
-            if (system.id == id) {
+            if (system.id == id)
                 yield system;
-            }
 
             continue;
         }
 
         let deployment = system.deployment;
 
-        if (deployment == null) {
+        if (deployment == null)
             continue;
-        }
 
         let cid = '' + deployment.customer.id;
 
@@ -113,9 +110,8 @@ sysmon.filtered = function (systems) {
 sysmon.online = function* (systems) {
     for (const system of systems) {
         if (system.checks != null && system.checks.OnlineCheck != null) {
-            if (system.checks.OnlineCheck.successful) {
+            if (system.checks.OnlineCheck.successful)
                 yield system;
-            }
         }
     }
 };
@@ -127,9 +123,8 @@ sysmon.online = function* (systems) {
 sysmon.offline = function* (systems) {
     for (const system of systems) {
         if (system.checks != null && system.checks.OnlineCheck != null) {
-            if (! system.checks.OnlineCheck.successful) {
+            if (! system.checks.OnlineCheck.successful)
                 yield system;
-            }
         }
     }
 };
@@ -143,9 +138,8 @@ sysmon.blackmode = function* (systems) {
         if (system.checks != null && system.checks.ApplicationCheck != null) {
             if (! system.checks.ApplicationCheck.successful) {
                 // Exclude unknown states if system was offline.
-                if (system.checks.ApplicationCheck.enabled != null && system.checks.ApplicationCheck.running != null) {
+                if (system.checks.ApplicationCheck.enabled != null && system.checks.ApplicationCheck.running != null)
                     yield system;
-                }
             }
         }
     }
@@ -164,9 +158,8 @@ sysmon.outdated = function* (systems) {
             const lastSync = new Date(system.lastSync);
             const timedelta = now - lastSync;
 
-            if (timedelta >= outdated) {
+            if (timedelta >= outdated)
                 yield system;
-            }
         }
     }
 };
