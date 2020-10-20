@@ -75,10 +75,8 @@ sysmon.loadSystems = function () {
     Performs a login.
 */
 sysmon.login = function (account, passwd) {
-    const payload = {'account': account, 'passwd': passwd};
-    const data = JSON.stringify(payload);
-    const headers = {'Content-Type': 'application/json'};
-    return sysmon.makeRequest('POST', 'https://his.homeinfo.de/session', data, headers).then(
+    const json = {'account': account, 'passwd': passwd};
+    return homeinfo.requests.postJSON('https://his.homeinfo.de/session', json).then(
         function () {
             window.location = 'manage.html';
         },
@@ -93,7 +91,7 @@ sysmon.login = function (account, passwd) {
     Retrieves systems from the API.
 */
 sysmon.getStats = function () {
-    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/stats').then(
+    return homeinfo.requests.get(sysmon.BASE_URL + '/stats').then(
         function (response) {
             const systems = response.json;
             sysmon.storeSystems(systems);
@@ -108,7 +106,7 @@ sysmon.getStats = function () {
     Retrieves system details from the API.
 */
 sysmon.getSystemDetails = function (system, headers = {}) {
-    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/details/' + system, null, headers).then(
+    return homeinfo.requetsts.get(sysmon.BASE_URL + '/details/' + system, null, headers).then(
         function (response) {
             return response.json;
         },
@@ -121,7 +119,7 @@ sysmon.getSystemDetails = function (system, headers = {}) {
     Issues a system check.
 */
 sysmon.checkSystem = function (system) {
-    return sysmon.makeRequest('GET', sysmon.BASE_URL + '/check/' + system).then(
+    return homeinfo.requests.get(sysmon.BASE_URL + '/check/' + system).then(
         function (response) {
             return response.json;
         },
