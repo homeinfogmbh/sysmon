@@ -23,6 +23,7 @@
 import { Loader, suppressEvent } from 'https://javascript.homeinfo.de/lib.js';
 import * as api from './api.js';
 import { blackmode, filtered, offline, online, outdated } from './filter.js';
+import { openTab } from './navigation.js';
 
 
 /*
