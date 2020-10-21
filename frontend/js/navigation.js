@@ -20,6 +20,8 @@
 */
 'use strict';
 
+import { system } from './api.js';
+
 
 /*
     Opens a certain tab in the overview menu.
