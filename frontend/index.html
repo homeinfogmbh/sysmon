@@ -22,10 +22,10 @@
   <title>Systemüberwachung</title>
   <link rel="stylesheet" href="css/w3.css">
   <link rel="stylesheet" href="css/sysmon.css">
-  <script src="https://javascript.homeinfo.de/homeinfo.js"></script>
-  <script src="js/common.js"></script>
-  <script src="js/functions.js"></script>
-  <script src="js/login.js"></script>
+  <script type="module">
+    import { init } from './js/login.js';
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 </head>
 
 <div class="w3-container w3-teal">

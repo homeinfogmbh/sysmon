@@ -23,13 +23,10 @@
   <link rel="stylesheet" href="css/w3.css">
   <link rel="stylesheet" href="css/fontawesome.css">
   <link rel="stylesheet" href="css/sysmon.css">
-  <script src="https://javascript.homeinfo.de/homeinfo.js"></script>
-  <script src="js/common.js"></script>
-  <script src="js/dom.js"></script>
-  <script src="js/functions.js"></script>
-  <script src="js/filter.js"></script>
-  <script src="js/navigation.js"></script>
-  <script src="js/overview.js"></script>
+  <script type="module">
+    import { init } from './js/overview.js';
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 </head>
 
 <div class="w3-container w3-teal">
