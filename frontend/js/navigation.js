@@ -45,7 +45,7 @@ export function openTab (id) {
 /*
     Show system details page.
 */
-export function showSystemDetails (system) {
-    system.set(system);
+export function showSystemDetails (systemId) {
+    system.set(systemId);
     window.open('system.html', '_blank');
 }
