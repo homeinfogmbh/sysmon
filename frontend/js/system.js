@@ -116,7 +116,7 @@ function render() {
         'from': dateFrom.value,
         'until': dateUntil.value
     };
-    return getSystemDetails(system.get(), headers).then(renderDiagram);
+    return Loader.wrap(getSystemDetails(system.get(), headers).then(renderDiagram));
 }
 
 
@@ -127,18 +127,16 @@ function checkSystem (event) {
     const target = event.currentTarget;
     target.disabled = true;
     const system = getSystem();
-    return Loader.wrap(
-        checkSystem(system).then(
-            function (json) {
-                const state = json.online ? 'online' : 'offline';
-                target.disabled = false;
-                alert('Das System #' + system + ' ist aktuell ' + state + '.');
-            }
-        ).finally(
-            function () {
-                target.disabled = false;
-            }
-        )
+    return checkSystem(system).then(
+        function (json) {
+            const state = json.online ? 'online' : 'offline';
+            target.disabled = false;
+            alert('Das System #' + system + ' ist aktuell ' + state + '.');
+        }
+    ).finally(
+        function () {
+            target.disabled = false;
+        }
     );
 }
 
