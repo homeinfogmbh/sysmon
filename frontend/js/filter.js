@@ -21,7 +21,6 @@
 'use strict';
 
 import { filterSystems } from 'https://javascript.homeinfo.de/hwdb.js';
-import { includesIgnoreCase } from 'https://javascript.homeinfo.de/lib.js';
 import { addressToString } from 'https://javascript.homeinfo.de/mdb.js';
 
 
