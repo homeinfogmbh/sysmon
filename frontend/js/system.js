@@ -20,14 +20,14 @@
 */
 'use strict';
 
-
-var sysmon = sysmon || {};
-
-
-sysmon.chart = null;
+import { Loader } from 'https://javascript.homeinfo.de/lib.js';
+import { getSystemDetails, system } from './api.js';
 
 
-sysmon.getConfig = function (data) {
+let chart;
+
+
+function getConfig (data) {
     const color = Chart.helpers.color;
     return {
         type: 'line',
@@ -85,7 +85,7 @@ sysmon.getConfig = function (data) {
 };
 
 
-sysmon.renderDiagram = function (records) {
+function renderDiagram (records) {
     const data = [];
 
     for (const record of records) {
@@ -95,25 +95,14 @@ sysmon.renderDiagram = function (records) {
 
     console.log('Rendering chart.');
 
-    if (sysmon.chart == null) {
-        const config = sysmon.getConfig(data);
+    if (chart == null) {
+        const config = getConfig(data);
         const ctx = document.getElementById('uptime').getContext('2d');
-        sysmon.chart = new Chart(ctx, config);
+        chart = new Chart(ctx, config);
     } else {
-        sysmon.chart.data.datasets[0].data = data;
-        sysmon.chart.update();
+        chart.data.datasets[0].data = data;
+        chart.update();
     }
-
-    sysmon.stopLoading();
-};
-
-
-/*
-    Returns the current system ID.
-*/
-function getSystem() {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('system');
 }
 
 
@@ -127,7 +116,7 @@ function render() {
         'from': dateFrom.value,
         'until': dateUntil.value
     };
-    return sysmon.getSystemDetails(getSystem(), headers).then(sysmon.renderDiagram);
+    return getSystemDetails(system.get(), headers).then(renderDiagram);
 }
 
 
@@ -137,20 +126,19 @@ function render() {
 function checkSystem (event) {
     const target = event.currentTarget;
     target.disabled = true;
-    sysmon.startLoading();
     const system = getSystem();
-    return sysmon.checkSystem(system).then(
-        function (json) {
-            const state = json.online ? 'online' : 'offline';
-            target.disabled = false;
-            sysmon.stopLoading();
-            alert('Das System #' + system + ' ist aktuell ' + state + '.');
-        }
-    ).finally(
-        function () {
-            target.disabled = false;
-            sysmon.stopLoading();
-        }
+    return Loader.wrap(
+        checkSystem(system).then(
+            function (json) {
+                const state = json.online ? 'online' : 'offline';
+                target.disabled = false;
+                alert('Das System #' + system + ' ist aktuell ' + state + '.');
+            }
+        ).finally(
+            function () {
+                target.disabled = false;
+            }
+        )
     );
 }
 
@@ -160,7 +148,7 @@ function checkSystem (event) {
 */
 function initUI () {
     const systemId = document.getElementById('systemId');
-    systemId.innerHTML = getSystem();
+    systemId.innerHTML = system.get();
     const today = new Date();
     const defaultTimespan = 30 * 24 * 3600 * 1000;  // 30 days.
     const startDate = new Date(today - defaultTimespan);
@@ -172,12 +160,9 @@ function initUI () {
 
 
 /*
-    Initialize manage.html.
+    Initialize system.html.
 */
-function init () {
+export function init () {
     initUI();
     render();
 }
-
-
-document.addEventListener('DOMContentLoaded', init);

@@ -20,120 +20,51 @@
 */
 'use strict';
 
-
-var sysmon = sysmon || {};
-
-
-/*
-    Case-insensitively returns the index of the substring.
-*/
-sysmon.includesIgnoreCase = function (haystack, needle) {
-    if (! haystack)
-        return false;
-
-    return haystack.toLowerCase().includes(needle.toLowerCase());
-};
-
-
-/*
-    Returns the respective address as a one-line string.
-*/
-sysmon.addressToString = function (address) {
-    return address.street + ' ' + address.houseNumber + ', ' + address.zipCode + ' ' + address.city;
-};
-
-
-/*
-    Filters the provided system by the respective keywords.
-*/
-sysmon.filterSystems = function* (systems, keyword) {
-    for (const system of systems) {
-        // Yield any copy on empty keyword.
-        if (keyword == null || keyword == '') {
-            yield system;
-            continue;
-        }
-
-        // Exact ID matching.
-        if (keyword.startsWith('#')) {
-            let fragments = keyword.split('#');
-            let id = parseInt(fragments[1]);
-
-            if (system.id == id)
-                yield system;
-
-            continue;
-        }
-
-        let deployment = system.deployment;
-
-        if (deployment == null)
-            continue;
-
-        let cid = '' + deployment.customer.id;
-
-        if (sysmon.includesIgnoreCase(cid, keyword)) {
-            yield system;
-            continue;
-        }
-
-        let customerName = deployment.customer.company.name;
-
-        if (sysmon.includesIgnoreCase(customerName, keyword)) {
-            yield system;
-            continue;
-        }
-
-        let address = sysmon.addressToString(deployment.address);
-
-        if (sysmon.includesIgnoreCase(address, keyword)) {
-            yield system;
-            continue;
-        }
-    }
-};
+import { filterSystems } from 'https://javascript.homeinfo.de/hwdb.js';
+import { includesIgnoreCase } from 'https://javascript.homeinfo.de/lib.js';
+import { addressToString } from 'https://javascript.homeinfo.de/mdb.js';
 
 
 /*
     Filters systems.
 */
-sysmon.filtered = function (systems) {
+export function filtered (systems) {
     const keyword = document.getElementById('searchField').value;
-    systems = sysmon.filterSystems(systems, keyword);
+    systems = filterSystems(systems, keyword);
     return Array.from(systems);
-};
+}
 
 
 /*
     Yields online systems.
 */
-sysmon.online = function* (systems) {
+export function *online (systems) {
     for (const system of systems) {
         if (system.checks != null && system.checks.OnlineCheck != null) {
             if (system.checks.OnlineCheck.successful)
                 yield system;
         }
     }
-};
+}
 
 
 /*
     Yields offline systems.
 */
-sysmon.offline = function* (systems) {
+export function *offline (systems) {
     for (const system of systems) {
         if (system.checks != null && system.checks.OnlineCheck != null) {
             if (! system.checks.OnlineCheck.successful)
                 yield system;
         }
     }
-};
+}
 
 
 /*
     Yields systems in black mode.
 */
-sysmon.blackmode = function* (systems) {
+export function *blackmode (systems) {
     for (const system of systems) {
         if (system.checks != null && system.checks.ApplicationCheck != null) {
             if (! system.checks.ApplicationCheck.successful) {
@@ -143,14 +74,14 @@ sysmon.blackmode = function* (systems) {
             }
         }
     }
-};
+}
 
 
 /*
     Yields systems out of sync.
 */
-sysmon.outdated = function* (systems) {
-    const outdated = 3 * 24 * 3600 * 1000;  // Three days in milliseconds.
+export function *outdated (systems) {
+    const outdated = 3 * 24 * 60 * 60 * 1000;  // Three days in milliseconds.
     const now = Date.now();
 
     for (const system of systems) {
@@ -162,4 +93,4 @@ sysmon.outdated = function* (systems) {
                 yield system;
         }
     }
-};
+}

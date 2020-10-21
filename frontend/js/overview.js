@@ -20,31 +20,35 @@
 */
 'use strict';
 
-
-var sysmon = sysmon || {};
+import * as api from './api.js';
+import { blackmode, filtered, offline, online, outdated } from './filter.js';
 
 
 /*
     Filters, sorts and renders systems.
 */
 function render (systems) {
-    systems = sysmon.filtered(systems);
-    const onlineSystems = sysmon.online(systems);
+    systems = filtered(systems);
+
+    const onlineSystems = online(systems);
     const onlineContainer = document.getElementById('online');
     const onlineCounter = document.getElementById('onlineCount');
-    sysmon.render(onlineSystems, onlineContainer, onlineCounter);
-    const offlineSystems = sysmon.offline(systems);
+    api.render(onlineSystems, onlineContainer, onlineCounter);
+
+    const offlineSystems = offline(systems);
     const offlineContainer = document.getElementById('offline');
     const offlineCounter = document.getElementById('offlineCount');
-    sysmon.render(offlineSystems, offlineContainer, offlineCounter);
-    const blackmodeSystems = sysmon.blackmode(systems);
+    api.render(offlineSystems, offlineContainer, offlineCounter);
+
+    const blackmodeSystems = blackmode(systems);
     const blackmodeContainer = document.getElementById('blackmode');
     const blackmodeCounter = document.getElementById('blackmodeCount');
-    sysmon.render(blackmodeSystems, blackmodeContainer, blackmodeCounter);
-    const outdatedSystems = sysmon.outdated(systems);
+    api.render(blackmodeSystems, blackmodeContainer, blackmodeCounter);
+
+    const outdatedSystems = outdated(systems);
     const outdatedContainer = document.getElementById('outdated');
     const outdatedCounter = document.getElementById('outdatedCount');
-    sysmon.render(outdatedSystems, outdatedContainer, outdatedCounter);
+    api.render(outdatedSystems, outdatedContainer, outdatedCounter);
 }
 
 
@@ -52,21 +56,17 @@ function render (systems) {
     Reloads the systems.
 */
 function load (force = false) {
-    sysmon.startLoading();
-    return sysmon.systems.getValue(force).then(render).then(sysmon.stopLoading);
+    return systems.getValue(force).then(render);
 }
 
 
 /*
-    Initialize manage.html.
+    Initialize overview.html.
 */
-function init () {
+export function init () {
     load();
     const btnFilter = document.getElementById('filter');
-    btnFilter.addEventListener('click', sysmon.partial(load), false);
+    btnFilter.addEventListener('click', suppressEvent(load), false);
     const btnReload = document.getElementById('reload');
-    btnReload.addEventListener('click', sysmon.partial(load, true), false);
+    btnReload.addEventListener('click', suppressEvent(load, true), false);
 }
-
-
-document.addEventListener('DOMContentLoaded', init);

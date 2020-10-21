@@ -20,45 +20,24 @@
 */
 'use strict';
 
-
-var sysmon = sysmon || {};
+import { suppressEvent } from 'https://javascript.homeinfo.de/lib.js';
+import * as api from './api.js';
 
 
 /*
     Performs the initial login.
 */
-sysmon.doLogin = function (event) {
-    event.preventDefault();
+function login () {
     const account = document.getElementById('account').value;
     const passwd = document.getElementById('passwd').value;
-    const storeCredentials = document.getElementById('storeCredentials').checked;
-
-    if (storeCredentials) {
-        localStorage.setItem('sysmon.account', account);
-        localStorage.setItem('sysmon.passwd', passwd);
-    } else {
-        localStorage.removeItem('sysmon.account');
-        localStorage.removeItem('sysmon.passwd');
-    }
-
-    return sysmon.login(account, passwd).then(
-        function () {
-            window.location = 'overview.html';
-        },
-        function () {
-            alert('Ungültiger Benutzername und / oder Passwort.');
-        }
-    );
-};
+    return api.login(account, passwd);
+}
 
 
 /*
     Initialize index.html.
 */
-function init () {
+export function init () {
     const loginButton = document.getElementById('login');
-    loginButton.addEventListener('click', sysmon.doLogin, false);
+    loginButton.addEventListener('click', suppressEvent(login), false);
 }
-
-
-document.addEventListener('DOMContentLoaded', init);

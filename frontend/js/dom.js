@@ -20,28 +20,15 @@
 */
 'use strict';
 
-
-var sysmon = sysmon || {};
-
-
-/*
-    Converts true, false and null into a string.
-*/
-sysmon.boolNaToString = function (boolean) {
-    if (boolean == null)
-        return '?';
-
-    if (boolean)
-        return '✓';
-
-    return '✗';
-};
+import { suppressEvent } from 'https://javascript.homeinfo.de/lib.js';
+import { addressToString } from 'https://javascript.homeinfo.de/mdb.js';
+import { showSystemDetails } from './navigation.js';
 
 
 /*
     Generates a terminal DOM entry.
 */
-sysmon.systemCheckToDOM = function (systemCheck) {
+export function systemCheckToDOM (systemCheck) {
     if (systemCheck.checks == null)
         return null;
 
@@ -50,12 +37,12 @@ sysmon.systemCheckToDOM = function (systemCheck) {
     let customer = 'Kein Kunde';
 
     if (deployment != null) {
-        address = sysmon.addressToString(deployment.address);
+        address = addressToString(deployment.address);
         customer = deployment.customer.company.name + ' (' + deployment.customer.id + ')';
     }
 
     const tableRow = document.createElement('tr');
-    tableRow.setAttribute('onclick', 'sysmon.showSystemDetails(' + systemCheck.id + ');');
+    btnDeploy.addEventListener('click', suppressEvent(showSystemDetails, systemCheck.id), false);
     tableRow.style.cursor = 'pointer';
     const columnSystem = document.createElement('td');
     columnSystem.textContent = '' + systemCheck.id;
@@ -70,4 +57,4 @@ sysmon.systemCheckToDOM = function (systemCheck) {
     columnLastSync.textContent = systemCheck.lastSync || 'N/A';
     tableRow.appendChild(columnLastSync);
     return tableRow;
-};
+}
