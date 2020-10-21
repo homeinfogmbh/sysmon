@@ -58,7 +58,7 @@ function render (systems) {
     Reloads the systems.
 */
 function load (force = false) {
-    return Loader.wrap(api.systems.getValue(force).then(render));
+    return Loader.wrap(api.systems.get(force).then(render));
 }
 
 
