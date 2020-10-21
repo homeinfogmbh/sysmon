@@ -53,7 +53,7 @@ function render (systems) {
 */
 function load (force = false) {
     sysmon.startLoading();
-    return sysmon.systemd.getValue(force).then(render).then(sysmon.stopLoading);
+    return sysmon.systems.getValue(force).then(render).then(sysmon.stopLoading);
 }
 
 
