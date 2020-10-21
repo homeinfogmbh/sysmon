@@ -42,7 +42,7 @@ export function systemCheckToDOM (systemCheck) {
     }
 
     const tableRow = document.createElement('tr');
-    btnDeploy.addEventListener('click', suppressEvent(showSystemDetails, systemCheck.id), false);
+    tableRow.addEventListener('click', suppressEvent(showSystemDetails, systemCheck.id), false);
     tableRow.style.cursor = 'pointer';
     const columnSystem = document.createElement('td');
     columnSystem.textContent = '' + systemCheck.id;
