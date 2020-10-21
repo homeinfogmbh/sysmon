@@ -20,6 +20,7 @@
 */
 'use strict';
 
+import { Loader, suppressEvent } from 'https://javascript.homeinfo.de/lib.js';
 import * as api from './api.js';
 import { blackmode, filtered, offline, online, outdated } from './filter.js';
 
@@ -56,7 +57,7 @@ function render (systems) {
     Reloads the systems.
 */
 function load (force = false) {
-    return api.systems.getValue(force).then(render);
+    return Loader.wrap(api.systems.getValue(force).then(render));
 }
 
 
