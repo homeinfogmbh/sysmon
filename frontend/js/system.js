@@ -156,6 +156,8 @@ function initUI () {
     dateFrom.value = startDate.toISOString().split('T')[0];
     const dateUntil = document.getElementById('until');
     dateUntil.value = today.toISOString().split('T')[0];
+    btnCheck = document.getElementById('btnCheck');
+    btnCheck.addEventListener('click', checkSystem, false);
 }
 
 

@@ -70,4 +70,12 @@ export function init () {
     btnFilter.addEventListener('click', suppressEvent(load), false);
     const btnReload = document.getElementById('reload');
     btnReload.addEventListener('click', suppressEvent(load, true), false);
+    btnOffline = document.getElementById('btnOffline');
+    btnOffline.addEventListener('click', openTab('offlineTab'), false);
+    btnOnline = document.getElementById('btnOnline');
+    btnOnline.addEventListener('click', openTab('onlineTab'), false);
+    btnBlackmode = document.getElementById('btnBlackmode');
+    btnBlackmode.addEventListener('click', openTab('blackmodeTab'), false);
+    btnOutdated = document.getElementById('btnOutdated');
+    btnOutdated.addEventListener('click', openTab('outdatedTab'), false);
 }

@@ -26,17 +26,19 @@ import { system } from './api.js';
 /*
     Opens a certain tab in the overview menu.
 */
-export function openTab (event, id) {
-    for (const tab of document.getElementsByClassName('tab'))
-        tab.style.display = 'none';
+export function openTab (id) {
+    return function (event) {
+        for (const tab of document.getElementsByClassName('tab'))
+            tab.style.display = 'none';
 
-    const highlightColor = 'w3-grey';
+        const highlightColor = 'w3-grey';
 
-    for (const tabButton of document.getElementsByClassName('tabButton'))
-        tabButton.classList.remove(highlightColor);
+        for (const tabButton of document.getElementsByClassName('tabButton'))
+            tabButton.classList.remove(highlightColor);
 
-    document.getElementById(id).style.display = 'block';
-    event.currentTarget.classList.add(highlightColor);
+        document.getElementById(id).style.display = 'block';
+        event.currentTarget.classList.add(highlightColor);
+    };
 }
 
 
