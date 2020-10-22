@@ -21,7 +21,7 @@
 'use strict';
 
 import { Loader, suppressEvent } from 'https://javascript.homeinfo.de/lib.mjs';
-import { getSystemDetails, system } from './api.mjs';
+import { checkSystem, getSystemDetails, system } from './api.mjs';
 
 
 let chart;
@@ -121,15 +121,15 @@ function render() {
 /*
     Issues a live system check.
 */
-function checkSystem (event) {
+function checkNow (event) {
     const target = event.currentTarget;
     target.disabled = true;
-    const system = system.get();
-    return checkSystem(system).then(
+    const systemId = system.get();
+    return checkSystem(systemId).then(
         function (json) {
             const state = json.online ? 'online' : 'offline';
             target.disabled = false;
-            alert('Das System #' + system + ' ist aktuell ' + state + '.');
+            alert('Das System #' + systemId + ' ist aktuell ' + state + '.');
         }
     ).finally(
         function () {
@@ -158,7 +158,7 @@ function initUI () {
     dateUntil.addEventListener('change', suppressEvent(render), false);
 
     const btnCheck = document.getElementById('btnCheck');
-    btnCheck.addEventListener('click', checkSystem, false);
+    btnCheck.addEventListener('click', checkNow, false);
 }
 
 
