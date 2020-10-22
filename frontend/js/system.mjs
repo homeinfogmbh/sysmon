@@ -124,7 +124,7 @@ function render() {
 function checkSystem (event) {
     const target = event.currentTarget;
     target.disabled = true;
-    const system = getSystem();
+    const system = system.get();
     return checkSystem(system).then(
         function (json) {
             const state = json.online ? 'online' : 'offline';
