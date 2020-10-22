@@ -24,6 +24,7 @@ APPLICATION = Application('sysmon')
 
 @APPLICATION.route('/stats', methods=['GET'], strict_slashes=False)
 @authenticated
+@authorized('sysmon')
 def list_stats():
     """Lists systems and their stats."""
 
@@ -37,6 +38,7 @@ def list_stats():
 @APPLICATION.route('/details/<int:system>', methods=['GET'],
                    strict_slashes=False)
 @authenticated
+@authorized('sysmon')
 def system_details(system):
     """Lists uptime details of a system."""
 
@@ -64,6 +66,7 @@ def system_details(system):
 @APPLICATION.route('/check/<int:system>', methods=['GET'],
                    strict_slashes=False)
 @authenticated
+@authorized('sysmon')
 def check_system(system):
     """Performs a system check."""
 
