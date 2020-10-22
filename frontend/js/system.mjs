@@ -20,7 +20,7 @@
 */
 'use strict';
 
-import { Loader } from 'https://javascript.homeinfo.de/lib.mjs';
+import { Loader, suppressEvent } from 'https://javascript.homeinfo.de/lib.mjs';
 import { getSystemDetails, system } from './api.mjs';
 
 
@@ -148,10 +148,15 @@ function initUI () {
     const today = new Date();
     const defaultTimespan = 30 * 24 * 3600 * 1000;  // 30 days.
     const startDate = new Date(today - defaultTimespan);
+
     const dateFrom = document.getElementById('from');
     dateFrom.value = startDate.toISOString().split('T')[0];
+    btnCheck.addEventListener('change', suppressEvent(render), false);
+
     const dateUntil = document.getElementById('until');
     dateUntil.value = today.toISOString().split('T')[0];
+    btnCheck.addEventListener('change', suppressEvent(render), false);
+
     const btnCheck = document.getElementById('btnCheck');
     btnCheck.addEventListener('click', checkSystem, false);
 }
