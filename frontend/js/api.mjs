@@ -20,10 +20,10 @@
 */
 'use strict';
 
-import { Cache, JSONStorage } from 'https://javascript.homeinfo.de/caching.js';
-import { json } from 'https://javascript.homeinfo.de/requests.js';
-import * as session from 'https://javascript.homeinfo.de/his/session.js';
-import { systemCheckToDOM } from './dom.js';
+import { Cache, JSONStorage } from 'https://javascript.homeinfo.de/caching.mjs';
+import { json } from 'https://javascript.homeinfo.de/requests.mjs';
+import * as session from 'https://javascript.homeinfo.de/his/session.mjs';
+import { systemCheckToDOM } from './dom.mjs';
 
 
 const BASE_URL = 'https://backend.homeinfo.de/sysmon';

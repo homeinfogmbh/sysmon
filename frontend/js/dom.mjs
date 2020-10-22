@@ -20,9 +20,9 @@
 */
 'use strict';
 
-import { suppressEvent } from 'https://javascript.homeinfo.de/lib.js';
-import { addressToString } from 'https://javascript.homeinfo.de/mdb.js';
-import { showSystemDetails } from './navigation.js';
+import { suppressEvent } from 'https://javascript.homeinfo.de/lib.mjs';
+import { addressToString } from 'https://javascript.homeinfo.de/mdb.mjs';
+import { showSystemDetails } from './navigation.mjs';
 
 
 /*

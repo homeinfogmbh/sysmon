@@ -20,10 +20,10 @@
 */
 'use strict';
 
-import { Loader, suppressEvent } from 'https://javascript.homeinfo.de/lib.js';
-import * as api from './api.js';
-import { blackmode, filtered, offline, online, outdated } from './filter.js';
-import { openTab } from './navigation.js';
+import { Loader, suppressEvent } from 'https://javascript.homeinfo.de/lib.mjs';
+import * as api from './api.mjs';
+import { blackmode, filtered, offline, online, outdated } from './filter.mjs';
+import { openTab } from './navigation.mjs';
 
 
 /*

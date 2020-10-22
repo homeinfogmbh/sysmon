@@ -20,8 +20,8 @@
 */
 'use strict';
 
-import { Loader } from 'https://javascript.homeinfo.de/lib.js';
-import { getSystemDetails, system } from './api.js';
+import { Loader } from 'https://javascript.homeinfo.de/lib.mjs';
+import { getSystemDetails, system } from './api.mjs';
 
 
 let chart;

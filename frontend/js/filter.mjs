@@ -20,8 +20,8 @@
 */
 'use strict';
 
-import { filterSystems } from 'https://javascript.homeinfo.de/hwdb.js';
-import { addressToString } from 'https://javascript.homeinfo.de/mdb.js';
+import { filterSystems } from 'https://javascript.homeinfo.de/hwdb.mjs';
+import { addressToString } from 'https://javascript.homeinfo.de/mdb.mjs';
 
 
 /*

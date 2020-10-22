@@ -1,5 +1,5 @@
 /*
-    navigation.js - Systems monitoring navigation.
+    login.js - Systems monitoring login handling.
 
     (C) 2019 HOMEINFO - Digitale Informationssysteme GmbH
 
@@ -20,32 +20,24 @@
 */
 'use strict';
 
-import { system } from './api.js';
+import { suppressEvent } from 'https://javascript.homeinfo.de/lib.mjs';
+import * as api from './api.mjs';
 
 
 /*
-    Opens a certain tab in the overview menu.
+    Performs the initial login.
 */
-export function openTab (id) {
-    return function (event) {
-        for (const tab of document.getElementsByClassName('tab'))
-            tab.style.display = 'none';
-
-        const highlightColor = 'w3-grey';
-
-        for (const tabButton of document.getElementsByClassName('tabButton'))
-            tabButton.classList.remove(highlightColor);
-
-        document.getElementById(id).style.display = 'block';
-        event.currentTarget.classList.add(highlightColor);
-    };
+function login () {
+    const account = document.getElementById('account').value;
+    const passwd = document.getElementById('passwd').value;
+    return api.login(account, passwd);
 }
 
 
 /*
-    Show system details page.
+    Initialize index.html.
 */
-export function showSystemDetails (systemId) {
-    system.set(systemId);
-    window.open('system.html', '_blank');
+export function init () {
+    const loginButton = document.getElementById('login');
+    loginButton.addEventListener('click', suppressEvent(login), false);
 }
