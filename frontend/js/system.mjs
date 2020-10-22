@@ -93,8 +93,6 @@ function renderDiagram (records) {
         data.push(item);
     }
 
-    console.log('Rendering chart.');
-
     if (chart == null) {
         const config = getConfig(data);
         const ctx = document.getElementById('uptime').getContext('2d');
