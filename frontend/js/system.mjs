@@ -151,11 +151,11 @@ function initUI () {
 
     const dateFrom = document.getElementById('from');
     dateFrom.value = startDate.toISOString().split('T')[0];
-    btnCheck.addEventListener('change', suppressEvent(render), false);
+    dateFrom.addEventListener('change', suppressEvent(render), false);
 
     const dateUntil = document.getElementById('until');
     dateUntil.value = today.toISOString().split('T')[0];
-    btnCheck.addEventListener('change', suppressEvent(render), false);
+    dateUntil.addEventListener('change', suppressEvent(render), false);
 
     const btnCheck = document.getElementById('btnCheck');
     btnCheck.addEventListener('click', checkSystem, false);
