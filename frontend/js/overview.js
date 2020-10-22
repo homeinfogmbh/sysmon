@@ -67,16 +67,22 @@ function load (force = false) {
 */
 export function init () {
     load();
+
     const btnFilter = document.getElementById('filter');
     btnFilter.addEventListener('click', suppressEvent(load), false);
+
     const btnReload = document.getElementById('reload');
     btnReload.addEventListener('click', suppressEvent(load, true), false);
-    btnOffline = document.getElementById('btnOffline');
+
+    const btnOffline = document.getElementById('btnOffline');
     btnOffline.addEventListener('click', openTab('offlineTab'), false);
-    btnOnline = document.getElementById('btnOnline');
+
+    const btnOnline = document.getElementById('btnOnline');
     btnOnline.addEventListener('click', openTab('onlineTab'), false);
-    btnBlackmode = document.getElementById('btnBlackmode');
+
+    const btnBlackmode = document.getElementById('btnBlackmode');
     btnBlackmode.addEventListener('click', openTab('blackmodeTab'), false);
-    btnOutdated = document.getElementById('btnOutdated');
+
+    const btnOutdated = document.getElementById('btnOutdated');
     btnOutdated.addEventListener('click', openTab('outdatedTab'), false);
 }
