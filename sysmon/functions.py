@@ -7,7 +7,7 @@ from flask import request
 from functoolsplus import coerce
 from his import ACCOUNT, CUSTOMER
 from hwdb import Deployment, System
-from termacls import get_administerable_systems
+from termacls import get_system_admin_condition
 from wsgilib import Error
 
 from sysmon.exceptions import NotChecked
@@ -15,8 +15,8 @@ from sysmon.orm import CHECKS, OnlineCheck
 
 
 __all__ = [
-    'get_system',
     'get_systems',
+    'get_system',
     'get_customers',
     'get_types',
     'get_stats',
@@ -31,6 +31,17 @@ CUSTOMER_INTERVAL = timedelta(hours=48)
 CUSTOMER_MAX_OFFLINE = 0.2
 
 
+def get_systems():
+    """Yields systems that are deployed."""
+
+    condition = get_system_admin_condition(ACCOUNT)
+
+    if 'all' not in request.args:
+        condition &= System.monitoring_cond()
+
+    return System.depjoin().where(condition)
+
+
 def get_system(system):
     """Returns a system by its ID."""
 
@@ -39,15 +50,6 @@ def get_system(system):
 
     systems = get_systems()
     return systems.select().where(System.id == system).get()
-
-
-def get_systems():
-    """Yields systems that are deployed."""
-
-    if 'all' in request.args:
-        return get_administerable_systems(ACCOUNT)
-
-    return get_administerable_systems(ACCOUNT).where(System.monitoring_cond())
 
 
 @coerce(set)
