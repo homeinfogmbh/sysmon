@@ -28,11 +28,11 @@ import { showSystemDetails } from './navigation.mjs';
 /*
     Generates a terminal DOM entry.
 */
-export function systemCheckToDOM (systemCheck, highlightOffline = false) {
-    if (systemCheck.checks == null)
+export function systemCheckToDOM (system, highlightOffline = false) {
+    if (system.checks == null)
         return null;
 
-    const deployment = systemCheck.deployment;
+    const deployment = system.deployment;
     let address = 'Keine Adresse';
     let customer = 'Kein Kunde';
 
@@ -42,10 +42,10 @@ export function systemCheckToDOM (systemCheck, highlightOffline = false) {
     }
 
     const tableRow = document.createElement('tr');
-    tableRow.addEventListener('click', suppressEvent(showSystemDetails, systemCheck.id), false);
+    tableRow.addEventListener('click', suppressEvent(showSystemDetails, system.id), false);
     tableRow.style.cursor = 'pointer';
     const columnSystem = document.createElement('td');
-    columnSystem.textContent = '' + systemCheck.id;
+    columnSystem.textContent = '' + system.id;
     tableRow.appendChild(columnSystem);
     const columnAddress = document.createElement('td');
     columnAddress.textContent = address;
@@ -54,7 +54,7 @@ export function systemCheckToDOM (systemCheck, highlightOffline = false) {
     columnCustomer.textContent = customer;
     tableRow.appendChild(columnCustomer);
     const columnLastSync = document.createElement('td');
-    columnLastSync.textContent = systemCheck.lastSync || 'N/A';
+    columnLastSync.textContent = system.lastSync || 'N/A';
     tableRow.appendChild(columnLastSync);
 
     if (! system.checks.OnlineCheck.successful)
