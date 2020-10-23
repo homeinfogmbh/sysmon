@@ -98,14 +98,14 @@ export function checkSystem (system) {
 /*
     Lists the respective systems.
 */
-export function render (systems, container, counter) {
+export function render (systems, container, counter, highlightOffline = false) {
     container.innerHTML = '';
     counter.innerHTML = '';
     let count = 0;
 
     for (const system of systems) {
         count += 1;
-        let row = systemCheckToDOM(system);
+        let row = systemCheckToDOM(system, highlightOffline);
 
         if (row != null)
             container.appendChild(row);

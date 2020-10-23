@@ -28,7 +28,7 @@ import { showSystemDetails } from './navigation.mjs';
 /*
     Generates a terminal DOM entry.
 */
-export function systemCheckToDOM (systemCheck) {
+export function systemCheckToDOM (systemCheck, highlightOffline = false) {
     if (systemCheck.checks == null)
         return null;
 
@@ -56,5 +56,9 @@ export function systemCheckToDOM (systemCheck) {
     const columnLastSync = document.createElement('td');
     columnLastSync.textContent = systemCheck.lastSync || 'N/A';
     tableRow.appendChild(columnLastSync);
+
+    if (! system.checks.OnlineCheck.successful)
+        tableRow.classList.add('w3-red');
+
     return tableRow;
 }

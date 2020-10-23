@@ -45,12 +45,12 @@ function render (systems) {
     const blackmodeSystems = blackmode(systems);
     const blackmodeContainer = document.getElementById('blackmode');
     const blackmodeCounter = document.getElementById('blackmodeCount');
-    api.render(blackmodeSystems, blackmodeContainer, blackmodeCounter);
+    api.render(blackmodeSystems, blackmodeContainer, blackmodeCounter, true);
 
     const outdatedSystems = outdated(systems);
     const outdatedContainer = document.getElementById('outdated');
     const outdatedCounter = document.getElementById('outdatedCount');
-    api.render(outdatedSystems, outdatedContainer, outdatedCounter);
+    api.render(outdatedSystems, outdatedContainer, outdatedCounter, true);
 }
 
 
