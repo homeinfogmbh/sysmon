@@ -21,7 +21,7 @@
 'use strict';
 
 import { Cache, JSONStorage } from 'https://javascript.homeinfo.de/caching.mjs';
-import { request } from 'https://javascript.homeinfo.de/requests.mjs';
+import { request } from 'https://javascript.homeinfo.de/his/his.mjs';
 import * as session from 'https://javascript.homeinfo.de/his/session.mjs';
 import { systemCheckToDOM } from './dom.mjs';
 
@@ -77,7 +77,7 @@ export function getStats () {
     Retrieves system details from the API.
 */
 export function getSystemDetails (system, headers = {}) {
-    return request.get(BASE_URL + '/details/' + system, headers).then(
+    return request.get(BASE_URL + '/details/' + system, null, headers).then(
         response => response.json,
         checkSession('Die Systemdetails konnten nicht abgefragt werden.')
     );
