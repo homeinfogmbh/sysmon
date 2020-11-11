@@ -7,7 +7,7 @@ from flask import request
 from his import authenticated, authorized, Application
 from hwdb import System
 from timelib import strpdatetime
-from wsgilib import JSON
+from wsgilib import Binary, JSON
 
 from sysmon.functions import check_customer_systems
 from sysmon.functions import get_system
@@ -77,6 +77,26 @@ def check_system(system):
 
     online_check = OnlineCheck.run(system)
     return JSON(online_check.to_json())
+
+
+@APPLICATION.route('/screenshot/<int:system>', methods=['GET'],
+                   strict_slashes=False)
+@authenticated
+@authorized('sysmon')
+def get_screenshot(system):
+    """Returns a screenshot of the system."""
+
+    try:
+        system = get_system(system)
+    except System.DoesNotExist:
+        return ('No such system.', 404)
+
+    response = system.screenshot()
+
+    if response.status_code != 200:
+        return ('Could not take screenshot.', 500)
+
+    return Binary(response.content)
 
 
 @APPLICATION.route('/enduser', methods=['GET'], strict_slashes=False)
