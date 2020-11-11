@@ -1,7 +1,7 @@
 """Administrative systems monitoring."""
 
 from datetime import timedelta
-from traceback import print_exc
+from traceback import format_exc
 
 from flask import request
 
@@ -95,7 +95,7 @@ def get_screenshot(system):
     try:
         response = system.screenshot()
     except SystemOffline:
-        return (print_exc(), 503)
+        return (format_exc(), 503)
 
     if response.status_code != 200:
         return ('Could not take screenshot.', 500)
