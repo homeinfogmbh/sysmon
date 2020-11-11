@@ -5,7 +5,7 @@ from datetime import timedelta
 from flask import request
 
 from his import authenticated, authorized, Application
-from hwdb import System
+from hwdb import SystemOffline, System
 from timelib import strpdatetime
 from wsgilib import Binary, JSON
 
@@ -91,7 +91,10 @@ def get_screenshot(system):
     except System.DoesNotExist:
         return ('No such system.', 404)
 
-    response = system.screenshot()
+    try:
+        response = system.screenshot()
+    except SystemOffline:
+        return ('System is offline.', 503)
 
     if response.status_code != 200:
         return ('Could not take screenshot.', 500)
