@@ -44,13 +44,13 @@ def get_systems() -> ModelSelect:
 
     select = System.select(System, Deployment, Address, Customer, Company)
     select = select.join_from(
-        System, Deployment, on=System.deployment == Deployment)
+        System, Deployment, on=System.deployment == Deployment.id)
     select = select.join_from(
         Deployment, Address, on=Deployment.address == Address.id)
     select = select.join_from(
         Deployment, Customer, on=Deployment.customer == Customer.id)
     select = select.join_from(
-        Customer, Company, on=Customer.id == Company.id)
+        Customer, Company, on=Customer.company == Company.id)
     return select.where(condition)
 
 
