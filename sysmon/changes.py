@@ -2,8 +2,10 @@
 
 from contextlib import suppress
 from enum import Enum
-from typing import NamedTuple
+from typing import Iterator, NamedTuple
 from xml.etree.ElementTree import Element, SubElement
+
+from peewee import ModelBase
 
 from hwdb import System
 
@@ -29,7 +31,7 @@ class CheckState(NamedTuple):
     check: SystemCheck
     state: State
 
-    def to_xml(self):
+    def to_xml(self) -> Element:
         """Returns an XML element."""
         row = Element('tr')
         header = SubElement(row, 'th')
@@ -46,7 +48,7 @@ class CheckState(NamedTuple):
         return row
 
 
-def check_state_change(system, check):
+def check_state_change(system: System, check: ModelBase) -> CheckState:
     """Checks the state change for the respective system and check."""
 
     select = check.select().where(check.system == system)
@@ -55,7 +57,7 @@ def check_state_change(system, check):
     try:
         last, *previous = select
     except ValueError:
-        raise NotChecked(system, check)
+        raise NotChecked(system, check) from None
 
     if previous:
         previous, = previous
@@ -74,7 +76,7 @@ def check_state_change(system, check):
     return CheckState(system, last, State.FAILED)
 
 
-def state_changes():
+def state_changes() -> Iterator[CheckState]:
     """Yields state changes."""
 
     for system in System.monitored():
