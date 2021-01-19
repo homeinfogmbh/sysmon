@@ -1,8 +1,9 @@
 """System state notification."""
 
+from typing import Iterable
 from xml.etree.ElementTree import Element, SubElement
 
-from sysmon.changes import State, state_changes
+from sysmon.changes import CheckState, State, state_changes
 from sysmon.config import LOGGER
 from sysmon.mail import email
 
@@ -10,7 +11,7 @@ from sysmon.mail import email
 __all__ = ['notify']
 
 
-def mk_html_table(check_states):
+def mk_html_table(check_states: Iterable[CheckState]) -> Element:
     """Returns a HTML table."""
 
     table = Element('table', attrib={'border': '1'})
@@ -22,7 +23,8 @@ def mk_html_table(check_states):
     return table
 
 
-def mk_html_msg(recovered, failed):
+def mk_html_msg(recovered: Iterable[CheckState],
+                failed: Iterable[CheckState]) -> Element:
     """Returns a HTML message."""
 
     html = Element('html')
@@ -50,7 +52,7 @@ def mk_html_msg(recovered, failed):
     return html
 
 
-def notify():
+def notify() -> None:
     """Notifies about state changes."""
 
     recovered = []
