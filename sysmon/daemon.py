@@ -11,7 +11,7 @@ from sysmon.orm import CHECKS
 __all__ = ['spawn']
 
 
-def run_checks():
+def run_checks() -> None:
     """Monitors deployed systems."""
 
     for system in System.monitored():
@@ -20,7 +20,7 @@ def run_checks():
             check.run(system)
 
 
-def spawn():
+def spawn() -> None:
     """Runs the daemon."""
 
     basicConfig(level=INFO, format=LOG_FORMAT)
