@@ -106,8 +106,9 @@ export function render (systems, container, counter, highlightOffline = false) {
     container.innerHTML = '';
     counter.innerHTML = '';
     let count = 0;
+    let system;
 
-    for (const [count, system] of enumerate(systems)) {
+    for ([count, system] of enumerate(systems)) {
         let row = systemCheckToDOM(system, highlightOffline);
 
         if (row != null)
