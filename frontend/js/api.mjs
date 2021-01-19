@@ -105,6 +105,7 @@ export function checkSystem (system) {
 export function render (systems, container, counter, highlightOffline = false) {
     container.innerHTML = '';
     counter.innerHTML = '';
+    let count = 0;
 
     for (const [count, system] of enumerate(systems)) {
         let row = systemCheckToDOM(system, highlightOffline);
