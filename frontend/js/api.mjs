@@ -22,6 +22,7 @@
 
 import { Cache, JSONStorage } from 'https://javascript.homeinfo.de/caching.mjs';
 import { request } from 'https://javascript.homeinfo.de/his/his.mjs';
+import { enumerate } from 'https://javascript.homeinfo.de/lib.mjs';
 import * as session from 'https://javascript.homeinfo.de/his/session.mjs';
 import { systemCheckToDOM } from './dom.mjs';
 
@@ -101,15 +102,13 @@ export function checkSystem (system) {
 export function render (systems, container, counter, highlightOffline = false) {
     container.innerHTML = '';
     counter.innerHTML = '';
-    let count = 0;
 
-    for (const system of systems) {
-        count += 1;
+    for (const [count, system] of enumerate(systems)) {
         let row = systemCheckToDOM(system, highlightOffline);
 
         if (row != null)
             container.appendChild(row);
     }
 
-    counter.innerHTML = '(' + count + ')';
+    counter.innerHTML = '(' + (count || 0) + ')';
 }
