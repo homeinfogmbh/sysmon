@@ -1,6 +1,7 @@
 """Emailing to administrators."""
 
-from xml.etree.ElementTree import tostring
+from typing import Iterator
+from xml.etree.ElementTree import Element, tostring
 
 from emaillib import EMail, Mailer
 from functoolsplus import coerce
@@ -11,15 +12,16 @@ from sysmon.config import CONFIG
 __all__ = ['email']
 
 
-def admins():
+def admins() -> Iterator[str]:
     """Yields admins's emails."""
 
-    emails_ = CONFIG['mail']['admins'].split(',')
-    return filter(None, map(lambda email: email.strip(), emails_))
+    return filter(None, map(
+        str.strip, CONFIG.get('mail', 'admins').split(','))
+    )
 
 
 @coerce(tuple)
-def emails(html):
+def emails(html: Element) -> Iterator[EMail]:
     """Send emails to admins."""
 
     subject = CONFIG['mail']['subject']
@@ -29,7 +31,7 @@ def emails(html):
         yield EMail(subject, CONFIG['mail']['email'], admin, html=html)
 
 
-def email(html):
+def email(html: Element) -> None:
     """Sends emails to admins."""
 
     mailer = Mailer(
