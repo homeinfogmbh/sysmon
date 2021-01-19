@@ -1,12 +1,14 @@
 """Common functions."""
 
 from datetime import datetime, timedelta
+from typing import Iterable, Iterator, Optional, Union
 
 from flask import request
+from peewee import ModelSelect
 
 from functoolsplus import coerce
 from his import ACCOUNT, CUSTOMER
-from hwdb import Deployment, System
+from hwdb import Deployment, DeploymentType, System
 from mdb import Address, Company, Customer
 from termacls import get_system_admin_condition
 from wsgilib import Error
@@ -32,7 +34,7 @@ CUSTOMER_INTERVAL = timedelta(hours=48)
 CUSTOMER_MAX_OFFLINE = 0.2
 
 
-def get_systems():
+def get_systems() -> ModelSelect:
     """Yields systems that are deployed."""
 
     condition = get_system_admin_condition(ACCOUNT)
@@ -49,7 +51,7 @@ def get_systems():
     return select.where(condition)
 
 
-def get_system(system):
+def get_system(system: Union[System, int]) -> System:
     """Returns a system by its ID."""
 
     if ACCOUNT.root:
@@ -60,7 +62,7 @@ def get_system(system):
 
 
 @coerce(set)
-def get_customers():
+def get_customers() -> Iterator[Customer]:
     """Yields all allowed customers."""
 
     for system in get_systems():
@@ -69,7 +71,7 @@ def get_customers():
 
 
 @coerce(set)
-def get_types():
+def get_types() -> Iterator[DeploymentType]:
     """Yields all allowed types."""
 
     for system in get_systems():
@@ -77,7 +79,9 @@ def get_types():
             yield system.deployment.type
 
 
-def get_stats(system, *, begin=None, end=None):
+def get_stats(system: Union[System, int], *,
+              begin: Optional[datetime] = None,
+              end: Optional[datetime] = None) -> dict:
     """Returns the checks for the respective system."""
 
     json = {}
@@ -105,7 +109,9 @@ def get_stats(system, *, begin=None, end=None):
 
 
 @coerce(list)
-def get_systems_checks(systems, *, begin=None, end=None):
+def get_systems_checks(systems: Iterable[System], *,
+                       begin: Optional[datetime] = None,
+                       end: Optional[datetime] = None) -> Iterator[dict]:
     """Yields JSON objects with system information and checks data."""
 
     for system in systems:
@@ -114,13 +120,13 @@ def get_systems_checks(systems, *, begin=None, end=None):
         yield json
 
 
-def get_customer_systems():
+def get_customer_systems() -> ModelSelect:
     """Reuturns monitored systems of the current customer."""
 
     return System.monitored().where(Deployment.customer == CUSTOMER.id)
 
 
-def check_customer_system(system):
+def check_customer_system(system: Union[System, int]) -> bool:
     """Returns the customer online check for the respective system."""
 
     end = datetime.now()
@@ -136,7 +142,7 @@ def check_customer_system(system):
     raise NotChecked(system, OnlineCheck)
 
 
-def check_customer_systems():
+def check_customer_systems() -> dict:
     """Checks all systems of the respective customer."""
 
     states = {}
