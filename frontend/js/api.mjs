@@ -28,6 +28,7 @@ import { systemCheckToDOM } from './dom.mjs';
 
 
 const BASE_URL = 'https://backend.homeinfo.de/sysmon';
+const SESSION_DURATION = 90;
 const UNHANDLED_ERROR = 'Unbehandelter Fehler. Bitte kontaktieren Sie uns.';
 export const system = new JSONStorage('homeinfo.sysmon.system');
 export const systems = new Cache('homeinfo.sysmon.systems', getStats);
@@ -52,7 +53,7 @@ export function checkSession (message) {
     Performs a login.
 */
 export function login (account, passwd) {
-    return session.login(account, passwd).then(
+    return session.login(account, passwd, null, {'session-duration': SESSION_DURATION}).then(
         function () {
             window.location = 'overview.html';
         },
@@ -67,7 +68,7 @@ export function login (account, passwd) {
     Retrieves systems from the API.
 */
 export function getStats () {
-    return request.get(BASE_URL + '/stats').then(
+    return request.get(BASE_URL + '/stats', null, {'session-duration': SESSION_DURATION}).then(
         response => response.json,
         checkSession('Die Liste der Systeme konnte nicht abgefragt werden.')
     );
@@ -78,6 +79,7 @@ export function getStats () {
     Retrieves system details from the API.
 */
 export function getSystemDetails (system, headers = {}) {
+    headers['session-duration'] = SESSION_DURATION;
     return request.get(BASE_URL + '/details/' + system, null, headers).then(
         response => response.json,
         checkSession('Die Systemdetails konnten nicht abgefragt werden.')
@@ -89,7 +91,7 @@ export function getSystemDetails (system, headers = {}) {
     Issues a system check.
 */
 export function checkSystem (system) {
-    return request.get(BASE_URL + '/check/' + system).then(
+    return request.get(BASE_URL + '/check/' + system, null, {'session-duration': SESSION_DURATION}).then(
         response => response.json,
         checkSession('Ein Systemcheck konnte nicht durchgeführt werden.')
     );
