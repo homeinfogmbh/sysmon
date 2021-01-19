@@ -26,7 +26,7 @@ APPLICATION = Application('sysmon')
 @APPLICATION.route('/stats', methods=['GET'], strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def list_stats():
+def list_stats() -> JSON:
     """Lists systems and their stats."""
 
     systems = get_systems()
@@ -40,7 +40,7 @@ def list_stats():
                    strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def system_details(system):
+def system_details(system: int) -> JSON:
     """Lists uptime details of a system."""
 
     try:
@@ -68,7 +68,7 @@ def system_details(system):
                    strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def check_system(system):
+def check_system(system: int) -> JSON:
     """Performs a system check."""
 
     try:
@@ -84,7 +84,7 @@ def check_system(system):
                    strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def get_screenshot(system):
+def get_screenshot(system: int) -> Binary:
     """Returns a screenshot of the system."""
 
     try:
@@ -106,7 +106,7 @@ def get_screenshot(system):
 @APPLICATION.route('/enduser', methods=['GET'], strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def endsuser_states():
+def endsuser_states() -> JSON:
     """Checks the system states for end-users."""
 
     return JSON(check_customer_systems())
