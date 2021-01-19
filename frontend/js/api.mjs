@@ -114,5 +114,5 @@ export function render (systems, container, counter, highlightOffline = false) {
             container.appendChild(row);
     }
 
-    counter.innerHTML = '(' + (count || 0) + ')';
+    counter.innerHTML = '(' + count + ')';
 }
