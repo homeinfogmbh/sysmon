@@ -1,8 +1,11 @@
 """Records cleanup."""
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from datetime import datetime, timedelta
 from logging import INFO, basicConfig, getLogger
+from typing import Iterable, Iterator
+
+from peewee import ModelBase
 
 from sysmon.config import LOG_FORMAT
 from sysmon.orm import CHECKS
@@ -15,7 +18,7 @@ LOGGER = getLogger('sysmon-cleanup')
 TABLES = {table.__name__: table for table in CHECKS}
 
 
-def get_tables(names):
+def get_tables(names: Iterable[str]) -> Iterator[ModelBase]:
     """Returns the respective type by its name."""
 
     for name in names:
@@ -25,7 +28,7 @@ def get_tables(names):
             LOGGER.error('No such table: %s', name)
 
 
-def get_args():
+def get_args() -> Namespace:
     """Parses the CLI arguments."""
 
     parser = ArgumentParser(description='cleans old records')
@@ -36,7 +39,7 @@ def get_args():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     """Runs the program."""
 
     args = get_args()
