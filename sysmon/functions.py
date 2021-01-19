@@ -7,6 +7,7 @@ from flask import request
 from functoolsplus import coerce
 from his import ACCOUNT, CUSTOMER
 from hwdb import Deployment, System
+from mdb import Address, Company, Customer
 from termacls import get_system_admin_condition
 from wsgilib import Error
 
@@ -39,7 +40,13 @@ def get_systems():
     if 'all' not in request.args:
         condition &= System.monitoring_cond()
 
-    return System.depjoin().where(condition)
+    select = System.select(System, Deployment, Address, Customer, Company)
+    select = select.join(Deployment, on=System.deployment == Deployment)
+    select = select.join(Address, on=Deployment.address == Address.id)
+    select = select.join_from(
+        Deployment, Customer, on=Deployment.customer == Customer.id)
+    select = select.join(Company, on=Customer.id == Company.id)
+    return select.where(condition)
 
 
 def get_system(system):
