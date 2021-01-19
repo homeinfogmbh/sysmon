@@ -1,5 +1,6 @@
 """ORM models."""
 
+from __future__ import annotations
 from datetime import datetime
 
 from requests import Timeout
@@ -11,6 +12,7 @@ from hwdb import SystemOffline, System
 from peeweeplus import JSONModel, MySQLDatabase
 
 from sysmon.config import CONFIG
+from sysmon.types import ApplicationState
 
 
 __all__ = [
@@ -28,7 +30,7 @@ __all__ = [
 DATABASE = MySQLDatabase.from_config(CONFIG['db'])
 
 
-def create_tables(*args, **kwargs):
+def create_tables(*args, **kwargs) -> None:
     """Creates the respective tables."""
 
     for model in MODELS:
@@ -51,7 +53,7 @@ class SystemCheck(SysmonModel):
         System, column_name='system', on_delete='CASCADE', on_update='CASCADE')
 
     @classmethod
-    def run(cls, system):
+    def run(cls, system: System):
         """Runs the checks on the respective systems."""
         raise NotImplementedError()
 
@@ -65,7 +67,7 @@ class SystemCheck(SysmonModel):
         """Returns the state message."""
         raise NotImplementedError()
 
-    def to_json(self, **kwargs):
+    def to_json(self, **kwargs) -> dict:
         """Returns a JSON-ish dict."""
         json = super().to_json(**kwargs)
         json['successful'] = self.successful
@@ -81,19 +83,19 @@ class OnlineCheck(SystemCheck):
     online = BooleanField(default=False)
 
     @classmethod
-    def run(cls, system):
+    def run(cls, system: System) -> OnlineCheck:
         """Runs the checks on the respective systems."""
         record = cls(system=system, online=system.online)
         record.save()
         return record
 
     @property
-    def successful(self):
+    def successful(self) -> bool:
         """Checks whether the check was successful."""
         return self.online
 
     @property
-    def message(self):
+    def message(self) -> str:
         """Returns the state message."""
         return 'is online' if self.online else 'is offline'
 
@@ -108,22 +110,22 @@ class ApplicationCheck(SystemCheck):
     running = BooleanField(null=True)
 
     @classmethod
-    def _get_states(cls, system):
+    def _get_states(cls, system: System) -> ApplicationState:
         """Gets the application states from the respective system."""
         try:
             response = system.exec('application', state=None)
         except (Timeout, SystemOffline):
-            return (None, None)
+            return ApplicationState(None, None)
 
         try:
             json = response.json()
         except JSONDecodeError:
-            return (None, None)
+            return ApplicationState(None, None)
 
-        return (json.get('enabled'), json.get('running'))
+        return ApplicationState(json.get('enabled'), json.get('running'))
 
     @classmethod
-    def run(cls, system):
+    def run(cls, system: System) -> ApplicationCheck:
         """Runs the checks on the respective systems."""
         enabled, running = cls._get_states(system)
         record = cls(system=system, enabled=enabled, running=running)
@@ -131,12 +133,12 @@ class ApplicationCheck(SystemCheck):
         return record
 
     @property
-    def successful(self):
+    def successful(self) -> bool:
         """Checks whether the check was successful."""
         return self.enabled and self.running
 
     @property
-    def message(self):
+    def message(self) -> str:
         """Returns the state message."""
         if self.enabled and self.running:
             return 'Application is up and running'
