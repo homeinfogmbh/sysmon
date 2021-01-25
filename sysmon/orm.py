@@ -55,7 +55,8 @@ class SystemCheck(SysmonModel):
 
     timestamp = DateTimeField(default=datetime.now)
     system = ForeignKeyField(
-        System, column_name='system', on_delete='CASCADE', on_update='CASCADE')
+        System, column_name='system', on_delete='CASCADE', on_update='CASCADE',
+        lazy_load=False)
 
     @classmethod
     def run(cls, system: System):
