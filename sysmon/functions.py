@@ -3,15 +3,14 @@
 from datetime import datetime, timedelta
 from typing import Iterable, Iterator, Optional, Union
 
-from flask import request
 from peewee import ModelSelect
 
 from functoolsplus import coerce
 from his import ACCOUNT, CUSTOMER
 from hwdb import Deployment, DeploymentType, System
-from mdb import Address, Company, Customer
+from mdb import Customer
 from termacls import get_system_admin_condition
-from wsgilib import Error
+from wsgilib import Error, get_bool
 
 from sysmon.exceptions import NotChecked
 from sysmon.orm import CHECKS, OnlineCheck
@@ -39,29 +38,16 @@ def get_systems() -> ModelSelect:
 
     condition = get_system_admin_condition(ACCOUNT)
 
-    if 'all' not in request.args:
+    if get_bool('all'):
         condition &= System.monitoring_cond()
 
-    select = System.select(System, Deployment, Address, Customer, Company)
-    select = select.join_from(
-        System, Deployment, on=System.deployment == Deployment.id)
-    select = select.join_from(
-        Deployment, Address, on=Deployment.address == Address.id)
-    select = select.join_from(
-        Deployment, Customer, on=Deployment.customer == Customer.id)
-    select = select.join_from(
-        Customer, Company, on=Customer.company == Company.id)
-    return select.where(condition)
+    return System.select(cascade=True).where(condition)
 
 
 def get_system(system: Union[System, int]) -> System:
     """Returns a system by its ID."""
 
-    if ACCOUNT.root:
-        return System[system]
-
-    systems = get_systems()
-    return systems.select().where(System.id == system).get()
+    return get_systems().where(System.id == system).get()
 
 
 @coerce(set)
