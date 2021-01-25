@@ -57,7 +57,7 @@ export function systemCheckToDOM (system, highlightOffline = false) {
     columnLastSync.textContent = system.lastSync || 'N/A';
     tableRow.appendChild(columnLastSync);
 
-    if (highlightOffline && !system.checks.OnlineCheck.successful)
+    if (highlightOffline && system.checks.OnlineCheck && !system.checks.OnlineCheck.successful)
         tableRow.classList.add('w3-red');
 
     return tableRow;
