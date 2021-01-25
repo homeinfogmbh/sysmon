@@ -6,9 +6,14 @@ from datetime import datetime
 from requests import Timeout
 from simplejson.errors import JSONDecodeError
 
-from peewee import BooleanField, DateTimeField, ForeignKeyField
+from peewee import JOIN
+from peewee import BooleanField
+from peewee import DateTimeField
+from peewee import ForeignKeyField
+from peewee import ModelSelect
 
-from hwdb import SystemOffline, System
+from hwdb import SystemOffline, Deployment, System
+from mdb import Address, Company, Customer
 from peeweeplus import JSONModel, MySQLDatabase
 
 from sysmon.config import CONFIG
@@ -56,6 +61,27 @@ class SystemCheck(SysmonModel):
     def run(cls, system: System):
         """Runs the checks on the respective systems."""
         raise NotImplementedError()
+
+    @classmethod
+    def select(cls, *args, cascade: bool = False, **kwargs) -> ModelSelect:
+        """Selects records."""
+        if not cascade:
+            return super().select(*args, **kwargs)
+
+        dataset = Deployment.alias()
+        args = {
+            cls, System, Deployment, Customer, Company, Address, dataset,
+            *args
+        }
+        return super().select(*args).join(System).join(
+            Deployment, on=System.deployment == Deployment.id,
+            join_type=JOIN.LEFT_OUTER).join(
+            Customer, join_type=JOIN.LEFT_OUTER).join(
+            Company, join_type=JOIN.LEFT_OUTER).join_from(
+            Deployment, Address, on=Deployment.address == Address.id,
+            join_type=JOIN.LEFT_OUTER).join_from(
+            System, dataset, on=System.dataset == dataset.id,
+            join_type=JOIN.LEFT_OUTER)
 
     @property
     def successful(self):
