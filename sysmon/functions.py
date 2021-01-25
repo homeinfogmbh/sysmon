@@ -85,7 +85,7 @@ def get_stats(system: Union[System, int], *,
             selection &= model.timestamp <= end
 
         ordering = model.timestamp.desc()
-        query = model.select().where(selection).order_by(ordering)
+        query = model.select(cascade=True).where(selection).order_by(ordering)
 
         try:
             latest = query.limit(1).get()
