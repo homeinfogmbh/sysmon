@@ -145,7 +145,7 @@ export function render (systems, container, counter, highlightOffline = false) {
     container.appendChild(createLegend(highlightOffline));
 
     for ([count, system] of enumerate(systems, 1)) {
-        row = systemCheckToDOM(system, highlight);
+        row = systemCheckToDOM(system, highlightOffline);
 
         if (row != null)
             container.appendChild(row);
