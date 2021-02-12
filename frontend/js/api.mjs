@@ -120,13 +120,13 @@ export function render (systems, container, counter, highlight = false) {
         span = document.createElement('span');
         span.classList.add('w3-red');
         span.textContent = 'offline';
-        row.appendChild(span);
+        col.appendChild(span);
         text = document.createTextNode(', ');
         col.appendChild(text);
         span = document.createElement('span');
         span.classList.add('w3-yellow');
         span.textContent = 'nicht verbaut';
-        row.appendChild(span);
+        col.appendChild(span);
         text = document.createTextNode('.');
         col.appendChild(text);
         container.appendChild(row);
