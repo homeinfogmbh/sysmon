@@ -36,6 +36,40 @@ export const systems = new Cache('homeinfo.sysmon.systems', getStats);
 
 
 /*
+    Create legend.
+*/
+function createLegend (highlightOffline = false) {
+    let row, col, text, span;
+
+    row = document.createElement('div');
+    row.classList.add('w3-row');
+    col = document.createElement('div');
+    col.classList.add('w3-col');
+    col.classList.add('s12');
+    row.appendChild(col);
+    text = document.createTextNode('Legende: ');
+    col.appendChild(text);
+
+    if (highlightOffline) {
+        span = document.createElement('span');
+        span.classList.add('w3-red');
+        span.textContent = 'offline';
+        col.appendChild(span);
+        text = document.createTextNode(', ');
+        col.appendChild(text);
+    }
+
+    span = document.createElement('span');
+    span.classList.add('w3-yellow');
+    span.textContent = 'nicht verbaut';
+    col.appendChild(span);
+    text = document.createTextNode('.');
+    col.appendChild(text);
+    return row;
+}
+
+
+/*
     Function to make a request and display an error message on error.
 */
 export function checkSession (message) {
@@ -102,35 +136,13 @@ export function checkSystem (system) {
 /*
     Lists the respective systems.
 */
-export function render (systems, container, counter, highlight = false) {
+export function render (systems, container, counter, highlightOffline = false) {
     container.innerHTML = '';
     counter.innerHTML = '';
     let count = 0;
-    let row, col, text, span, system;
+    let row, system;
 
-    if (highlight) {
-        row = document.createElement('div');
-        row.classList.add('w3-row');
-        col = document.createElement('div');
-        col.classList.add('w3-col');
-        col.classList.add('s12');
-        row.appendChild(col);
-        text = document.createTextNode('Legende: ');
-        col.appendChild(text);
-        span = document.createElement('span');
-        span.classList.add('w3-red');
-        span.textContent = 'offline';
-        col.appendChild(span);
-        text = document.createTextNode(', ');
-        col.appendChild(text);
-        span = document.createElement('span');
-        span.classList.add('w3-yellow');
-        span.textContent = 'nicht verbaut';
-        col.appendChild(span);
-        text = document.createTextNode('.');
-        col.appendChild(text);
-        container.appendChild(row);
-    }
+    container.appendChild(getLegend(highlightOffline));
 
     for ([count, system] of enumerate(systems, 1)) {
         row = systemCheckToDOM(system, highlight);

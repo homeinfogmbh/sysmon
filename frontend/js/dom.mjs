@@ -28,7 +28,7 @@ import { showSystemDetails } from './navigation.mjs';
 /*
     Generates a terminal DOM entry.
 */
-export function systemCheckToDOM (system, highlight = false) {
+export function systemCheckToDOM (system, highlightOffline = false) {
     if (system.checks == null)
         return null;
 
@@ -57,11 +57,10 @@ export function systemCheckToDOM (system, highlight = false) {
     columnLastSync.textContent = system.lastSync || 'N/A';
     tableRow.appendChild(columnLastSync);
 
-    if (highlight) {
-        if (system.checks.OnlineCheck && !system.checks.OnlineCheck.successful)
-            tableRow.classList.add('w3-red');
-        else if (!system.fitted)
-            tableRow.classList.add('w3-yellow');
+    if (highlightOffline && system.checks.OnlineCheck && !system.checks.OnlineCheck.successful)
+        tableRow.classList.add('w3-red');
+    else if (!system.fitted)
+        tableRow.classList.add('w3-yellow');
     }
 
     return tableRow;
