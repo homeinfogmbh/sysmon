@@ -142,7 +142,7 @@ export function render (systems, container, counter, highlightOffline = false) {
     let count = 0;
     let row, system;
 
-    container.appendChild(getLegend(highlightOffline));
+    container.appendChild(createLegend(highlightOffline));
 
     for ([count, system] of enumerate(systems, 1)) {
         row = systemCheckToDOM(system, highlight);
