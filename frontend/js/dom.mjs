@@ -61,7 +61,6 @@ export function systemCheckToDOM (system, highlightOffline = false) {
         tableRow.classList.add('w3-red');
     else if (!system.fitted)
         tableRow.classList.add('w3-yellow');
-    }
 
     return tableRow;
 }
