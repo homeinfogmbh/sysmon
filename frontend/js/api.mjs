@@ -61,7 +61,7 @@ function createLegend (highlightOffline = false) {
 
     span = document.createElement('span');
     span.classList.add('w3-yellow');
-    span.textContent = 'nicht&nbsp;verbaut';
+    span.innerHTML = 'nicht&nbsp;verbaut';
     col.appendChild(span);
     text = document.createTextNode('.');
     col.appendChild(text);
