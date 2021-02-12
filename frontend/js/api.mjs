@@ -47,7 +47,7 @@ function createLegend (highlightOffline = false) {
     col.classList.add('w3-col');
     col.classList.add('s12');
     row.appendChild(col);
-    text = document.createTextNode('Legende: ');
+    text = document.createTextNode('Legende:&nbsp;');
     col.appendChild(text);
 
     if (highlightOffline) {
@@ -55,7 +55,7 @@ function createLegend (highlightOffline = false) {
         span.classList.add('w3-red');
         span.textContent = 'offline';
         col.appendChild(span);
-        text = document.createTextNode(', ');
+        text = document.createTextNode(',&nbsp;');
         col.appendChild(text);
     }
 
