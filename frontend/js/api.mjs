@@ -102,14 +102,14 @@ export function checkSystem (system) {
 /*
     Lists the respective systems.
 */
-export function render (systems, container, counter, highlightOffline = false) {
+export function render (systems, container, counter, highlight = false) {
     container.innerHTML = '';
     counter.innerHTML = '';
     let count = 0;
     let system;
 
     for ([count, system] of enumerate(systems, 1)) {
-        let row = systemCheckToDOM(system, highlightOffline);
+        let row = systemCheckToDOM(system, highlight);
 
         if (row != null)
             container.appendChild(row);
