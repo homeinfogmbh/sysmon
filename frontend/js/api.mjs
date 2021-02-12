@@ -111,7 +111,7 @@ export function render (systems, container, counter, highlight = false) {
     if (highlight) {
         row = document.createElement('div');
         row.classList.add('w3-row');
-        col =  = document.createElement('div');
+        col = document.createElement('div');
         col.classList.add('w3-col');
         col.classList.add('s12');
         row.appendChild(col);
