@@ -31,26 +31,10 @@ import { openTab } from './navigation.mjs';
 */
 function render (systems) {
     systems = filtered(systems);
-
-    const onlineSystems = online(systems);
-    const onlineContainer = document.getElementById('online');
-    const onlineCounter = document.getElementById('onlineCount');
-    api.render(onlineSystems, onlineContainer, onlineCounter);
-
-    const offlineSystems = offline(systems);
-    const offlineContainer = document.getElementById('offline');
-    const offlineCounter = document.getElementById('offlineCount');
-    api.render(offlineSystems, offlineContainer, offlineCounter);
-
-    const blackmodeSystems = blackmode(systems);
-    const blackmodeContainer = document.getElementById('blackmode');
-    const blackmodeCounter = document.getElementById('blackmodeCount');
-    api.render(blackmodeSystems, blackmodeContainer, blackmodeCounter, true);
-
-    const outdatedSystems = outdated(systems);
-    const outdatedContainer = document.getElementById('outdated');
-    const outdatedCounter = document.getElementById('outdatedCount');
-    api.render(outdatedSystems, outdatedContainer, outdatedCounter, true);
+    api.render(online(systems), document.getElementById('online'), document.getElementById('onlineCount'));
+    api.render(offline(systems), document.getElementById('offline'), document.getElementById('offlineCount'));
+    api.render(blackmode(systems), document.getElementById('blackmode'), document.getElementById('blackmodeCount'), true);
+    api.render(outdated(systems), document.getElementById('outdated'), document.getElementById('outdatedCount'), true);
 }
 
 

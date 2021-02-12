@@ -106,10 +106,34 @@ export function render (systems, container, counter, highlight = false) {
     container.innerHTML = '';
     counter.innerHTML = '';
     let count = 0;
-    let system;
+    let row, col, text, span, system;
+
+    if (highlight) {
+        row = document.createElement('div');
+        row.classList.add('w3-row');
+        col =  = document.createElement('div');
+        col.classList.add('w3-col');
+        col.classList.add('s12');
+        row.appendChild(col);
+        text = document.createTextNode('Legende: ');
+        col.appendChild(text);
+        span = document.createElement('span');
+        span.classList.add('w3-red');
+        span.text = 'offline';
+        row.appendChild(span);
+        text = document.createTextNode(', ');
+        col.appendChild(text);
+        span = document.createElement('span');
+        span.classList.add('w3-yellow');
+        span.text = 'nicht verbaut';
+        row.appendChild(span);
+        text = document.createTextNode('.');
+        col.appendChild(text);
+        container.appendChild(row);
+    }
 
     for ([count, system] of enumerate(systems, 1)) {
-        let row = systemCheckToDOM(system, highlight);
+        row = systemCheckToDOM(system, highlight);
 
         if (row != null)
             container.appendChild(row);
