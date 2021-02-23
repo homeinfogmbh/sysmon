@@ -1,5 +1,5 @@
 /*
-    filter.js - Systems monitoring systems filtering.
+    filter.mjs - Systems monitoring systems filtering.
 
     (C) 2019-2021 HOMEINFO - Digitale Informationssysteme GmbH
 

@@ -1,5 +1,5 @@
 /*
-    navigation.js - Systems monitoring navigation.
+    navigation.mjs - Systems monitoring navigation.
 
     (C) 2019-2021 HOMEINFO - Digitale Informationssysteme GmbH
 

@@ -1,5 +1,5 @@
 /*
-    login.js - Systems monitoring login handling.
+    login.mjs - Systems monitoring login handling.
 
     (C) 2019-2021 HOMEINFO - Digitale Informationssysteme GmbH
 

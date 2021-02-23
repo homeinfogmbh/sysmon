@@ -1,5 +1,5 @@
 /*
-    system.js - Systems monitoring details.
+    system.mjs - Systems monitoring details.
 
     (C) 2019-2021 HOMEINFO - Digitale Informationssysteme GmbH
 

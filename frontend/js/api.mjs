@@ -1,5 +1,5 @@
 /*
-    common.js - Systems monitoring common JavaScript library.
+    api.mjs - Systems monitoring API library.
 
     (C) 2019-2021 HOMEINFO - Digitale Informationssysteme GmbH
 

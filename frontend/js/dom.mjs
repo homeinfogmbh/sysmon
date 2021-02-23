@@ -1,5 +1,5 @@
 /*
-    dom.js - Systems monitoring DOM library.
+    dom.mjs - Systems monitoring DOM library.
 
     (C) 2019-2021 HOMEINFO - Digitale Informationssysteme GmbH
 

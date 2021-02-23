@@ -1,5 +1,5 @@
 /*
-    overview.js - Systems monitoring overview.
+    overview.mjs - Systems monitoring overview.
 
     (C) 2019-2021 HOMEINFO - Digitale Informationssysteme GmbH
 
