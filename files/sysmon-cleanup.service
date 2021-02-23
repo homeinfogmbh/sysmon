@@ -1,6 +1,7 @@
 [Unit]
 Description=HOMEINFO Digital Signage Systems Monitoring Records Cleanup
 After=network.target mysql.service
+OnFailure=notify-failed@%n
 
 [Service]
 User=sysmon
