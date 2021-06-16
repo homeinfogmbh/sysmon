@@ -38,7 +38,7 @@ def get_systems() -> ModelSelect:
 
     condition = get_system_admin_condition(ACCOUNT)
 
-    if get_bool('all'):
+    if not get_bool('all'):
         condition &= System.monitoring_cond()
 
     return System.select(cascade=True).where(condition)
