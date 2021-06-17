@@ -41,11 +41,9 @@ export const systems = new Cache('homeinfo.sysmon.systems', getStats);
 function createLegend (highlightOffline = false) {
     let row, col, text, span;
 
-    row = document.createElement('div');
-    row.classList.add('w3-row');
-    col = document.createElement('div');
-    col.classList.add('w3-col');
-    col.classList.add('s12');
+    row = document.createElement('tr');
+    col = document.createElement('td');
+    col.setAttribute('colspan', 4);
     row.appendChild(col);
     text = document.createTextNode('Legende: ');
     col.appendChild(text);
