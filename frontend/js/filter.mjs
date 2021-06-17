@@ -25,6 +25,13 @@ import { addressToString } from 'https://javascript.homeinfo.de/mdb.mjs';
 
 
 /*
+ * Consider systems outdated if their last sync is
+ * older than three days (in milliseconds).
+ */
+const OUTDATED = 3 * 24 * 60 * 60 * 1000;
+
+
+/*
     Filters systems.
 */
 export function filtered (systems) {
@@ -80,7 +87,6 @@ export function *blackmode (systems) {
     Yields systems out of sync.
 */
 export function *outdated (systems) {
-    const outdated = 3 * 24 * 60 * 60 * 1000;  // Three days in milliseconds.
     const now = Date.now();
 
     for (const system of systems) {
@@ -88,7 +94,7 @@ export function *outdated (systems) {
             const lastSync = new Date(system.lastSync);
             const timedelta = now - lastSync;
 
-            if (timedelta >= outdated)
+            if (timedelta > OUTDATED)
                 yield system;
         }
     }
