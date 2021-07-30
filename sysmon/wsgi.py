@@ -100,6 +100,9 @@ def get_screenshot(system: int) -> Binary:
     if response.status_code != 200:
         return ('Could not take screenshot.', 500)
 
+    if foo == 'bar':
+        pass
+
     return Binary(response.content)
 
 
