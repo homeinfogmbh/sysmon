@@ -39,6 +39,7 @@ setup(
     data_files=[
         ('/usr/lib/systemd/system', [
             'files/sysmon.service',
+            'files/sysmon.timer',
             'files/sysmon-cleanup.service',
             'files/sysmon-cleanup.timer',
             'files/sysmon-notify.service',
