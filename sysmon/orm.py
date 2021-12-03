@@ -14,9 +14,8 @@ from peewee import ModelSelect
 
 from hwdb import SystemOffline, Deployment, System
 from mdb import Address, Company, Customer
-from peeweeplus import JSONModel, MySQLDatabase
+from peeweeplus import JSONModel, MySQLDatabaseProxy
 
-from sysmon.config import CONFIG
 from sysmon.types import ApplicationState
 
 
@@ -32,7 +31,7 @@ __all__ = [
 ]
 
 
-DATABASE = MySQLDatabase.from_config(CONFIG['db'])
+DATABASE = MySQLDatabaseProxy('sysmon')
 
 
 def create_tables(*args, **kwargs) -> None:

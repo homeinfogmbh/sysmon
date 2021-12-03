@@ -4,9 +4,8 @@ from typing import Iterator
 from xml.etree.ElementTree import Element, tostring
 
 from emaillib import EMail, Mailer
-from functoolsplus import coerce
 
-from sysmon.config import CONFIG
+from sysmon.config import get_config
 
 
 __all__ = ['email']
@@ -16,25 +15,26 @@ def admins() -> Iterator[str]:
     """Yields admins's emails."""
 
     return filter(None, map(
-        str.strip, CONFIG.get('mail', 'admins').split(','))
+        str.strip, get_config().get('mail', 'admins').split(','))
     )
 
 
-@coerce(tuple)
 def emails(html: Element) -> Iterator[EMail]:
     """Send emails to admins."""
 
-    subject = CONFIG['mail']['subject']
+    subject = (config := get_config()).get('mail', 'subject')
     html = tostring(html, encoding='unicode', method='html')
 
     for admin in admins():
-        yield EMail(subject, CONFIG['mail']['email'], admin, html=html)
+        yield EMail(subject, config.get('mail', 'email'), admin, html=html)
 
 
-def email(html: Element) -> None:
+def email(html: Element) -> bool:
     """Sends emails to admins."""
 
-    mailer = Mailer(
-        CONFIG['mail']['host'], int(CONFIG['mail']['port']),
-        CONFIG['mail']['user'], CONFIG['mail']['passwd'])
-    mailer.send(emails(html))
+    return Mailer(
+        (config := get_config()).get('mail', 'host'),
+        config.getint('mail', 'port'),
+        config.get('mail', 'user'),
+        config.get('mail', 'passwd')
+    ).send(emails(html))
