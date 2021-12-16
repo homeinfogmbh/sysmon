@@ -148,7 +148,10 @@ class ApplicationCheck(SystemCheck):
         except JSONDecodeError:
             return ApplicationState(None, None)
 
-        return ApplicationState(json.get('enabled'), json.get('running'))
+        return ApplicationState(
+            bool(json.get('enabled')),
+            bool(json.get('running'))
+        )
 
     @classmethod
     def run(cls, system: System) -> ApplicationCheck:
