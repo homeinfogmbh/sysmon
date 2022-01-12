@@ -143,6 +143,9 @@ class ApplicationCheck(SystemCheck):
         except (Timeout, SystemOffline):
             return ApplicationState(None, None)
 
+        if response.status_code != 200:
+            return ApplicationState(None, None)
+
         try:
             json = response.json()
         except JSONDecodeError:
