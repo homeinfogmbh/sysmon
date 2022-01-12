@@ -1,14 +1,14 @@
 """Administrative systems monitoring."""
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 from traceback import format_exc
+from typing import Union
 
 from flask import request
 
 from his import authenticated, authorized, Application
 from hwdb import SystemOffline, System
-from timelib import strpdatetime
-from wsgilib import Binary, JSON
+from wsgilib import Binary, JSON, JSONMessage
 
 from sysmon.functions import check_customer_systems
 from sysmon.functions import get_system
@@ -30,8 +30,13 @@ def list_stats() -> JSON:
     """Lists systems and their stats."""
 
     systems = get_systems()
-    begin = strpdatetime(request.headers.get('begin'))
-    end = strpdatetime(request.headers.get('end'))
+
+    if (begin := request.headers.get('begin')) is not None:
+        begin = datetime.fromisoformat(begin)
+
+    if (end := request.headers.get('end')) is not None:
+        end = datetime.fromisoformat(begin)
+
     json = get_systems_checks(systems, begin=begin, end=end)
     return JSON(json)
 
@@ -40,17 +45,21 @@ def list_stats() -> JSON:
                    strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def system_details(system: int) -> JSON:
+def system_details(system: int) -> Union[JSON, JSONMessage]:
     """Lists uptime details of a system."""
 
     try:
         system = get_system(system)
     except System.DoesNotExist:
-        return ('No such system.', 404)
+        return JSONMessage('No such system.', status=404)
 
     select = OnlineCheck.system == system
-    start = strpdatetime(request.headers.get('from'))
-    end = strpdatetime(request.headers.get('until'))
+
+    if (start := request.headers.get('from')) is not None:
+        start = datetime.fromisoformat(start)
+
+    if (end := request.headers.get('until')) is not None:
+        end = datetime.fromisoformat(end)
 
     if start:
         select &= OnlineCheck.timestamp >= start
@@ -68,13 +77,13 @@ def system_details(system: int) -> JSON:
                    strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def check_system(system: int) -> JSON:
+def check_system(system: int) -> Union[JSON, JSONMessage]:
     """Performs a system check."""
 
     try:
         system = get_system(system)
     except System.DoesNotExist:
-        return ('No such system.', 404)
+        return JSONMessage('No such system.', status=404)
 
     online_check = OnlineCheck.run(system)
     return JSON(online_check.to_json())
@@ -84,21 +93,21 @@ def check_system(system: int) -> JSON:
                    strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def get_screenshot(system: int) -> Binary:
+def get_screenshot(system: int) -> Union[Binary, JSONMessage]:
     """Returns a screenshot of the system."""
 
     try:
         system = get_system(system)
     except System.DoesNotExist:
-        return ('No such system.', 404)
+        return JSONMessage('No such system.', status=404)
 
     try:
         response = system.screenshot()
     except SystemOffline:
-        return (format_exc(), 503)
+        return JSONMessage(format_exc(), status=503)
 
     if response.status_code != 200:
-        return ('Could not take screenshot.', 500)
+        return JSONMessage('Could not take screenshot.', status=500)
 
     return Binary(response.content)
 

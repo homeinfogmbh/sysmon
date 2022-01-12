@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from requests import Timeout
-from simplejson.errors import JSONDecodeError
+from json.decoder import JSONDecodeError
 
 from peewee import JOIN
 from peewee import BooleanField
