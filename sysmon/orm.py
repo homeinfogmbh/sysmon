@@ -135,8 +135,8 @@ class ApplicationCheck(SystemCheck):
     enabled = BooleanField(null=True)
     running = BooleanField(null=True)
 
-    @classmethod
-    def _get_states(cls, system: System) -> ApplicationState:
+    @staticmethod
+    def _get_states(system: System) -> ApplicationState:
         """Gets the application states from the respective system."""
         try:
             response = system.exec('application', state=None)
