@@ -5,18 +5,16 @@ from enum import Enum
 from typing import Iterator, NamedTuple
 from xml.etree.ElementTree import Element, SubElement
 
-from peewee import ModelBase
-
 from hwdb import System
 
 from sysmon.exceptions import NotChecked
-from sysmon.orm import CHECKS, SystemCheck
+from sysmon.orm import CheckResults
 
 
 __all__ = ['State', 'CheckState', 'check_state_change', 'state_changes']
 
 
-class State(Enum):
+class State(str, Enum):
     """State change of a system check."""
 
     RECOVERED = 'recovered'
@@ -28,7 +26,6 @@ class CheckState(NamedTuple):
     """A system's service check state."""
 
     system: System
-    check: SystemCheck
     state: State
 
     def to_xml(self) -> Element:
@@ -44,42 +41,42 @@ class CheckState(NamedTuple):
             column.text = str(self.system.deployment)
 
         column = SubElement(row, 'td')
-        column.text = self.check.message
+        column.text = self.state
         return row
 
 
-def check_state_change(system: System, check: ModelBase) -> CheckState:
+def check_state_change(system: System) -> CheckState:
     """Checks the state change for the respective system and check."""
 
-    select = check.select().where(check.system == system)
-    select = select.order_by(check.timestamp.desc()).limit(2)
+    select = CheckResults.select().where(
+        CheckResults.system == system
+    ).order_by(CheckResults.timestamp.desc()).limit(2)
 
     try:
         last, *previous = select
     except ValueError:
-        raise NotChecked(system, check) from None
+        raise NotChecked(system) from None
 
     if previous:
         previous, = previous
 
         if last.successful and not previous.successful:
-            return CheckState(system, last, State.RECOVERED)
+            return CheckState(system, State.RECOVERED)
 
         if previous.successful and not last.successful:
-            return CheckState(system, last, State.FAILED)
+            return CheckState(system, State.FAILED)
 
-        return CheckState(system, last, State.UNCHANGED)
+        return CheckState(system, State.UNCHANGED)
 
     if last.successful:
-        return CheckState(system, last, State.RECOVERED)
+        return CheckState(system, State.RECOVERED)
 
-    return CheckState(system, last, State.FAILED)
+    return CheckState(system, State.FAILED)
 
 
 def state_changes() -> Iterator[CheckState]:
     """Yields state changes."""
 
     for system in System.monitored():
-        for check in CHECKS:
-            with suppress(NotChecked):
-                yield check_state_change(system, check)
+        with suppress(NotChecked):
+            yield check_state_change(system)

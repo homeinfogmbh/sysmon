@@ -15,7 +15,9 @@ from hwdb import Deployment, System
 from mdb import Address, Company, Customer
 from peeweeplus import EnumField, JSONModel, MySQLDatabaseProxy
 
-from sysmon.enumerations import BaytrailFreezeState, SuccessFailedUnsupported
+from sysmon.enumerations import ApplicationState
+from sysmon.enumerations import BaytrailFreezeState
+from sysmon.enumerations import SuccessFailedUnsupported
 
 
 __all__ = ['DATABASE', 'SysmonModel', 'CheckResults']
@@ -76,3 +78,11 @@ class CheckResults(SysmonModel):
             System, dataset, on=System.dataset == dataset.id,
             join_type=JOIN.LEFT_OUTER
         )
+
+    @property
+    def successful(self) -> bool:
+        """Determines whether the check was considered successful."""
+        if not self.icmp_request:
+            return False
+
+        return self.ssh_login == SuccessFailedUnsupported.SUCCESS
