@@ -14,7 +14,7 @@ As a response, a list of check results is being returned.
   "description": "A representation of a person, company, organization, or place",
   "type": "array",
   "items": {
-    "type": "string"
+    "type": "https://homeinfo.de/check-results.schema.json"
   }
 }
 ```
