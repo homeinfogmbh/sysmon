@@ -1,6 +1,6 @@
 """Administrative systems monitoring."""
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from traceback import format_exc
 from typing import Union
 
@@ -13,9 +13,8 @@ from wsgilib import Binary, JSON, JSONMessage
 from sysmon.exceptions import FailureLimitExceeded
 from sysmon.functions import check_customer_systems
 from sysmon.functions import get_system
-from sysmon.functions import get_systems
-from sysmon.functions import get_systems_checks
-from sysmon.orm import OnlineCheck
+from sysmon.functions import get_check_results
+from sysmon.functions import get_check_results_of_system
 
 
 __all__ = ['APPLICATION']
@@ -30,16 +29,14 @@ APPLICATION = Application('sysmon')
 def list_stats() -> JSON:
     """Lists systems and their stats."""
 
-    systems = get_systems(ACCOUNT.id)
-
     if (begin := request.headers.get('begin')) is not None:
         begin = datetime.fromisoformat(begin)
 
     if (end := request.headers.get('end')) is not None:
         end = datetime.fromisoformat(begin)
 
-    json = get_systems_checks(systems, begin=begin, end=end)
-    return JSON(json)
+    check_results = get_check_results(ACCOUNT.id, begin=begin, end=end)
+    return JSON([check_result.to_json() for check_result in check_results])
 
 
 @APPLICATION.route(
@@ -52,29 +49,16 @@ def list_stats() -> JSON:
 def system_details(system: int) -> Union[JSON, JSONMessage]:
     """Lists uptime details of a system."""
 
-    try:
-        system = get_system(system, ACCOUNT.id)
-    except System.DoesNotExist:
-        return JSONMessage('No such system.', status=404)
+    if (begin := request.headers.get('begin')) is not None:
+        begin = datetime.fromisoformat(begin)
 
-    select = OnlineCheck.system == system
-
-    if (start := request.headers.get('from')) is not None:
-        start = datetime.fromisoformat(start)
-
-    if (end := request.headers.get('until')) is not None:
+    if (end := request.headers.get('end')) is not None:
         end = datetime.fromisoformat(end)
 
-    if start:
-        select &= OnlineCheck.timestamp >= start
-
-    if end:
-        end += timedelta(days=1)    # Compensate for rest of day.
-        select &= OnlineCheck.timestamp <= end
-
-    online_checks = OnlineCheck.select().where(select)
-    online_checks = online_checks.order_by(OnlineCheck.timestamp)
-    return JSON([online_check.to_json() for online_check in online_checks])
+    check_results = get_check_results_of_system(
+        system, ACCOUNT.id, begin=begin, end=end
+    )
+    return JSON([check_result.to_json() for check_result in check_results])
 
 
 @APPLICATION.route(
