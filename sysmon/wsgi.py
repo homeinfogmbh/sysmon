@@ -24,7 +24,7 @@ __all__ = ['APPLICATION']
 APPLICATION = Application('sysmon')
 
 
-@APPLICATION.route('/stats', methods=['GET'], strict_slashes=False)
+@APPLICATION.route('/checks', methods=['GET'], strict_slashes=False)
 @authenticated
 @authorized('sysmon')
 def list_stats() -> JSON:
@@ -38,7 +38,7 @@ def list_stats() -> JSON:
 
     check_results = get_check_results(ACCOUNT.id, begin=begin, end=end)
     return JSON([
-        check_result.to_json(cascade=3) for check_result in check_results
+        check_result.to_json() for check_result in check_results
     ])
 
 
