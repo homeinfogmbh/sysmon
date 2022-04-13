@@ -6,9 +6,11 @@ from typing import Optional, Union
 from peewee import ModelSelect
 
 from his import Account
-from hwdb import System
+from hwdb import Deployment, System
+from mdb import Customer
 from termacls import get_system_admin_condition
 
+from sysmon.exceptions import FailureLimitExceeded, NotChecked
 from sysmon.orm import CheckResults
 
 
@@ -16,7 +18,8 @@ __all__ = [
     'get_systems',
     'get_system',
     'get_check_results',
-    'get_check_results_of_system'
+    'get_check_results_of_system',
+    'check_customer_systems'
 ]
 
 
@@ -76,3 +79,46 @@ def get_check_results_of_system(
     return get_check_results(account, begin=begin, end=end).where(
         System.id == system
     )
+
+
+def get_customer_systems(customer: Union[Customer, int]) -> ModelSelect:
+    """Returns monitored systems of the current customer."""
+
+    return System.monitored().where(Deployment.customer == customer)
+
+
+def check_customer_system(system: Union[System, int]) -> bool:
+    """Returns the customer online check for the respective system."""
+
+    end = datetime.now()
+    start = end - CUSTOMER_INTERVAL
+    condition = CheckResults.system == system
+    condition &= CheckResults.timestamp >= start
+    condition &= CheckResults.timestamp <= end
+    query = CheckResults.select().where(condition)
+
+    if query:
+        return any(online_check.success for online_check in query)
+
+    raise NotChecked(system)
+
+
+def check_customer_systems(customer: Union[Customer, int]) -> dict:
+    """Checks all systems of the respective customer."""
+
+    states = {}
+    failures = 0
+    systems = 0
+
+    for systems, system in enumerate(get_customer_systems(customer), start=1):
+        try:
+            states[system.id] = state = check_customer_system(system)
+        except NotChecked:
+            states[system.id] = None
+        else:
+            failures += not state
+
+    if failures >= systems * CUSTOMER_MAX_OFFLINE:
+        raise FailureLimitExceeded()
+
+    return states

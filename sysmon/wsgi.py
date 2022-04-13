@@ -6,10 +6,11 @@ from typing import Union
 
 from flask import request
 
-from his import authenticated, authorized, Application
+from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
 from hwdb import SystemOffline, System
 from wsgilib import Binary, JSON, JSONMessage
 
+from sysmon.exceptions import FailureLimitExceeded
 from sysmon.functions import check_customer_systems
 from sysmon.functions import get_system
 from sysmon.functions import get_systems
@@ -29,7 +30,7 @@ APPLICATION = Application('sysmon')
 def list_stats() -> JSON:
     """Lists systems and their stats."""
 
-    systems = get_systems()
+    systems = get_systems(ACCOUNT.id)
 
     if (begin := request.headers.get('begin')) is not None:
         begin = datetime.fromisoformat(begin)
@@ -41,15 +42,18 @@ def list_stats() -> JSON:
     return JSON(json)
 
 
-@APPLICATION.route('/details/<int:system>', methods=['GET'],
-                   strict_slashes=False)
+@APPLICATION.route(
+    '/details/<int:system>',
+    methods=['GET'],
+    strict_slashes=False
+)
 @authenticated
 @authorized('sysmon')
 def system_details(system: int) -> Union[JSON, JSONMessage]:
     """Lists uptime details of a system."""
 
     try:
-        system = get_system(system)
+        system = get_system(syste, ACCOUNT.id)
     except System.DoesNotExist:
         return JSONMessage('No such system.', status=404)
 
@@ -73,15 +77,18 @@ def system_details(system: int) -> Union[JSON, JSONMessage]:
     return JSON([online_check.to_json() for online_check in online_checks])
 
 
-@APPLICATION.route('/check/<int:system>', methods=['GET'],
-                   strict_slashes=False)
+@APPLICATION.route(
+    '/check/<int:system>',
+    methods=['GET'],
+    strict_slashes=False
+)
 @authenticated
 @authorized('sysmon')
 def check_system(system: int) -> Union[JSON, JSONMessage]:
     """Performs a system check."""
 
     try:
-        system = get_system(system)
+        system = get_system(system, ACCOUNT.id)
     except System.DoesNotExist:
         return JSONMessage('No such system.', status=404)
 
@@ -89,15 +96,18 @@ def check_system(system: int) -> Union[JSON, JSONMessage]:
     return JSON(online_check.to_json())
 
 
-@APPLICATION.route('/screenshot/<int:system>', methods=['GET'],
-                   strict_slashes=False)
+@APPLICATION.route(
+    '/screenshot/<int:system>',
+    methods=['GET'],
+    strict_slashes=False
+)
 @authenticated
 @authorized('sysmon')
 def get_screenshot(system: int) -> Union[Binary, JSONMessage]:
     """Returns a screenshot of the system."""
 
     try:
-        system = get_system(system)
+        system = get_system(system, ACCOUNT.id)
     except System.DoesNotExist:
         return JSONMessage('No such system.', status=404)
 
@@ -115,7 +125,10 @@ def get_screenshot(system: int) -> Union[Binary, JSONMessage]:
 @APPLICATION.route('/enduser', methods=['GET'], strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def endsuser_states() -> JSON:
+def endsuser_states() -> Union[JSON, JSONMessage]:
     """Checks the system states for end-users."""
 
-    return JSON(check_customer_systems())
+    try:
+        return JSON(check_customer_systems(CUSTOMER.id))
+    except FailureLimitExceeded:
+        return JSONMessage('Failure limit exceeded.', status=400)
