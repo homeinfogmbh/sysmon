@@ -1,25 +1,17 @@
 """Processing of state changes."""
 
 from contextlib import suppress
-from enum import Enum
 from typing import Iterator, NamedTuple
 from xml.etree.ElementTree import Element, SubElement
 
 from hwdb import System
 
+from sysmon.enumerations import State
 from sysmon.exceptions import NotChecked
 from sysmon.orm import CheckResults
 
 
-__all__ = ['State', 'CheckState', 'check_state_change', 'state_changes']
-
-
-class State(str, Enum):
-    """State change of a system check."""
-
-    RECOVERED = 'recovered'
-    FAILED = 'failed'
-    UNCHANGED = 'unchanged'
+__all__ = ['CheckState', 'check_state_change', 'state_changes']
 
 
 class CheckState(NamedTuple):
