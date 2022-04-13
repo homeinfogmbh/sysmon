@@ -15,16 +15,43 @@ from sysmon.orm import CheckResults
 
 
 __all__ = [
-    'get_systems',
+    'check_customer_systems',
     'get_system',
+    'get_systems',
     'get_check_results',
-    'get_check_results_of_system',
-    'check_customer_systems'
+    'get_check_results_of_system'
 ]
 
 
 CUSTOMER_INTERVAL = timedelta(hours=48)
 CUSTOMER_MAX_OFFLINE = 0.2
+
+
+def check_customer_systems(customer: Union[Customer, int]) -> dict:
+    """Checks all systems of the respective customer."""
+
+    states = {}
+    failures = 0
+    systems = 0
+
+    for systems, system in enumerate(get_customer_systems(customer), start=1):
+        try:
+            states[system.id] = state = check_customer_system(system)
+        except NotChecked:
+            states[system.id] = None
+        else:
+            failures += not state
+
+    if failures >= systems * CUSTOMER_MAX_OFFLINE:
+        raise FailureLimitExceeded()
+
+    return states
+
+
+def get_system(system: Union[System, int], account: Account) -> System:
+    """Returns a system by its ID."""
+
+    return get_systems(account).where(System.id == system).get()
 
 
 def get_systems(account: Account, *, all: bool = False) -> ModelSelect:
@@ -38,12 +65,6 @@ def get_systems(account: Account, *, all: bool = False) -> ModelSelect:
         condition &= System.monitoring_cond()
 
     return System.select(cascade=True).where(condition)
-
-
-def get_system(system: Union[System, int], account: Account) -> System:
-    """Returns a system by its ID."""
-
-    return get_systems(account).where(System.id == system).get()
 
 
 def get_check_results(
@@ -101,24 +122,3 @@ def check_customer_system(system: Union[System, int]) -> bool:
         return any(online_check.success for online_check in query)
 
     raise NotChecked(system)
-
-
-def check_customer_systems(customer: Union[Customer, int]) -> dict:
-    """Checks all systems of the respective customer."""
-
-    states = {}
-    failures = 0
-    systems = 0
-
-    for systems, system in enumerate(get_customer_systems(customer), start=1):
-        try:
-            states[system.id] = state = check_customer_system(system)
-        except NotChecked:
-            states[system.id] = None
-        else:
-            failures += not state
-
-    if failures >= systems * CUSTOMER_MAX_OFFLINE:
-        raise FailureLimitExceeded()
-
-    return states
