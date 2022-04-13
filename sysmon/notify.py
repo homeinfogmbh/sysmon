@@ -3,8 +3,9 @@
 from typing import Iterable
 from xml.etree.ElementTree import Element, SubElement
 
-from sysmon.changes import CheckState, State, state_changes
+from sysmon.changes import CheckState, state_changes
 from sysmon.config import LOGGER
+from sysmon.enumerations import State
 from sysmon.mail import email
 
 
@@ -17,14 +18,15 @@ def mk_html_table(check_states: Iterable[CheckState]) -> Element:
     table = Element('table', attrib={'border': '1'})
 
     for check_state in check_states:
-        sub_element = check_state.to_xml()
-        table.append(sub_element)
+        table.append(check_state.to_html())
 
     return table
 
 
-def mk_html_msg(recovered: Iterable[CheckState],
-                failed: Iterable[CheckState]) -> Element:
+def mk_html_msg(
+        recovered: Iterable[CheckState],
+        failed: Iterable[CheckState]
+) -> Element:
     """Returns a HTML message."""
 
     html = Element('html')

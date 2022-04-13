@@ -20,8 +20,8 @@ class CheckState(NamedTuple):
     system: System
     state: State
 
-    def to_xml(self) -> Element:
-        """Returns an XML element."""
+    def to_html(self) -> Element:
+        """Returns an HTML element."""
         row = Element('tr')
         header = SubElement(row, 'th')
         header.text = str(self.system.id)
