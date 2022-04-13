@@ -77,7 +77,7 @@ def get_check_results_of_system(
     """Selects checks for the respective system and account."""
 
     return get_check_results(account, begin=begin, end=end).where(
-        System.id == system
+        CheckResults.system == system
     )
 
 
