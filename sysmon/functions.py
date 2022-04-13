@@ -1,7 +1,7 @@
 """Common functions."""
 
 from datetime import datetime, timedelta
-from typing import Optional, Union
+from typing import Iterable, Iterator, Optional, Union
 
 from peewee import ModelSelect
 

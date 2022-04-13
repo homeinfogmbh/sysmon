@@ -53,7 +53,7 @@ def system_details(system: int) -> Union[JSON, JSONMessage]:
     """Lists uptime details of a system."""
 
     try:
-        system = get_system(syste, ACCOUNT.id)
+        system = get_system(system, ACCOUNT.id)
     except System.DoesNotExist:
         return JSONMessage('No such system.', status=404)
 
