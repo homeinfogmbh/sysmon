@@ -2,7 +2,7 @@
 
 from ipaddress import IPv6Address
 from subprocess import CalledProcessError, run
-from typing import Any, Optional
+from typing import Any, Iterable, Optional
 
 from requests import ConnectTimeout, get
 
@@ -18,7 +18,7 @@ KEYFILE = '/usr/share/terminals/terminals'
 SSH_USER = 'homeinfo'
 
 
-__all__ = ['check_system']
+__all__ = ['check_system', 'check_systems']
 
 
 def check_system(system: System) -> CheckResults:
@@ -41,6 +41,13 @@ def check_system(system: System) -> CheckResults:
     )
     check_results.save()
     return check_results
+
+
+def check_systems(systems: Iterable[System]) -> None:
+    """Checks the given systems."""
+
+    for system in systems:
+        check_system(system)
 
 
 def get_sysinfo(
