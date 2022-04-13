@@ -1,31 +1,22 @@
 """Common functions."""
 
 from datetime import datetime, timedelta
-from typing import Iterable, Iterator, Optional, Union
+from typing import Optional, Union
 
 from peewee import ModelSelect
 
-from functoolsplus import coerce
-from his import ACCOUNT, CUSTOMER
-from hwdb import Deployment, DeploymentType, System
-from mdb import Customer
+from his import Account
+from hwdb import System
 from termacls import get_system_admin_condition
-from wsgilib import Error, get_bool
 
-from sysmon.exceptions import NotChecked
-from sysmon.orm import CHECKS, OnlineCheck
+from sysmon.orm import CheckResults
 
 
 __all__ = [
     'get_systems',
     'get_system',
-    'get_customers',
-    'get_types',
-    'get_stats',
-    'get_systems_checks',
-    'get_customer_systems',
-    'check_customer_system',
-    'check_customer_systems'
+    'get_check_results',
+    'get_check_results_of_system'
 ]
 
 
@@ -33,120 +24,55 @@ CUSTOMER_INTERVAL = timedelta(hours=48)
 CUSTOMER_MAX_OFFLINE = 0.2
 
 
-def get_systems() -> ModelSelect:
-    """Yields systems that are deployed."""
+def get_systems(account: Account, *, all: bool = False) -> ModelSelect:
+    """Yields systems that are subject to
+    checking that the given account may view.
+    """
 
-    condition = get_system_admin_condition(ACCOUNT)
+    condition = get_system_admin_condition(account)
 
-    if not get_bool('all'):
+    if not all:
         condition &= System.monitoring_cond()
 
     return System.select(cascade=True).where(condition)
 
 
-def get_system(system: Union[System, int]) -> System:
+def get_system(system: Union[System, int], account: Account) -> System:
     """Returns a system by its ID."""
 
-    return get_systems().where(System.id == system).get()
+    return get_systems(account).where(System.id == system).get()
 
 
-@coerce(set)
-def get_customers() -> Iterator[Customer]:
-    """Yields all allowed customers."""
+def get_check_results(
+        account: Account,
+        *,
+        begin: Optional[datetime] = None,
+        end: Optional[datetime] = None
+) -> ModelSelect:
+    """Selects checks results for the given account."""
 
-    for system in get_systems():
-        if system.deployment:
-            yield system.deployment.customer
+    condition = get_system_admin_condition(account)
 
+    if begin:
+        condition &= CheckResults.timestamp >= begin
 
-@coerce(set)
-def get_types() -> Iterator[DeploymentType]:
-    """Yields all allowed types."""
+    if end:
+        condition &= CheckResults.timestamp <= end
 
-    for system in get_systems():
-        if system.deployment:
-            yield system.deployment.type
-
-
-def get_stats(system: Union[System, int], *,
-              begin: Optional[datetime] = None,
-              end: Optional[datetime] = None) -> dict:
-    """Returns the checks for the respective system."""
-
-    json = {}
-
-    for model in CHECKS:
-        selection = model.system == system
-
-        if begin:
-            selection &= model.timestamp >= begin
-
-        if end:
-            selection &= model.timestamp <= end
-
-        ordering = model.timestamp.desc()
-        query = model.select(cascade=True).where(selection).order_by(ordering)
-
-        try:
-            latest = query.limit(1).get()
-        except model.DoesNotExist:
-            continue
-
-        json[model.__name__] = latest.to_json()
-
-    return json
+    return CheckResults.select(cascade=True).where(condition).order_by(
+        CheckResults.timestamp.desc()
+    )
 
 
-@coerce(list)
-def get_systems_checks(systems: Iterable[System], *,
-                       begin: Optional[datetime] = None,
-                       end: Optional[datetime] = None) -> Iterator[dict]:
-    """Yields JSON objects with system information and checks data."""
+def get_check_results_of_system(
+        system: Union[System, int],
+        account: Account,
+        *,
+        begin: Optional[datetime] = None,
+        end: Optional[datetime] = None
+) -> ModelSelect:
+    """Selects checks for the respective system and account."""
 
-    for system in systems:
-        json = system.to_json(brief=True, cascade=3)
-        json['checks'] = get_stats(system, begin=begin, end=end)
-        yield json
-
-
-def get_customer_systems() -> ModelSelect:
-    """Reuturns monitored systems of the current customer."""
-
-    return System.monitored().where(Deployment.customer == CUSTOMER.id)
-
-
-def check_customer_system(system: Union[System, int]) -> bool:
-    """Returns the customer online check for the respective system."""
-
-    end = datetime.now()
-    start = end - CUSTOMER_INTERVAL
-    condition = OnlineCheck.system == system
-    condition &= OnlineCheck.timestamp >= start
-    condition &= OnlineCheck.timestamp <= end
-    query = OnlineCheck.select().where(condition)
-
-    if query:
-        return any(online_check.online for online_check in query)
-
-    raise NotChecked(system, OnlineCheck)
-
-
-def check_customer_systems() -> dict:
-    """Checks all systems of the respective customer."""
-
-    states = {}
-    failures = 0
-    systems = 0
-
-    for systems, system in enumerate(get_customer_systems(), start=1):
-        try:
-            states[system.id] = state = check_customer_system(system)
-        except NotChecked:
-            states[system.id] = None
-        else:
-            failures += not state
-
-    if failures >= systems * CUSTOMER_MAX_OFFLINE:
-        raise Error('Failure limit exceeded.')
-
-    return states
+    return get_check_results(account, begin=begin, end=end).where(
+        System.id == system
+    )
