@@ -10,6 +10,7 @@ from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
 from hwdb import SystemOffline, System
 from wsgilib import Binary, JSON, JSONMessage
 
+from sysmon.checks import check_system
 from sysmon.exceptions import FailureLimitExceeded
 from sysmon.functions import check_customer_systems
 from sysmon.functions import get_system
@@ -36,7 +37,9 @@ def list_stats() -> JSON:
         end = datetime.fromisoformat(begin)
 
     check_results = get_check_results(ACCOUNT.id, begin=begin, end=end)
-    return JSON([check_result.to_json() for check_result in check_results])
+    return JSON([
+        check_result.to_json(cascade=3) for check_result in check_results
+    ])
 
 
 @APPLICATION.route(
@@ -58,7 +61,9 @@ def system_details(system: int) -> Union[JSON, JSONMessage]:
     check_results = get_check_results_of_system(
         system, ACCOUNT.id, begin=begin, end=end
     )
-    return JSON([check_result.to_json() for check_result in check_results])
+    return JSON([
+        check_result.to_json(cascade=3) for check_result in check_results
+    ])
 
 
 @APPLICATION.route(
@@ -68,7 +73,7 @@ def system_details(system: int) -> Union[JSON, JSONMessage]:
 )
 @authenticated
 @authorized('sysmon')
-def check_system(system: int) -> Union[JSON, JSONMessage]:
+def run_system_check(system: int) -> Union[JSON, JSONMessage]:
     """Performs a system check."""
 
     try:
@@ -76,8 +81,7 @@ def check_system(system: int) -> Union[JSON, JSONMessage]:
     except System.DoesNotExist:
         return JSONMessage('No such system.', status=404)
 
-    online_check = OnlineCheck.run(system)
-    return JSON(online_check.to_json())
+    return JSON(check_system(system).to_json(cascade=3))
 
 
 @APPLICATION.route(
