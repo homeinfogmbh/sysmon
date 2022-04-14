@@ -1,5 +1,6 @@
 """System checking."""
 
+from datetime import datetime
 from ipaddress import IPv6Address
 from subprocess import CalledProcessError, run
 from typing import Any, Iterable, Optional
@@ -39,6 +40,13 @@ def check_system(system: System) -> CheckResults:
         ram_free=get_ram_free(sysinfo),
         ram_availablee=get_ram_available(sysinfo)
     )
+
+    try:
+        last_check = get_last_check(system)
+    except CheckResults.DoesNotExist:
+        last_check = None
+
+    check_results.offline_since = get_offline_since(check_results, last_check)
     check_results.save()
     return check_results
 
@@ -196,3 +204,28 @@ def get_ram_available(sysinfo: dict[str, Any]) -> Optional[int]:
     """Returns the available memory in kilobytes."""
 
     return sysinfo.get('meminfo', {}).get('MemAvailable', {}).get('value')
+
+
+def get_last_check(system: System) -> CheckResults:
+    """Returns the last check of the given system."""
+
+    return CheckResults.select().where(
+        CheckResults.system == system
+    ).order_by(
+        CheckResults.timestamp.desc()
+    ).get()
+
+
+def get_offline_since(
+        current: CheckResults,
+        last: Optional[CheckResults]
+) -> Optional[datetime]:
+    """Returns the datetime since when the check is considered offline."""
+
+    if current.online:
+        return None
+
+    if last is None or last.offline_since is None:
+        return datetime.now()
+
+    return last.offline_since

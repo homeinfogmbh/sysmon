@@ -52,6 +52,7 @@ class CheckResults(SysmonModel):
     ram_total = IntegerField(null=True)
     ram_free = IntegerField(null=True)
     ram_available = IntegerField(null=True)
+    offline_since = DateTimeField(null=True)
 
     @classmethod
     def select(cls, *args, cascade: bool = False) -> ModelSelect:
