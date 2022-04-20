@@ -12,6 +12,7 @@ __all__ = [
     'application_not_running',
     'more_than_three_months_offline',
     'not_deployed',
+    'os_out_of_date',
     'smart_check_failed',
     'testing'
 ]
@@ -33,6 +34,12 @@ def not_deployed(system: System) -> bool:
     """Checks whether a system is not deployed."""
 
     return system.deployment is None
+
+
+def os_out_of_date(check_resuts: CheckResults) -> bool:
+    """Checks whether the operating system is out of date."""
+
+    return False    # TODO: implement
 
 
 def smart_check_failed(check_results: CheckResults) -> bool:
