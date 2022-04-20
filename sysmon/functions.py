@@ -1,7 +1,7 @@
 """Common functions."""
 
 from datetime import datetime, timedelta
-from typing import Optional, Union
+from typing import Any, Iterable, Optional, Union
 
 from peewee import ModelSelect
 
@@ -16,6 +16,7 @@ from sysmon.orm import CheckResults
 
 __all__ = [
     'check_customer_systems',
+    'count',
     'get_system',
     'get_systems',
     'get_check_results',
@@ -46,6 +47,12 @@ def check_customer_systems(customer: Union[Customer, int]) -> dict:
         raise FailureLimitExceeded()
 
     return states
+
+
+def count(items: Iterable[Any]) -> int:
+    """Counts the items."""
+
+    return sum(1 for _ in items)
 
 
 def get_system(system: Union[System, int], account: Account) -> System:

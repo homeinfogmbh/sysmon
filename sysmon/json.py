@@ -12,6 +12,7 @@ from sysmon.filters import not_deployed
 from sysmon.filters import os_out_of_date
 from sysmon.filters import smart_check_failed
 from sysmon.filters import testing
+from sysmon.functions import count
 from sysmon.orm import CheckResults
 
 
@@ -67,12 +68,6 @@ def serialize_system_and_checks(
         checks_results_json.append(check_result.to_json())
 
     return json
-
-
-def count(items: Iterable[Any]) -> int:
-    """Counts the items."""
-
-    return sum(1 for _ in items)
 
 
 def last_check_of_each_system(
