@@ -9,14 +9,13 @@ from requests import ConnectionError, get
 
 from hwdb import SystemOffline, System
 
-from sysmon.config import LOGGER
+from sysmon.config import LOGGER, get_config
 from sysmon.enumerations import ApplicationState
 from sysmon.enumerations import BaytrailFreezeState
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.orm import CheckResults
 
 
-KEYFILE = '/usr/share/terminals/terminals'
 SSH_USERS = {'root', 'homeinfo'}
 
 
@@ -121,7 +120,6 @@ def check_ssh_login(
         system: System,
         user: str,
         *,
-        keyfile: str = KEYFILE,
         timeout: int = 5
 ) -> SuccessFailedUnsupported:
     """Checks the SSH login on the system."""
@@ -130,7 +128,7 @@ def check_ssh_login(
         check_call(
             [
                 '/usr/bin/ssh',
-                '-e', keyfile,
+                '-e', get_config().get('ssh', 'keyfile'),
                 '-o', 'LogLevel=error',
                 '-o', 'UserKnownHostsFile=/dev/null',
                 '-o', 'StrictHostKeyChecking=no',
