@@ -1,10 +1,8 @@
 """JSON file generation."""
 
-from collections import defaultdict
-from contextlib import suppress
 from typing import Any, Iterable, Iterator
 
-from hwdb import Deployment, System
+from hwdb import System
 
 from sysmon.filters import application_not_running
 from sysmon.filters import more_than_three_months_offline
@@ -13,6 +11,9 @@ from sysmon.filters import os_out_of_date
 from sysmon.filters import smart_check_failed
 from sysmon.filters import testing
 from sysmon.functions import count
+from sysmon.grouping import check_results_by_systems
+from sysmon.grouping import last_check_of_each_system
+from sysmon.grouping import unique_deployments
 from sysmon.orm import CheckResults
 
 
@@ -72,43 +73,3 @@ def serialize_system_and_checks(
         checks_results_json.append(check_result.to_json())
 
     return json
-
-
-def last_check_of_each_system(
-        checks_per_system: dict[System, list[CheckResults]]
-) -> Iterator[CheckResults]:
-    """Returns the last checks for each system."""
-
-    for check_results in checks_per_system.values():
-        with suppress(IndexError):
-            yield check_results[-1]
-
-
-def check_results_by_systems(
-        check_results: Iterable[CheckResults]
-) -> dict[System, list[CheckResults]]:
-    """Returns a dict of systems and their respective
-    check results sorted by timestamp.
-    """
-
-    result = defaultdict(list)
-
-    for check_result in check_results:
-        result[check_result.system].append(check_result)
-
-    for check_results in result.values():
-        check_results.sort(key=lambda item: item.timestamp)
-
-    return result
-
-
-def unique_systems(check_results: Iterable[CheckResults]) -> set[System]:
-    """Extracts a set of unique systems from the check results."""
-
-    return {check_result.system for check_result in check_results}
-
-
-def unique_deployments(systems: Iterable[System]) -> set[Deployment]:
-    """Extracts a set of unique deployments from the check results."""
-
-    return {system.deployment for system in systems}
