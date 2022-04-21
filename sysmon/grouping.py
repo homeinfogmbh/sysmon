@@ -4,16 +4,12 @@ from collections import defaultdict
 from contextlib import suppress
 from typing import Iterable, Iterator
 
-from hwdb import Deployment, System
+from hwdb import System
 
 from sysmon.orm import CheckResults
 
 
-__all__ = [
-    'check_results_by_systems',
-    'last_check_of_each_system',
-    'unique_deployments'
-]
+__all__ = ['check_results_by_systems', 'last_check_of_each_system']
 
 
 def check_results_by_systems(
@@ -42,9 +38,3 @@ def last_check_of_each_system(
     for check_results in checks_per_system.values():
         with suppress(IndexError):
             yield check_results[-1]
-
-
-def unique_deployments(systems: Iterable[System]) -> set[Deployment]:
-    """Extracts a set of unique deployments from the check results."""
-
-    return {system.deployment for system in systems}
