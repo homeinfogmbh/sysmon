@@ -40,9 +40,7 @@ setup(
             'files/sysmon.service',
             'files/sysmon.timer',
             'files/sysmon-cleanup.service',
-            'files/sysmon-cleanup.timer',
-            'files/sysmon-notify.service',
-            'files/sysmon-notify.timer'
+            'files/sysmon-cleanup.timer'
         ])
     ],
     license='GPLv3',

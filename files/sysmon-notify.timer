@@ -1,9 +1,0 @@
-[Unit]
-Description=HOMEINFO Digital Signage Systems Monitoring Notification
-After=network.target mysql.service
-
-[Timer]
-OnCalendar=daily
-
-[Install]
-WantedBy=timers.target
