@@ -61,17 +61,14 @@ def get_system(system: Union[System, int], account: Account) -> System:
     return get_systems(account).where(System.id == system).get()
 
 
-def get_systems(account: Account, *, all: bool = False) -> ModelSelect:
+def get_systems(account: Account) -> ModelSelect:
     """Yields systems that are subject to
     checking that the given account may view.
     """
 
-    condition = get_system_admin_condition(account)
-
-    if not all:
-        condition &= System.monitoring_cond()
-
-    return System.select(cascade=True).where(condition)
+    return System.select(cascade=True).where(
+        get_system_admin_condition(account)
+    )
 
 
 def get_check_results(
@@ -118,12 +115,12 @@ def get_customer_systems(customer: Union[Customer, int]) -> ModelSelect:
 def check_customer_system(system: Union[System, int]) -> bool:
     """Returns the customer online check for the respective system."""
 
-    end = datetime.now()
-    start = end - CUSTOMER_INTERVAL
-    condition = CheckResults.system == system
-    condition &= CheckResults.timestamp >= start
-    condition &= CheckResults.timestamp <= end
-    query = CheckResults.select().where(condition)
+    start = (end := datetime.now()) - CUSTOMER_INTERVAL
+    query = CheckResults.select().where(
+        (CheckResults.system == system)
+        & (CheckResults.timestamp >= start)
+        & (CheckResults.timestamp <= end)
+    )
 
     if query:
         return any(online_check.success for online_check in query)
