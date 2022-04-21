@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from ipaddress import IPv6Address
-from subprocess import CalledProcessError, check_call
+from subprocess import DEVNULL, CalledProcessError, check_call
 from typing import Any, Iterable, Optional
 
 from requests import ConnectionError, get
@@ -125,16 +125,20 @@ def check_ssh_login(
     """Checks the SSH login on the system."""
 
     try:
-        check_call([
-            '/usr/bin/ssh',
-            '-e', keyfile,
-            '-o', 'LogLevel=error',
-            '-o', 'UserKnownHostsFile=/dev/null',
-            '-o', 'StrictHostKeyChecking=no',
-            '-o', f'ConnectTimeout={timeout}',
-            f'{user}@{system.ip_address}',
-            '/usr/bin/true'
-        ])
+        check_call(
+            [
+                '/usr/bin/ssh',
+                '-e', keyfile,
+                '-o', 'LogLevel=error',
+                '-o', 'UserKnownHostsFile=/dev/null',
+                '-o', 'StrictHostKeyChecking=no',
+                '-o', f'ConnectTimeout={timeout}',
+                f'{user}@{system.ip_address}',
+                '/usr/bin/true'
+            ],
+            stderr=DEVNULL,
+            stdout=DEVNULL
+        )
     except CalledProcessError as error:
         if error.returncode == 255:
             return SuccessFailedUnsupported.UNSUPPORTED
