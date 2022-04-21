@@ -3,8 +3,8 @@ Description=Check all systems every six hours
 After=network.target mysql.service
 
 [Timer]
-OnCalendar=hourly
-RandomizedDelaySec=15min
+OnCalendar=daily
+RandomizedDelaySec=1h
 
 [Install]
 WantedBy=timers.target
