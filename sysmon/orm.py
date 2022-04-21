@@ -48,7 +48,7 @@ class CheckResults(SysmonModel):
     application_state = EnumField(ApplicationState)
     smart_check = EnumField(SuccessFailedUnsupported)
     baytrail_freeze = EnumField(BaytrailFreezeState)
-    application_version = CharField(12)
+    application_version = CharField(12, null=True)
     ram_total = IntegerField(null=True)
     ram_free = IntegerField(null=True)
     ram_available = IntegerField(null=True)
