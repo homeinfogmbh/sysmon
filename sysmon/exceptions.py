@@ -3,11 +3,7 @@
 from hwdb import System
 
 
-__all__ = ['FailureLimitExceeded', 'NotChecked']
-
-
-class FailureLimitExceeded(Exception):
-    """Indicates that the maximum failure limit for customers was exceeded."""
+__all__ = ['NotChecked']
 
 
 class NotChecked(Exception):
