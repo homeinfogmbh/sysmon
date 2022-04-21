@@ -11,10 +11,9 @@ from hwdb import SystemOffline, System
 from wsgilib import Binary, JSON, JSONMessage
 
 from sysmon.checks import check_system
-from sysmon.exceptions import FailureLimitExceeded
-from sysmon.functions import check_customer_systems
-from sysmon.functions import get_system
 from sysmon.functions import get_check_results
+from sysmon.functions import get_customer_check_results
+from sysmon.functions import get_system
 from sysmon.json import check_results_to_json
 
 
@@ -87,7 +86,7 @@ def get_screenshot(system: int) -> Union[Binary, JSONMessage]:
 def enduser_states() -> Union[JSON, JSONMessage]:
     """Checks the system states for end-users."""
 
-    try:
-        return JSON(check_customer_systems(CUSTOMER.id))
-    except FailureLimitExceeded:
-        return JSONMessage('Failure limit exceeded.', status=400)
+    return JSON([
+        check_result.to_json() for check_result in
+        get_customer_check_results(CUSTOMER.id)
+    ])

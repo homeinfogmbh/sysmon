@@ -1,7 +1,7 @@
 """Common functions."""
 
-from datetime import datetime, timedelta
-from typing import Any, Iterable, Optional, Union
+from datetime import datetime
+from typing import Any, Iterable, Iterator, Optional, Union
 
 from peewee import ModelSelect
 
@@ -10,48 +10,32 @@ from hwdb import Deployment, System
 from mdb import Customer
 from termacls import get_system_admin_condition
 
-from sysmon.exceptions import FailureLimitExceeded, NotChecked
+from sysmon.grouping import check_results_by_systems, last_check_of_each_system
 from sysmon.orm import CheckResults
 
 
 __all__ = [
-    'check_customer_systems',
     'count',
     'get_system',
     'get_systems',
-    'get_check_results'
+    'get_check_results',
+    'get_customer_check_results'
 ]
-
-
-CUSTOMER_INTERVAL = timedelta(hours=48)
-CUSTOMER_MAX_OFFLINE = 0.2
-
-
-def check_customer_systems(customer: Union[Customer, int]) -> dict:
-    """Checks all systems of the respective customer."""
-
-    states = {}
-    failures = 0
-    systems = 0
-
-    for systems, system in enumerate(get_customer_systems(customer), start=1):
-        try:
-            states[system.id] = state = check_customer_system(system)
-        except NotChecked:
-            states[system.id] = None
-        else:
-            failures += not state
-
-    if failures >= systems * CUSTOMER_MAX_OFFLINE:
-        raise FailureLimitExceeded()
-
-    return states
 
 
 def count(items: Iterable[Any]) -> int:
     """Counts the items."""
 
     return sum(1 for _ in items)
+
+
+def get_customer_system_checks(customer: Union[Customer, int]) -> dict:
+    """Selects all system checks of systems of the respective customer."""
+
+    return CheckResults.select().join(System).join(Deployment).where(
+        (Deployment.customer == customer)
+        & (Deployment.testing == 0)
+    )
 
 
 def get_system(system: Union[System, int], account: Account) -> System:
@@ -91,23 +75,11 @@ def get_check_results(
     )
 
 
-def get_customer_systems(customer: Union[Customer, int]) -> ModelSelect:
-    """Returns monitored systems of the current customer."""
+def get_customer_check_results(
+        customer: Union[Customer, int]
+) -> Iterator[CheckResults]:
+    """Checks all systems of the respective customer."""
 
-    return System.monitored().where(Deployment.customer == customer)
-
-
-def check_customer_system(system: Union[System, int]) -> bool:
-    """Returns the customer online check for the respective system."""
-
-    start = (end := datetime.now()) - CUSTOMER_INTERVAL
-    query = CheckResults.select().where(
-        (CheckResults.system == system)
-        & (CheckResults.timestamp >= start)
-        & (CheckResults.timestamp <= end)
-    )
-
-    if query:
-        return any(online_check.success for online_check in query)
-
-    raise NotChecked(system)
+    return last_check_of_each_system(check_results_by_systems(
+        get_customer_system_checks(customer)
+    ))
