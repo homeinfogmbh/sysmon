@@ -19,8 +19,7 @@ __all__ = [
     'count',
     'get_system',
     'get_systems',
-    'get_check_results',
-    'get_check_results_of_system'
+    'get_check_results'
 ]
 
 
@@ -89,20 +88,6 @@ def get_check_results(
 
     return CheckResults.select(cascade=True).where(condition).order_by(
         CheckResults.timestamp.desc()
-    )
-
-
-def get_check_results_of_system(
-        system: Union[System, int],
-        account: Account,
-        *,
-        begin: Optional[datetime] = None,
-        end: Optional[datetime] = None
-) -> ModelSelect:
-    """Selects checks for the respective system and account."""
-
-    return get_check_results(account, begin=begin, end=end).where(
-        CheckResults.system == system
     )
 
 

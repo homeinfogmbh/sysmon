@@ -15,7 +15,7 @@ from sysmon.exceptions import FailureLimitExceeded
 from sysmon.functions import check_customer_systems
 from sysmon.functions import get_system
 from sysmon.functions import get_check_results
-from sysmon.functions import get_check_results_of_system
+from sysmon.json import check_results_to_json
 
 
 __all__ = ['APPLICATION']
@@ -37,33 +37,7 @@ def list_stats() -> JSON:
         end = datetime.fromisoformat(begin)
 
     check_results = get_check_results(ACCOUNT.id, begin=begin, end=end)
-    return JSON([
-        check_result.to_json() for check_result in check_results
-    ])
-
-
-@APPLICATION.route(
-    '/details/<int:system>',
-    methods=['GET'],
-    strict_slashes=False
-)
-@authenticated
-@authorized('sysmon')
-def system_details(system: int) -> Union[JSON, JSONMessage]:
-    """Lists uptime details of a system."""
-
-    if (begin := request.headers.get('begin')) is not None:
-        begin = datetime.fromisoformat(begin)
-
-    if (end := request.headers.get('end')) is not None:
-        end = datetime.fromisoformat(end)
-
-    check_results = get_check_results_of_system(
-        system, ACCOUNT.id, begin=begin, end=end
-    )
-    return JSON([
-        check_result.to_json(cascade=3) for check_result in check_results
-    ])
+    return JSON(check_results_to_json(check_results))
 
 
 @APPLICATION.route(
@@ -73,15 +47,12 @@ def system_details(system: int) -> Union[JSON, JSONMessage]:
 )
 @authenticated
 @authorized('sysmon')
-def run_system_check(system: int) -> Union[JSON, JSONMessage]:
-    """Performs a system check."""
+def check_system(system: int) -> JSON:
+    """Lists uptime details of a system."""
 
-    try:
-        system = get_system(system, ACCOUNT.id)
-    except System.DoesNotExist:
-        return JSONMessage('No such system.', status=404)
-
-    return JSON(check_system(system).to_json(cascade=3))
+    system = get_system(system, ACCOUNT.id)
+    check_result = check_system(system)
+    return JSON(check_result.to_json())
 
 
 @APPLICATION.route(
@@ -113,7 +84,7 @@ def get_screenshot(system: int) -> Union[Binary, JSONMessage]:
 @APPLICATION.route('/enduser', methods=['GET'], strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def endsuser_states() -> Union[JSON, JSONMessage]:
+def enduser_states() -> Union[JSON, JSONMessage]:
     """Checks the system states for end-users."""
 
     try:
