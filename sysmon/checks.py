@@ -128,7 +128,7 @@ def check_ssh_login(
         check_call(
             [
                 '/usr/bin/ssh',
-                '-e', get_config().get('ssh', 'keyfile'),
+                '-i', get_config().get('ssh', 'keyfile'),
                 '-o', 'LogLevel=error',
                 '-o', 'UserKnownHostsFile=/dev/null',
                 '-o', 'StrictHostKeyChecking=no',
