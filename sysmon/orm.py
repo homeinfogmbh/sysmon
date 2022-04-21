@@ -11,7 +11,7 @@ from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import ModelSelect
 
-from hwdb import Deployment, OpenVPN, System
+from hwdb import Deployment, System
 from mdb import Address, Company, Customer
 from peeweeplus import EnumField, JSONModel, MySQLDatabaseProxy
 
@@ -62,12 +62,9 @@ class CheckResults(SysmonModel):
         if not cascade:
             return super().select(*args)
 
-        dataset = Deployment.alias()
-        args = {
-            cls, System, Deployment, Customer, Company, Address, dataset,
-            OpenVPN, *args
-        }
-        return super().select(*args).join(System).join(
+        return super().select(
+            cls, System, Deployment, Customer, Company, Address, *args
+        ).join(System).join(
             Deployment, on=System.deployment == Deployment.id,
             join_type=JOIN.LEFT_OUTER
         ).join(
@@ -76,12 +73,6 @@ class CheckResults(SysmonModel):
             Company, join_type=JOIN.LEFT_OUTER
         ).join_from(
             Deployment, Address, on=Deployment.address == Address.id,
-            join_type=JOIN.LEFT_OUTER
-        ).join_from(
-            System, dataset, on=System.dataset == dataset.id,
-            join_type=JOIN.LEFT_OUTER
-        ).join_from(
-            System, OpenVPN, on=System.openvpn == OpenVPN.id,
             join_type=JOIN.LEFT_OUTER
         )
 
