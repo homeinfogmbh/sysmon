@@ -30,7 +30,6 @@ def check_system(system: System) -> CheckResults:
         system=system,
         icmp_request=check_icmp_request(system),
         ssh_login=check_ssh(system),
-        root_login=check_root_login(system),
         http_request=http_request,
         application_state=get_application_state(system),
         smart_check=get_smart_results(sysinfo),
@@ -47,6 +46,9 @@ def check_system(system: System) -> CheckResults:
         last_check = None
 
     check_results.offline_since = get_offline_since(check_results, last_check)
+    check_results.blackscreen_since = get_blackscreen_since(
+        check_results, last_check
+    )
     return check_results
 
 
@@ -146,12 +148,6 @@ def check_ssh_login(
         return SuccessFailedUnsupported.FAILED
 
     return SuccessFailedUnsupported.SUCCESS
-
-
-def check_root_login(system: System) -> SuccessFailedUnsupported:
-    """Checks root login via SSH."""
-
-    return check_ssh_login(system, user='root')
 
 
 def get_application_state(system: System) -> ApplicationState:
@@ -257,3 +253,18 @@ def get_offline_since(
         return datetime.now()
 
     return last.offline_since
+
+
+def get_blackscreen_since(
+        current: CheckResults,
+        last: Optional[CheckResults]
+) -> Optional[datetime]:
+    """Returns the datetime since when the application is not running."""
+
+    if current.application_state is not ApplicationState.NOT_RUNNING:
+        return None
+
+    if last is None or last.blackscreen_since is None:
+        return datetime.now()
+
+    return last.blackscreen_since
