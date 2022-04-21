@@ -11,7 +11,7 @@ from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import ModelSelect
 
-from hwdb import Deployment, System
+from hwdb import Deployment, OpenVPN, System
 from mdb import Address, Company, Customer
 from peeweeplus import EnumField, JSONModel, MySQLDatabaseProxy
 
@@ -65,7 +65,7 @@ class CheckResults(SysmonModel):
         dataset = Deployment.alias()
         args = {
             cls, System, Deployment, Customer, Company, Address, dataset,
-            *args
+            OpenVPN, *args
         }
         return super().select(*args).join(System).join(
             Deployment, on=System.deployment == Deployment.id,
@@ -79,6 +79,9 @@ class CheckResults(SysmonModel):
             join_type=JOIN.LEFT_OUTER
         ).join_from(
             System, dataset, on=System.dataset == dataset.id,
+            join_type=JOIN.LEFT_OUTER
+        ).join_from(
+            System, OpenVPN, on=System.openvpn == OpenVPN.id,
             join_type=JOIN.LEFT_OUTER
         )
 
