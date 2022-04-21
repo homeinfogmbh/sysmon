@@ -185,6 +185,8 @@ def get_application_state(system: System) -> ApplicationState:
     if running[0] == 'html':
         return ApplicationState.HTML
 
+    return ApplicationState.UNKNOWN
+
 
 def get_smart_results(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
     """Returns the SMART test results."""
