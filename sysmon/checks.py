@@ -136,7 +136,7 @@ def check_ssh_login(
     ]
 
     try:
-        run(command, stdout=DEVNULL, stderr=PIPE, text=True)
+        run(command, check=True, stdout=DEVNULL, stderr=PIPE, text=True)
     except CalledProcessError as error:
         LOGGER.error('SSH connection error: %s', error.stderr)
 
