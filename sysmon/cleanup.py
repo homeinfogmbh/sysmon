@@ -8,10 +8,25 @@ from sysmon.config import LOG_FORMAT
 from sysmon.orm import CheckResults
 
 
-__all__ = ['main']
+__all__ = ['cleanup']
 
 
 LOGGER = getLogger('sysmon-cleanup')
+MAX_RETENTION = timedelta(days=30)
+
+
+def remove_checks_older_than(age: timedelta) -> int:
+    """Removes system checks older than the specified time."""
+
+    return remove_checks_before(datetime.now() - age)
+
+
+def remove_checks_before(timestamp: datetime) -> int:
+    """Removes system checks older than the given timestamp."""
+
+    return CheckResults.delete().where(
+        CheckResults.timestamp < timestamp
+    ).execute()
 
 
 def get_args() -> Namespace:
@@ -19,7 +34,8 @@ def get_args() -> Namespace:
 
     parser = ArgumentParser(description='cleans old records')
     parser.add_argument(
-        '-d', '--days', type=int, default=30, help='days of records to keep'
+        '-d', '--days', type=lambda days: timedelta(days=days),
+        default=MAX_RETENTION, help='days of records to keep'
     )
     return parser.parse_args()
 
@@ -30,7 +46,5 @@ def main() -> None:
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=INFO)
     LOGGER.info('Deleting records older than %i days.', args.days)
-    count = CheckResults.delete().where(
-        CheckResults.timestamp < datetime.now() - timedelta(days=args.days)
-    ).execute()
+    count = remove_checks_older_than(args.days)
     LOGGER.info('Deleted %i records.', count)
