@@ -35,7 +35,7 @@ def check_system(system: System) -> CheckResults:
         application_state=get_application_state(system),
         smart_check=get_smart_results(sysinfo),
         baytrail_freeze=get_baytrail_freeze_state(sysinfo),
-        application_version='unknown',      # TODO: implement
+        application_version=get_application_version(sysinfo),
         ram_total=get_ram_total(sysinfo),
         ram_free=get_ram_free(sysinfo),
         ram_availablee=get_ram_available(sysinfo)
@@ -56,6 +56,12 @@ def check_systems(systems: Iterable[System]) -> None:
 
     for system in systems:
         check_system(system)
+
+
+def get_application_version(sysinfo: dict[str, Any]) -> Optional[str]:
+    """Returns the application version string."""
+
+    return sysinfo.get('application_version')
 
 
 def get_sysinfo(
