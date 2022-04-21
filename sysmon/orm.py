@@ -89,11 +89,3 @@ class CheckResults(SysmonModel):
             self.icmp_request
             and self.ssh_login is SuccessFailedUnsupported.SUCCESS
         )
-
-    @property
-    def successful(self) -> bool:
-        """Determines whether the check was considered successful."""
-        if not self.icmp_request:
-            return False
-
-        return self.ssh_login == SuccessFailedUnsupported.SUCCESS
