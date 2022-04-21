@@ -124,21 +124,19 @@ def check_ssh_login(
 ) -> SuccessFailedUnsupported:
     """Checks the SSH login on the system."""
 
+    command = [
+        '/usr/bin/ssh',
+        '-i', get_config().get('ssh', 'keyfile'),
+        '-o', 'LogLevel=error',
+        '-o', 'UserKnownHostsFile=/dev/null',
+        '-o', 'StrictHostKeyChecking=no',
+        '-o', f'ConnectTimeout={timeout}',
+        f'{user}@{system.ip_address}',
+        '/usr/bin/true'
+    ]
+
     try:
-        check_call(
-            [
-                '/usr/bin/ssh',
-                '-i', get_config().get('ssh', 'keyfile'),
-                '-o', 'LogLevel=error',
-                '-o', 'UserKnownHostsFile=/dev/null',
-                '-o', 'StrictHostKeyChecking=no',
-                '-o', f'ConnectTimeout={timeout}',
-                f'{user}@{system.ip_address}',
-                '/usr/bin/true'
-            ],
-            stderr=DEVNULL,
-            stdout=DEVNULL
-        )
+        check_call(command, stdout=DEVNULL)
     except CalledProcessError as error:
         if error.returncode == 255:
             return SuccessFailedUnsupported.UNSUPPORTED
