@@ -35,7 +35,7 @@ def list_stats() -> JSON:
     if (end := request.headers.get('end')) is not None:
         end = datetime.fromisoformat(begin)
 
-    check_results = get_check_results(ACCOUNT.id, begin=begin, end=end)
+    check_results = get_check_results(ACCOUNT, begin=begin, end=end)
     return JSON(check_results_to_json(check_results))
 
 
@@ -49,7 +49,7 @@ def list_stats() -> JSON:
 def check_system(system: int) -> JSON:
     """Lists uptime details of a system."""
 
-    system = get_system(system, ACCOUNT.id)
+    system = get_system(system, ACCOUNT)
     check_result = check_system(system)
     return JSON(check_result.to_json())
 
@@ -65,7 +65,7 @@ def get_screenshot(system: int) -> Union[Binary, JSONMessage]:
     """Returns a screenshot of the system."""
 
     try:
-        system = get_system(system, ACCOUNT.id)
+        system = get_system(system, ACCOUNT)
     except System.DoesNotExist:
         return JSONMessage('No such system.', status=404)
 
