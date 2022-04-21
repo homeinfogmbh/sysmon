@@ -16,11 +16,15 @@ from sysmon.functions import count
 from sysmon.orm import CheckResults
 
 
-__all__ = ['to_dict']
+__all__ = ['check_results_to_json']
 
 
-def to_dict(check_results: Iterable[CheckResults]) -> dict[str, Any]:
-    """Creates the response dict."""
+def check_results_to_json(
+        check_results: Iterable[CheckResults]
+) -> dict[str, Any]:
+    """Converts a list of check results into
+    a JSON object for the front-end.
+    """
 
     return {
         'log': dict(serialize_by_system(
