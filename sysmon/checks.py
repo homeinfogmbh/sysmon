@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from ipaddress import IPv6Address
-from subprocess import CalledProcessError, run
+from subprocess import CalledProcessError, check_call
 from typing import Any, Iterable, Optional
 
 from requests import ConnectionError, get
@@ -16,7 +16,7 @@ from sysmon.orm import CheckResults
 
 
 KEYFILE = '/usr/share/terminals/terminals'
-SSH_USER = 'homeinfo'
+SSH_USERS = {'root', 'homeinfo'}
 
 
 __all__ = ['check_system', 'check_systems']
@@ -29,7 +29,7 @@ def check_system(system: System) -> CheckResults:
     check_results = CheckResults(
         system=system,
         icmp_request=check_icmp_request(system),
-        ssh_login=check_ssh_login(system),
+        ssh_login=check_ssh(system),
         root_login=check_root_login(system),
         http_request=http_request,
         application_state=get_application_state(system),
@@ -99,17 +99,33 @@ def check_icmp_request(system: System) -> bool:
     return True
 
 
+def check_ssh(system: System) -> SuccessFailedUnsupported:
+    """Checks the SSH connection to the system."""
+
+    for user in SSH_USERS:
+        if (
+                (result := check_ssh_login(system, user))
+                is SuccessFailedUnsupported.SUCCESS
+        ):
+            return SuccessFailedUnsupported.SUCCESS
+
+        if result is SuccessFailedUnsupported.UNSUPPORTED:
+            return SuccessFailedUnsupported.UNSUPPORTED
+
+    return SuccessFailedUnsupported.FAILED
+
+
 def check_ssh_login(
         system: System,
+        user: str,
         *,
         keyfile: str = KEYFILE,
-        timeout: int = 5,
-        user: str = SSH_USER
+        timeout: int = 5
 ) -> SuccessFailedUnsupported:
     """Checks the SSH login on the system."""
 
     try:
-        run([
+        check_call([
             '/usr/bin/ssh',
             '-e', keyfile,
             '-o', 'LogLevel=error',
