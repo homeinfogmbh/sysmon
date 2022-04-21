@@ -47,7 +47,6 @@ def check_system(system: System) -> CheckResults:
         last_check = None
 
     check_results.offline_since = get_offline_since(check_results, last_check)
-    check_results.save()
     return check_results
 
 
@@ -56,7 +55,8 @@ def check_systems(systems: Iterable[System]) -> None:
 
     for system in systems:
         LOGGER.info('Checking system: %i', system.id)
-        check_system(system)
+        system_check = check_system(system)
+        system_check.save()
 
 
 def get_application_version(sysinfo: dict[str, Any]) -> Optional[str]:
