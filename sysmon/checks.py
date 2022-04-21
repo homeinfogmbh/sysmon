@@ -5,7 +5,7 @@ from ipaddress import IPv6Address
 from subprocess import CalledProcessError, run
 from typing import Any, Iterable, Optional
 
-from requests import ConnectTimeout, get
+from requests import ConnectionError, get
 
 from hwdb import SystemOffline, System
 
@@ -79,7 +79,7 @@ def get_sysinfo(
 
     try:
         response = get(f'http://{socket}', timeout=timeout)
-    except ConnectTimeout:
+    except ConnectionError:
         return SuccessFailedUnsupported.UNSUPPORTED, {}
 
     if response.status_code != 200:
