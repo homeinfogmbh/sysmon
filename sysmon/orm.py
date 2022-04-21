@@ -85,7 +85,10 @@ class CheckResults(SysmonModel):
     @property
     def online(self) -> bool:
         """Determines whether the system is online."""
-        return self.icmp_request and self.ssh_login
+        return (
+            self.icmp_request
+            and self.ssh_login is SuccessFailedUnsupported.SUCCESS
+        )
 
     @property
     def successful(self) -> bool:
