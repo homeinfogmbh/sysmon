@@ -4,7 +4,7 @@ from typing import Any, Iterable, Iterator
 
 from hwdb import System
 
-from sysmon.grouping import check_results_by_systems
+from sysmon.filtering import check_results_by_systems
 from sysmon.orm import CheckResults
 
 

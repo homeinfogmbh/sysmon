@@ -10,7 +10,8 @@ from hwdb import Deployment, System
 from mdb import Customer
 from termacls import get_system_admin_condition
 
-from sysmon.grouping import check_results_by_systems, last_check_of_each_system
+from sysmon.filtering import check_results_by_systems
+from sysmon.filtering import last_check_of_each_system
 from sysmon.orm import CheckResults
 
 
