@@ -9,6 +9,7 @@ from requests import ConnectionError, get
 
 from hwdb import SystemOffline, System
 
+from sysmon.config import LOGGER
 from sysmon.enumerations import ApplicationState
 from sysmon.enumerations import BaytrailFreezeState
 from sysmon.enumerations import SuccessFailedUnsupported
@@ -55,6 +56,7 @@ def check_systems(systems: Iterable[System]) -> None:
     """Checks the given systems."""
 
     for system in systems:
+        LOGGER.info('Checking system: %i', system.id)
         check_system(system)
 
 
