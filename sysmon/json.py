@@ -66,7 +66,7 @@ def serialize_system_and_checks(
 ) -> dict[str, Any]:
     """Serialize a systems and its check results."""
 
-    json = system.to_json()
+    json = system.to_json(cascade=3)
     json['checkResults'] = checks_results_json = []
 
     for check_result in check_results:
