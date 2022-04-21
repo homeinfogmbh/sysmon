@@ -25,7 +25,7 @@ def check_results_by_systems(
         result[check_result.system].append(check_result)
 
     for check_results in result.values():
-        check_results.sort(key=lambda item: item.timestamp)
+        check_results.sort(key=lambda item: item.timestamp, reverse=True)
 
     return result
 
