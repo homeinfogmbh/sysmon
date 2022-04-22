@@ -183,10 +183,10 @@ def get_smart_results(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
     if not (results := sysinfo.get('smartctl')):
         return SuccessFailedUnsupported.UNSUPPORTED
 
-    if any(result != 'PASSED' for result in results.values()):
-        return SuccessFailedUnsupported.FAILED
+    if all(result == 'PASSED' for result in results.values()):
+        return SuccessFailedUnsupported.SUCCESS
 
-    return SuccessFailedUnsupported.SUCCESS
+    return SuccessFailedUnsupported.FAILED
 
 
 def get_baytrail_freeze_state(sysinfo: dict[str, Any]) -> BaytrailFreezeState:
