@@ -7,7 +7,7 @@ from typing import Any, Iterable, Optional
 
 from requests import ConnectionError, get
 
-from hwdb import SystemOffline, System
+from hwdb import System
 
 from sysmon.config import LOGGER, get_config
 from sysmon.enumerations import ApplicationState
@@ -31,7 +31,7 @@ def check_system(system: System) -> CheckResults:
         icmp_request=check_icmp_request(system),
         ssh_login=check_ssh(system),
         http_request=http_request,
-        application_state=get_application_state(system),
+        application_state=get_application_state(sysinfo),
         smart_check=get_smart_results(sysinfo),
         baytrail_freeze=get_baytrail_freeze_state(sysinfo),
         application_version=get_application_version(sysinfo),
@@ -150,21 +150,16 @@ def check_ssh_login(
     return SuccessFailedUnsupported.SUCCESS
 
 
-def get_application_state(system: System) -> ApplicationState:
+def get_application_state(sysinfo: dict[str, Any]) -> ApplicationState:
     """Checks whether the application is running."""
 
-    try:
-        response = system.application()
-    except SystemOffline:
+    if (status := sysinfo.get('application', {}).get('status')) is None:
         return ApplicationState.UNKNOWN
 
-    if response.status_code != 200:
-        return ApplicationState.UNKNOWN
-
-    if not (running := (json := response.json()).get('running')):
+    if not (running := status.get('running')):
         return ApplicationState.NOT_RUNNING
 
-    if not (enabled := json.get('enabled')):
+    if not (enabled := status.get('enabled')):
         return ApplicationState.NOT_ENABLED
 
     if running != enabled:
