@@ -61,12 +61,6 @@ def check_systems(systems: Iterable[System]) -> None:
         system_check.save()
 
 
-def get_application_version(sysinfo: dict[str, Any]) -> Optional[str]:
-    """Returns the application version string."""
-
-    return sysinfo.get('application_version')
-
-
 def get_sysinfo(
         system: System,
         *,
@@ -175,6 +169,12 @@ def get_application_state(sysinfo: dict[str, Any]) -> ApplicationState:
         return ApplicationState.HTML
 
     return ApplicationState.UNKNOWN
+
+
+def get_application_version(sysinfo: dict[str, Any]) -> Optional[str]:
+    """Returns the application version string."""
+
+    return sysinfo.get('application', {}).get('version')
 
 
 def get_smart_results(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
