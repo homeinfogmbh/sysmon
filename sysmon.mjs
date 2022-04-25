@@ -28,7 +28,7 @@ export class CheckResults {
         return Object.assign(new this(), json);
     }
 
-    get success () {
+    get online () {
         return this.icmpRequest && (this.sshLogin == 'success');
     }
 
