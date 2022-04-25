@@ -91,6 +91,13 @@ export class CheckedSystem {
 
         return null;
     }
+
+    get online () {
+        if (this.lastCheck == null)
+            return null;
+
+        return this.lastCheck.online;
+    }
 }
 
 export class GlobalStats {
