@@ -40,6 +40,13 @@ export class CheckedSystem {
 
         return instance;
     }
+
+    get lastCheck () {
+        if (this.checkResults.length > 0)
+            return this.checkResults[0];
+
+        return null;
+    }
 }
 
 export class GlobalStats {
