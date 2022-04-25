@@ -29,7 +29,7 @@ export class CheckResults {
     }
 
     get online () {
-        return this.icmpRequest && (this.sshLogin == 'success');
+        return this.icmpRequest && (this.sshLogin != 'failed');
     }
 
     get moreThanThreeMonthsOffline () {
