@@ -7,7 +7,7 @@ from typing import Any, Iterable, Optional
 
 from requests import ConnectionError, ReadTimeout, get
 
-from hwdb import System
+from hwdb import OperatingSystem, System
 
 from sysmon.config import LOGGER, get_config
 from sysmon.enumerations import ApplicationState
@@ -17,6 +17,10 @@ from sysmon.orm import CheckResults
 
 
 SSH_USERS = {'root', 'homeinfo'}
+SSH_CAPABLE_OSS = {
+    OperatingSystem.ARCH_LINUX,
+    OperatingSystem.ARCH_LINUX_ARM
+}
 
 
 __all__ = ['check_system', 'check_systems']
@@ -99,15 +103,12 @@ def check_icmp_request(system: System) -> bool:
 def check_ssh(system: System) -> SuccessFailedUnsupported:
     """Checks the SSH connection to the system."""
 
-    for user in SSH_USERS:
-        if (
-                (result := check_ssh_login(system, user))
-                is SuccessFailedUnsupported.SUCCESS
-        ):
-            return SuccessFailedUnsupported.SUCCESS
+    if system.operating_system not in SSH_CAPABLE_OSS:
+        return SuccessFailedUnsupported.UNSUPPORTED
 
-        if result is SuccessFailedUnsupported.UNSUPPORTED:
-            return SuccessFailedUnsupported.UNSUPPORTED
+    for user in SSH_USERS:
+        if check_ssh_login(system, user) is SuccessFailedUnsupported.SUCCESS:
+            return SuccessFailedUnsupported.SUCCESS
 
     return SuccessFailedUnsupported.FAILED
 
@@ -135,10 +136,6 @@ def check_ssh_login(
         run(command, check=True, stdout=DEVNULL, stderr=PIPE, text=True)
     except CalledProcessError as error:
         LOGGER.error('SSH connection error: %s', error.stderr)
-
-        if error.returncode == 255:
-            return SuccessFailedUnsupported.UNSUPPORTED
-
         return SuccessFailedUnsupported.FAILED
 
     return SuccessFailedUnsupported.SUCCESS
