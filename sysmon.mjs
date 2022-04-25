@@ -20,6 +20,9 @@
 */
 'use strict';
 
+const THREE_MONTHS = 3 * 30 * 24 * 60 * 60 * 1000;  // milliseconds
+const CURRENT_APPLICATION_VERSION = '2.48.0-1';
+
 export class CheckResults {
     static fromJSON (json) {
         return Object.assign(new this(), json);
@@ -27,6 +30,10 @@ export class CheckResults {
 
     get success () {
         return this.icmpRequest && (this.sshLogin == 'success');
+    }
+
+    get moreThanThreeMonthsOffline () {
+        return (new Date()) - (new Date(this.offlineSince)) > THREE_MONTHS;
     }
 }
 
@@ -51,14 +58,14 @@ export class CheckedSystem {
 
 export class GlobalStats {
     constructor (
-        smartErrors, notDeployed, testingSystems, blackMode, outdatedOS,
-        moreThanThreeMonthsOffline
+        smartErrors, notDeployed, testingSystems, blackMode,
+        outdatedApplication, moreThanThreeMonthsOffline
     ) {
         this.smartErrors = smartErrors;
         this.notDeployed = notDeployed;
         this.testingSystems = testingSystems;
         this.blackMode = blackMode;
-        this.outdatedOS = outdatedOS;
+        this.outdatedApplication = outdatedApplication;
         this.moreThanThreeMonthsOffline = moreThanThreeMonthsOffline;
     }
 
@@ -67,11 +74,38 @@ export class GlobalStats {
         let notDeployed = 0;
         let testingSystems = 0;
         let blackMode = 0;
-        let outdatedOS = 0;
+        let outdatedApplication = 0;
         let moreThanThreeMonthsOffline = 0;
+        let lastCheck;
 
         for (checkedSystem of checkedSystems) {
-            // TODO: count checks.
+            lastCheck = checkedSystem.lastCheck;
+
+            if (lastCheck == null)
+                continue;
+
+            if (lastCheck.smartCheck == 'failed')
+                smartErrors++;
+
+            if (checkedSystem.deployment == null)
+                notDeployed++;
+
+            if (checkedSystem.testing)
+                testingSystems++;
+
+            if (lastCheck.applicationState == 'not running')
+                blackMode++;
+
+            if (lastCheck.applicationVersion != CURRENT_APPLICATION_VERSION)
+                outdatedApplication++;
+
+            if (lastCheck.moreThanThreeMonthsOffline)
+                moreThanThreeMonthsOffline++;
         }
+
+        return new this(
+            smartErrors, notDeployed, testingSystems, blackMode,
+            outdatedApplication, moreThanThreeMonthsOffline
+        );
     }
 }
