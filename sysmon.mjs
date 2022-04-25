@@ -24,8 +24,42 @@ const THREE_MONTHS = 3 * 30 * 24 * 60 * 60 * 1000;  // milliseconds
 const CURRENT_APPLICATION_VERSION = '2.48.0-1';
 
 export class CheckResults {
+    constructor (
+        timestamp, icmpRequest, sshLogin, httpRequest, applicationState,
+        applicationVersion, smartCheck, baytrailFreeze, ramTotal, ramFree,
+        ramAvailable, offlineSince, blackscreenSince
+    ) {
+        this.timestamp = timestamp;
+        this.icmpRequest = icmpRequest;
+        this.sshLogin = sshLogin;
+        this.httpRequest = httpRequest;
+        this.applicationState = applicationState;
+        this.applicationVersion = applicationVersion;
+        this.smartCheck = smartCheck;
+        this.baytrailFreeze = baytrailFreeze;
+        this.ramTotal = ramTotal;
+        this.ramFree = ramFree;
+        this.ramAvailable = ramAvailable;
+        this.offlineSince = offlineSince;
+        this.blackscreenSince = blackscreenSince;
+    }
+
     static fromJSON (json) {
-        return Object.assign(new this(), json);
+        return new this(
+            new Date(json.timestamp),
+            json.icmpRequest,
+            json.sshLogin,
+            json.httpRequest,
+            json.applicationState,
+            json.applicationVersion,
+            json.smartCheck,
+            json.baytrailFreeze,
+            json.ramTotal,
+            json.ramFree,
+            json.ramAvailable,
+            (json.offlineSince == null) ? null : new Date(json.offlineSince),
+            (json.blackscreenSince == null) ? null : new Date(json.blackscreenSince)
+        );
     }
 
     get online () {
@@ -33,7 +67,10 @@ export class CheckResults {
     }
 
     get moreThanThreeMonthsOffline () {
-        return (new Date()) - (new Date(this.offlineSince)) > THREE_MONTHS;
+        if (this.offlineSince == null)
+            return false;
+
+        return (new Date()) - this.offlineSince > THREE_MONTHS;
     }
 }
 
