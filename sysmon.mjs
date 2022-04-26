@@ -20,6 +20,8 @@
 */
 'use strict';
 
+import { System } from 'https://javascript.homeinfo.de/hwdb.mjs';
+
 const CURRENT_APPLICATION_VERSION = '2.48.0-1';
 const ONE_DAY = 24 * 60 * 60 * 1000;    // milliseconds
 const THREE_MONTHS = 3 * 30 * ONE_DAY;  // milliseconds
@@ -79,15 +81,15 @@ export class CheckResults {
     }
 }
 
-export class CheckedSystem {
+export class CheckedSystem extends System {
     static fromJSON (json) {
-        instance = Object.assign(new this(), json);
-        instance.checkResults = [];
+        system = super.fromJSON(json)
+        system.checkResults = [];
 
         for (const checkResult of json.checkResults)
-            instance.checkResults.push(CheckResults.fromJSON(checkResult));
+            system.checkResults.push(CheckResults.fromJSON(checkResult));
 
-        return instance;
+        return system;
     }
 
     get lastCheck () {
