@@ -82,9 +82,13 @@ export class CheckResults {
 }
 
 export class CheckedSystem extends System {
+    constructor (...args, checkResults) {
+        super(...args);
+        this.checkResults = checkResults || [];
+    }
+
     static fromJSON (json) {
         system = super.fromJSON(json)
-        system.checkResults = [];
 
         for (const checkResult of json.checkResults)
             system.checkResults.push(CheckResults.fromJSON(checkResult));
