@@ -20,8 +20,9 @@
 */
 'use strict';
 
-const THREE_MONTHS = 3 * 30 * 24 * 60 * 60 * 1000;  // milliseconds
 const CURRENT_APPLICATION_VERSION = '2.48.0-1';
+const ONE_DAY = 24 * 60 * 60 * 1000;    // milliseconds
+const THREE_MONTHS = 3 * 30 * ONE_DAY;  // milliseconds
 
 export class CheckResults {
     constructor (
@@ -94,6 +95,13 @@ export class CheckedSystem {
             return this.checkResults[0];
 
         return null;
+    }
+
+    get notSynced () {
+        if (this.lastSync == null)
+            return false;
+
+        return (new Date()) - this.lastSync < ONE_DAY;
     }
 
     get online () {
