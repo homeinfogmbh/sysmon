@@ -62,19 +62,19 @@ export class CheckResults {
         );
     }
 
+    get moreThanThreeMonthsOffline () {
+        if (this.offlineSince == null)
+            return false;
+
+        return (new Date()) - this.offlineSince > THREE_MONTHS;
+    }
+
     get online () {
         return this.icmpRequest && (this.sshLogin != 'failed');
     }
 
     get outOfDate () {
         return this.applicationVersion != CURRENT_APPLICATION_VERSION;
-    }
-
-    get moreThanThreeMonthsOffline () {
-        if (this.offlineSince == null)
-            return false;
-
-        return (new Date()) - this.offlineSince > THREE_MONTHS;
     }
 }
 
