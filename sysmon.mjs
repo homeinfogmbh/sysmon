@@ -66,6 +66,10 @@ export class CheckResults {
         return this.icmpRequest && (this.sshLogin != 'failed');
     }
 
+    get outOfDate () {
+        return this.applicationVersion != CURRENT_APPLICATION_VERSION;
+    }
+
     get moreThanThreeMonthsOffline () {
         if (this.offlineSince == null)
             return false;
@@ -140,7 +144,7 @@ export class GlobalStats {
             if (lastCheck.applicationState == 'not running')
                 blackMode++;
 
-            if (lastCheck.applicationVersion != CURRENT_APPLICATION_VERSION)
+            if (lastCheck.outOfDate)
                 outdatedApplication++;
 
             if (lastCheck.moreThanThreeMonthsOffline)
