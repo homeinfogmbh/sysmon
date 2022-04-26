@@ -1,5 +1,5 @@
 {
-  "$id": "https://homeinfo.de/checked-systems.schema.json",
+  "$id": "https://jsonschema.homeinfo.de/sysmon/checked-systems.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "Checked systems mapped by their system ID.",
   "type": "object",
@@ -8,7 +8,7 @@
   },
   "patternProperties": {
     "^([0-9]+)+$": {
-      "type": "https://homeinfo.de/checked-system.schema.json"
+      "type": "https://jsonschema.homeinfo.de/sysmon/checked-system.schema.json"
     }
   },
   "additionalProperties": false

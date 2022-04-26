@@ -18,3 +18,7 @@ pull:
 
 push:
 	@ git push
+
+jsonschema:
+	@ mkdir -p /srv/http/de/homeinfo/jsonschema/sysmon
+	@ install -t /srv/http/de/homeinfo/jsonschema/sysmon jsonschema/*.schema.json

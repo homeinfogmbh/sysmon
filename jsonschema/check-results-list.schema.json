@@ -1,9 +1,9 @@
 {
-  "$id": "https://homeinfo.de/check-results-list.schema.json",
+  "$id": "https://jsonschema.homeinfo.de/sysmon/check-results-list.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "A list of check results.",
   "type": "array",
   "items": {
-    "type": "https://homeinfo.de/check-results.schema.json"
+    "type": "https://jsonschema.homeinfo.de/sysmon/check-results.schema.json"
   }
 }

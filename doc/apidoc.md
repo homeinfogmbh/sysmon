@@ -11,7 +11,7 @@ that URL.
 `application/json`
 
 As a response, an object of type
-`https://homeinfo.de/checked-systems.schema.` is returned.
+`https://jsonschema.homeinfo.de/sysmon/checked-systems.schema.` is returned.
 
 ## Run live check on a system
 `GET` `/check/<int:system>`
@@ -19,7 +19,8 @@ As a response, an object of type
 ### Response
 `application/json`
 
-As a response, an object of type `https://homeinfo.de/check-results.schema.`
+As a response, an object of type
+`https://jsonschema.homeinfo.de/sysmon/check-results.schema.`
 is returned.
 
 ## Get a screenshot of a system
@@ -37,5 +38,5 @@ As a response, a JPEG image is returned.
 `application/json`
 
 As a response, an object of type
-`https://homeinfo.de/check-results-list.schema.json`
+`https://jsonschema.homeinfo.de/sysmon/check-results-list.schema.json`
 is returned

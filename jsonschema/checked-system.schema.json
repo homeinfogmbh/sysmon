@@ -1,12 +1,12 @@
 {
-  "$id": "https://homeinfo.de/checked-system.schema.json",
+  "$id": "https://jsonschema.homeinfo.de/sysmon/checked-system.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "A system with a list of system checks.",
   "type": "object",
-  "allOf": ["https://homeinfo.de/system.schema.json"],
+  "allOf": ["https://jsonschema.homeinfo.de/hwdb/system.schema.json"],
   "properties": {
     "checkResults": {
-      "type": "https://homeinfo.de/check-results-list.schema.json",
+      "type": "https://jsonschema.homeinfo.de/sysmon/check-results-list.schema.json",
       "description": "List of system check results."
     }
   }
