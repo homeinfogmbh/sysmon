@@ -46,7 +46,7 @@ def list_stats() -> JSON:
 )
 @authenticated
 @authorized('sysmon')
-def check_system(system: int) -> JSON:
+def do_check_system(system: int) -> JSON:
     """Lists uptime details of a system."""
 
     system = get_system(system, ACCOUNT)
