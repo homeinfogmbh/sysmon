@@ -97,7 +97,7 @@ export class CheckedSystem {
         return null;
     }
 
-    get notSynced () {
+    get synced () {
         if (this.lastSync == null)
             return false;
 
