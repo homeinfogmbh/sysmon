@@ -1,19 +1,17 @@
 """Administrative systems monitoring."""
 
-from datetime import datetime
 from traceback import format_exc
 from typing import Union
-
-from flask import request
 
 from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
 from hwdb import SystemOffline, System
 from wsgilib import Binary, JSON, JSONMessage
 
 from sysmon.checks import check_system
-from sysmon.functions import get_check_results
+from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
+from sysmon.functions import get_latest_check_results_per_system
 from sysmon.json import check_results_to_json
 
 
@@ -26,17 +24,27 @@ APPLICATION = Application('sysmon')
 @APPLICATION.route('/checks', methods=['GET'], strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def list_stats() -> JSON:
+def list_latest_stats() -> JSON:
+    """Lists systems and their latest stats."""
+
+    return JSON(check_results_to_json(
+        get_latest_check_results_per_system(ACCOUNT)
+    ))
+
+
+@APPLICATION.route(
+    '/checks/<int:system>',
+    methods=['GET'],
+    strict_slashes=False
+)
+@authenticated
+@authorized('sysmon')
+def list_stats(system: int) -> JSON:
     """Lists systems and their stats."""
 
-    if (begin := request.headers.get('begin')) is not None:
-        begin = datetime.fromisoformat(begin)
-
-    if (end := request.headers.get('end')) is not None:
-        end = datetime.fromisoformat(begin)
-
-    check_results = get_check_results(ACCOUNT, begin=begin, end=end)
-    return JSON(check_results_to_json(check_results))
+    return JSON(check_results_to_json(
+        get_check_results_for_system(system, ACCOUNT)
+    ))
 
 
 @APPLICATION.route(

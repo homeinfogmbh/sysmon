@@ -20,6 +20,7 @@ __all__ = [
     'get_system',
     'get_systems',
     'get_check_results',
+    'get_check_results_for_system',
     'get_customer_check_results',
     'get_latest_check_results_per_system'
 ]
@@ -73,6 +74,20 @@ def get_check_results(
         condition &= CheckResults.timestamp <= end
 
     return CheckResults.select(cascade=True).where(condition).order_by(
+        CheckResults.timestamp.desc()
+    )
+
+
+def get_check_results_for_system(
+        system: Union[System, int],
+        account: Account
+) -> ModelSelect:
+    """Selects check results for the given system."""
+
+    return CheckResults.select(cascade=True).where(
+        (CheckResults.system == system)
+        & get_system_admin_condition(account)
+    ).order_by(
         CheckResults.timestamp.desc()
     )
 
