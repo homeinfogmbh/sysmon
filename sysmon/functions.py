@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any, Iterable, Iterator, Optional, Union
 
-from peewee import ModelSelect
+from peewee import ModelSelect, fn
 
 from his import Account
 from hwdb import Deployment, System
@@ -20,7 +20,8 @@ __all__ = [
     'get_system',
     'get_systems',
     'get_check_results',
-    'get_customer_check_results'
+    'get_customer_check_results',
+    'get_latest_check_results_per_system'
 ]
 
 
@@ -84,3 +85,25 @@ def get_customer_check_results(
     return last_check_of_each_system(check_results_by_systems(
         get_customer_system_checks(customer)
     ))
+
+
+def get_latest_check_results_per_system() -> ModelSelect:
+    """Yields the latest check results for each system."""
+
+    return (
+        CheckResults.select(
+            CheckResults, System
+        ).join(System).switch(CheckResults).join(
+            subquery := (
+                (CheckResultsAlias := CheckResults.alias()).select(
+                    CheckResultsAlias.system,
+                    fn.MAX(CheckResultsAlias.timestamp).alias(
+                        'latest_timestamp'
+                    )
+                ).group_by(CheckResultsAlias.system)
+            ), on=(
+                (CheckResults.timestamp == subquery.c.latest_timestamp) &
+                (CheckResults.system == subquery.c.system)
+            )
+        )
+    )
