@@ -105,5 +105,7 @@ def get_latest_check_results_per_system(account: Account) -> ModelSelect:
                 (CheckResults.timestamp == subquery.c.latest_timestamp) &
                 (CheckResults.system == subquery.c.system)
             )
-        ).where(get_system_admin_condition(account))
+        ).where(
+            get_system_admin_condition(account)
+        )
     )
