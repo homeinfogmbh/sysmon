@@ -90,22 +90,17 @@ def get_customer_check_results(
 def get_latest_check_results_per_system(account: Account) -> ModelSelect:
     """Yields the latest check results for each system."""
 
-    return (
-        CheckResults.select(
-            CheckResults, System
-        ).join(System).switch(CheckResults).join(
-            subquery := (
-                (CheckResultsAlias := CheckResults.alias()).select(
-                    CheckResultsAlias.system,
-                    fn.MAX(CheckResultsAlias.timestamp).alias(
-                        'latest_timestamp'
-                    )
-                ).group_by(CheckResultsAlias.system)
-            ), on=(
-                (CheckResults.timestamp == subquery.c.latest_timestamp) &
-                (CheckResults.system == subquery.c.system)
-            )
-        ).where(
-            get_system_admin_condition(account)
+    return CheckResults.select(
+        CheckResults, System
+    ).join(System).switch(CheckResults).join(
+        subquery := (CheckResultsAlias := CheckResults.alias()).select(
+            CheckResultsAlias.system,
+            fn.MAX(CheckResultsAlias.timestamp).alias('latest_timestamp')
+        ).group_by(CheckResultsAlias.system),
+        on=(
+            (CheckResults.timestamp == subquery.c.latest_timestamp) &
+            (CheckResults.system == subquery.c.system)
         )
+    ).where(
+        get_system_admin_condition(account)
     )
