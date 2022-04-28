@@ -90,9 +90,8 @@ def get_customer_check_results(
 def get_latest_check_results_per_system(account: Account) -> ModelSelect:
     """Yields the latest check results for each system."""
 
-    return CheckResults.select(
-        CheckResults, System
-    ).join(System).switch(CheckResults).join(
+    return CheckResults.select(cascade=True).join_from(
+        CheckResults,
         subquery := (CheckResultsAlias := CheckResults.alias()).select(
             CheckResultsAlias.system,
             fn.MAX(CheckResultsAlias.timestamp).alias('latest_timestamp')
