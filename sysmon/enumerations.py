@@ -6,7 +6,6 @@ from enum import Enum
 __all__ = [
     'ApplicationState',
     'BaytrailFreezeState',
-    'State',
     'SuccessFailedUnsupported'
 ]
 
@@ -29,14 +28,6 @@ class BaytrailFreezeState(str, Enum):
     MITIGATED = 'mitigated'
     VULNERABLE = 'vulnerable'
     UNKNOWN = 'unknown'
-
-
-class State(str, Enum):
-    """State change of a system check."""
-
-    RECOVERED = 'recovered'
-    FAILED = 'failed'
-    UNCHANGED = 'unchanged'
 
 
 class SuccessFailedUnsupported(str, Enum):
