@@ -37,4 +37,4 @@ def last_check_of_each_system(
 
     for check_results in checks_per_system.values():
         with suppress(IndexError):
-            yield check_results[-1]
+            yield check_results[0]
