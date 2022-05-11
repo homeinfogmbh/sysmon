@@ -263,9 +263,15 @@ def get_blackscreen_since(
     return last.blackscreen_since
 
 
-def efi_mount_ok(sysinfo: dict[str, Any]) -> Optional[bool]:
+def efi_mount_ok(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
     """Returns True iff the EFI partition is mounted
     on /boot or there is not EFI partition to be mounted.
     """
 
-    return sysinfo.get('efi', {}).get('mounted')
+    if (mounted := sysinfo.get('efi', {}).get('mounted')) is None:
+        return SuccessFailedUnsupported.UNSUPPORTED
+
+    if mounted:
+        return SuccessFailedUnsupported.SUCCESS
+
+    return SuccessFailedUnsupported.FAILED
