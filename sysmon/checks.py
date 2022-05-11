@@ -41,7 +41,8 @@ def check_system(system: System) -> CheckResults:
         application_version=get_application_version(sysinfo),
         ram_total=get_ram_total(sysinfo),
         ram_free=get_ram_free(sysinfo),
-        ram_availablee=get_ram_available(sysinfo)
+        ram_availablee=get_ram_available(sysinfo),
+        efi_mount_ok=efi_mount_ok(sysinfo)
     )
 
     try:
@@ -260,3 +261,11 @@ def get_blackscreen_since(
         return datetime.now()
 
     return last.blackscreen_since
+
+
+def efi_mount_ok(sysinfo: dict[str, Any]) -> Optional[bool]:
+    """Returns True iff the EFI partition is mounted
+    on /boot or there is not EFI partition to be mounted.
+    """
+
+    return sysinfo.get('efi', {}).get('mounted')

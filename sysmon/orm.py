@@ -52,6 +52,7 @@ class CheckResults(SysmonModel):
     ram_total = IntegerField(null=True)
     ram_free = IntegerField(null=True)
     ram_available = IntegerField(null=True)
+    efi_mount_ok = BooleanField(null=True)
     # Failed-since timestamps
     offline_since = DateTimeField(null=True)
     blackscreen_since = DateTimeField(null=True)
