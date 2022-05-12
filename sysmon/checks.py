@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from ipaddress import IPv6Address
-from subprocess import DEVNULL, PIPE, CalledProcessError, run
+from subprocess import DEVNULL, PIPE, CalledProcessError, check_call, run
 from typing import Any, Iterable, Optional
 
 from requests import ConnectionError, ReadTimeout, get
@@ -23,7 +23,7 @@ SSH_CAPABLE_OSS = {
 }
 
 
-__all__ = ['check_system', 'check_systems']
+__all__ = ['check_system', 'check_systems', 'hipster_status']
 
 
 def check_system(system: System) -> CheckResults:
@@ -275,3 +275,14 @@ def efi_mount_ok(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
         return SuccessFailedUnsupported.SUCCESS
 
     return SuccessFailedUnsupported.FAILED
+
+
+def hipster_status() -> bool:
+    """Determine the status of the HIPSTER daemon on the server."""
+
+    try:
+        check_call(['/bin/systemctl', 'status', 'hipster.service', '--quiet'])
+    except CalledProcessError:
+        return False
+
+    return True

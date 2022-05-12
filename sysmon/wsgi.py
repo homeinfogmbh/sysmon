@@ -7,7 +7,7 @@ from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
 from hwdb import SystemOffline, System
 from wsgilib import Binary, JSON, JSONMessage
 
-from sysmon.checks import check_system
+from sysmon.checks import check_system, hipster_status
 from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
@@ -98,3 +98,12 @@ def enduser_states() -> Union[JSON, JSONMessage]:
         check_result.to_json() for check_result in
         get_customer_check_results(CUSTOMER.id)
     ])
+
+
+@APPLICATION.route('/hipster-status', methods=['GET'], strict_slashes=False)
+@authenticated
+@authorized('sysmon')
+def hipster_status_() -> JSON:
+    """Returns the status of the HIPSTER daemon."""
+
+    return JSON(hipster_status())
