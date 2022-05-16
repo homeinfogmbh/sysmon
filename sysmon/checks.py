@@ -47,7 +47,7 @@ def check_system(system: System) -> CheckResults:
         application_version=get_application_version(sysinfo),
         ram_total=get_ram_total(sysinfo),
         ram_free=get_ram_free(sysinfo),
-        ram_availablee=get_ram_available(sysinfo),
+        ram_available=get_ram_available(sysinfo),
         efi_mount_ok=efi_mount_ok(sysinfo),
         download=measure_download_speed(system),
         upload=measure_upload_speed(system)
