@@ -53,6 +53,8 @@ class CheckResults(SysmonModel):
     ram_free = IntegerField(null=True)
     ram_available = IntegerField(null=True)
     efi_mount_ok = EnumField(SuccessFailedUnsupported)
+    download = IntegerField(null=True)      # kbps
+    upload = IntegerField(null=True)        # kbps
     # Failed-since timestamps
     offline_since = DateTimeField(null=True)
     blackscreen_since = DateTimeField(null=True)

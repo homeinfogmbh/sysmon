@@ -18,6 +18,7 @@ from sysmon.config import LOGGER, get_config
 from sysmon.enumerations import ApplicationState
 from sysmon.enumerations import BaytrailFreezeState
 from sysmon.enumerations import SuccessFailedUnsupported
+from sysmon.iperf3 import iperf3
 from sysmon.orm import CheckResults
 
 
@@ -47,7 +48,9 @@ def check_system(system: System) -> CheckResults:
         ram_total=get_ram_total(sysinfo),
         ram_free=get_ram_free(sysinfo),
         ram_availablee=get_ram_available(sysinfo),
-        efi_mount_ok=efi_mount_ok(sysinfo)
+        efi_mount_ok=efi_mount_ok(sysinfo),
+        download=measure_download_speed(system),
+        upload=measure_upload_speed(system)
     )
 
     try:
@@ -285,6 +288,28 @@ def efi_mount_ok(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
         return SuccessFailedUnsupported.SUCCESS
 
     return SuccessFailedUnsupported.FAILED
+
+
+def measure_download_speed(system: System) -> Optional[int]:
+    """Measure the download speed of the system in kbps."""
+
+    try:
+        result = iperf3(system.ip_address)
+    except (CalledProcessError, TimeoutExpired):
+        return None
+
+    return round(result.receiver.to_kbps().value)
+
+
+def measure_upload_speed(system: System) -> Optional[int]:
+    """Measure the upload speed of the system in kbps."""
+
+    try:
+        result = iperf3(system.ip_address, reverse=True)
+    except (CalledProcessError, TimeoutExpired):
+        return None
+
+    return round(result.receiver.to_kbps().value)
 
 
 def hipster_status() -> bool:
