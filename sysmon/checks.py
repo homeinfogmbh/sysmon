@@ -2,7 +2,12 @@
 
 from datetime import datetime
 from ipaddress import IPv6Address
-from subprocess import DEVNULL, PIPE, CalledProcessError, check_call, run
+from subprocess import DEVNULL
+from subprocess import PIPE
+from subprocess import TimeoutExpired
+from subprocess import CalledProcessError
+from subprocess import check_call
+from subprocess import run
 from typing import Any, Iterable, Optional
 
 from requests import ConnectionError, ReadTimeout, get
@@ -134,9 +139,14 @@ def check_ssh_login(
     ]
 
     try:
-        run(command, check=True, stdout=DEVNULL, stderr=PIPE, text=True)
+        run(
+            command, check=True, stdout=DEVNULL, stderr=PIPE, text=True,
+            timeout=timeout+1
+        )
     except CalledProcessError as error:
         LOGGER.error('SSH connection error: %s', error.stderr)
+        return SuccessFailedUnsupported.FAILED
+    except TimeoutExpired:
         return SuccessFailedUnsupported.FAILED
 
     return SuccessFailedUnsupported.SUCCESS
