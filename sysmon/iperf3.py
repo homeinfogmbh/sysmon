@@ -16,6 +16,7 @@ REGEX = (
 )
 KBPS = 'Kbits/sec'
 MBPS = 'Mbits/sec'
+BPS = 'bits/sec'
 
 
 class Speed(NamedTuple):
@@ -31,6 +32,9 @@ class Speed(NamedTuple):
 
         if self.unit == MBPS:
             return Speed(self.value * 1024, KBPS)
+
+        if self.unit == BPS:
+            return Speed(self.value / 1024, KBPS)
 
         raise ValueError('Cannot convert unit:', self.unit)
 
