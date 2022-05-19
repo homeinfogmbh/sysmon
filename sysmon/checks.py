@@ -2,6 +2,8 @@
 
 from datetime import datetime
 from ipaddress import IPv6Address
+from pathlib import Path
+from re import fullmatch
 from subprocess import DEVNULL
 from subprocess import PIPE
 from subprocess import TimeoutExpired
@@ -22,6 +24,9 @@ from sysmon.iperf3 import iperf3
 from sysmon.orm import CheckResults
 
 
+APPLICATION_AIR = r'application-air-(.+)-any\.pkg\.tar\.zst'
+APPLICATION_HTML = r'application-html-(.+)-any\.pkg\.tar\.zst'
+REPO_DIR = Path('/srv/http/de/homeinfo/mirror/prop/pacman')
 SSH_USERS = {'root', 'homeinfo'}
 SSH_CAPABLE_OSS = {
     OperatingSystem.ARCH_LINUX,
@@ -29,7 +34,12 @@ SSH_CAPABLE_OSS = {
 }
 
 
-__all__ = ['check_system', 'check_systems', 'hipster_status']
+__all__ = [
+    'check_system',
+    'check_systems',
+    'hipster_status',
+    'current_application_version'
+]
 
 
 def check_system(system: System) -> CheckResults:
@@ -321,3 +331,25 @@ def hipster_status() -> bool:
         return False
 
     return True
+
+
+def current_application_version(version: str) -> str | None:
+    """Returns the current application version in the repo."""
+
+    if version == 'html':
+        return extract_package_version(APPLICATION_HTML)
+
+    if version == 'air':
+        return extract_package_version(APPLICATION_AIR)
+
+    return None
+
+
+def extract_package_version(regex) -> str:
+    """Extracts the package version."""
+
+    for file in REPO_DIR.iterdir():
+        if match := fullmatch(regex, file.name):
+            return match.group(0)
+
+    raise ValueError('Could not determine any package version.')
