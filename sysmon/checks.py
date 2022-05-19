@@ -350,6 +350,6 @@ def extract_package_version(regex) -> str:
 
     for file in REPO_DIR.iterdir():
         if match := fullmatch(regex, file.name):
-            return match.group(0)
+            return match.group(1)
 
     raise ValueError('Could not determine any package version.')
