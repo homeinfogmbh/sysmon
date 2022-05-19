@@ -345,7 +345,7 @@ def current_application_version(typ: str) -> Optional[str]:
     return None
 
 
-def extract_package_version(regex) -> str:
+def extract_package_version(regex: str) -> str:
     """Extracts the package version."""
 
     for file in REPO_DIR.iterdir():
