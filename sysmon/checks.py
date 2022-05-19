@@ -333,13 +333,13 @@ def hipster_status() -> bool:
     return True
 
 
-def current_application_version(version: str) -> str | None:
+def current_application_version(typ: str) -> str | None:
     """Returns the current application version in the repo."""
 
-    if version == 'html':
+    if typ == 'html':
         return extract_package_version(APPLICATION_HTML)
 
-    if version == 'air':
+    if typ == 'air':
         return extract_package_version(APPLICATION_AIR)
 
     return None
