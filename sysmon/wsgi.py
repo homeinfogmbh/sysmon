@@ -7,7 +7,9 @@ from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
 from hwdb import SystemOffline, System
 from wsgilib import Binary, JSON, JSONMessage
 
-from sysmon.checks import check_system, hipster_status
+from sysmon.checks import check_system
+from sysmon.checks import hipster_status
+from sysmon.checks import current_application_version
 from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
@@ -107,3 +109,16 @@ def hipster_status_() -> JSON:
     """Returns the status of the HIPSTER daemon."""
 
     return JSON(hipster_status())
+
+
+@APPLICATION.route(
+    '/current-application-version/<str:typ>',
+    methods=['GET'],
+    strict_slashes=False
+)
+@authenticated
+@authorized('sysmon')
+def current_application_version_(typ: str) -> JSON:
+    """Returns the status of the HIPSTER daemon."""
+
+    return JSON(current_application_version(typ))
