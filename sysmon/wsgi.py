@@ -112,7 +112,7 @@ def hipster_status_() -> JSON:
 
 
 @APPLICATION.route(
-    '/current-application-version/<str:typ>',
+    '/current-application-version/<typ>',
     methods=['GET'],
     strict_slashes=False
 )
