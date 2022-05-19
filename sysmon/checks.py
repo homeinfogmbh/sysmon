@@ -333,7 +333,7 @@ def hipster_status() -> bool:
     return True
 
 
-def current_application_version(typ: str) -> str | None:
+def current_application_version(typ: str) -> Optional[str]:
     """Returns the current application version in the repo."""
 
     if typ == 'html':
