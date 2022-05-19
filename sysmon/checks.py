@@ -24,6 +24,14 @@ from sysmon.iperf3 import iperf3
 from sysmon.orm import CheckResults
 
 
+__all__ = [
+    'check_system',
+    'check_systems',
+    'hipster_status',
+    'current_application_version'
+]
+
+
 APPLICATION_AIR = r'application-air-(.+)-any\.pkg\.tar\.zst'
 APPLICATION_HTML = r'application-html-(.+)-any\.pkg\.tar\.zst'
 REPO_DIR = Path('/srv/http/de/homeinfo/mirror/prop/pacman')
@@ -32,14 +40,6 @@ SSH_CAPABLE_OSS = {
     OperatingSystem.ARCH_LINUX,
     OperatingSystem.ARCH_LINUX_ARM
 }
-
-
-__all__ = [
-    'check_system',
-    'check_systems',
-    'hipster_status',
-    'current_application_version'
-]
 
 
 def check_system(system: System) -> CheckResults:
