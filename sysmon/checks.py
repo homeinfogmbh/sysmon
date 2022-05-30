@@ -118,7 +118,7 @@ def check_icmp_request(system: System, timeout: Optional[int] = None) -> bool:
 
     try:
         system.ping(timeout=timeout)
-    except CalledProcessError:
+    except (CalledProcessError, TimeoutExpired):
         return False
 
     return True
