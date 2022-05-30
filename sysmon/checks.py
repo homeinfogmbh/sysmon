@@ -40,16 +40,21 @@ SSH_CAPABLE_OSS = {
     OperatingSystem.ARCH_LINUX,
     OperatingSystem.ARCH_LINUX_ARM
 }
+TIMEOUT = 5     # seconds
 
 
-def check_system(system: System) -> CheckResults:
+def check_system(
+        system: System,
+        *,
+        timeout: Optional[int] = TIMEOUT
+) -> CheckResults:
     """Checks a system."""
 
     http_request, sysinfo = get_sysinfo(system)
     check_results = CheckResults(
         system=system,
-        icmp_request=check_icmp_request(system),
-        ssh_login=check_ssh(system),
+        icmp_request=check_icmp_request(system, timeout=timeout),
+        ssh_login=check_ssh(system, timeout=timeout),
         http_request=http_request,
         application_state=get_application_state(sysinfo),
         smart_check=get_smart_results(sysinfo),
@@ -59,8 +64,8 @@ def check_system(system: System) -> CheckResults:
         ram_free=get_ram_free(sysinfo),
         ram_available=get_ram_available(sysinfo),
         efi_mount_ok=efi_mount_ok(sysinfo),
-        download=measure_download_speed(system),
-        upload=measure_upload_speed(system)
+        download=measure_download_speed(system, timeout=timeout),
+        upload=measure_upload_speed(system, timeout=timeout)
     )
 
     try:
@@ -108,25 +113,31 @@ def get_sysinfo(
     return SuccessFailedUnsupported.SUCCESS, response.json()
 
 
-def check_icmp_request(system: System) -> bool:
+def check_icmp_request(system: System, timeout: Optional[int] = None) -> bool:
     """Pings the system."""
 
     try:
-        system.ping()
+        system.ping(timeout=timeout)
     except CalledProcessError:
         return False
 
     return True
 
 
-def check_ssh(system: System) -> SuccessFailedUnsupported:
+def check_ssh(
+        system: System,
+        timeout: Optional[int] = None
+) -> SuccessFailedUnsupported:
     """Checks the SSH connection to the system."""
 
     if system.operating_system not in SSH_CAPABLE_OSS:
         return SuccessFailedUnsupported.UNSUPPORTED
 
     for user in SSH_USERS:
-        if check_ssh_login(system, user) is SuccessFailedUnsupported.SUCCESS:
+        if (
+                check_ssh_login(system, user, timeout=timeout) is
+                SuccessFailedUnsupported.SUCCESS
+        ):
             return SuccessFailedUnsupported.SUCCESS
 
     return SuccessFailedUnsupported.FAILED
@@ -300,22 +311,28 @@ def efi_mount_ok(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
     return SuccessFailedUnsupported.FAILED
 
 
-def measure_download_speed(system: System) -> Optional[int]:
+def measure_download_speed(
+        system: System,
+        timeout: Optional[int] = None
+) -> Optional[int]:
     """Measure the download speed of the system in kbps."""
 
     try:
-        result = iperf3(system.ip_address)
+        result = iperf3(system.ip_address, timeout=timeout)
     except (CalledProcessError, TimeoutExpired):
         return None
 
     return round(result.receiver.to_kbps().value)
 
 
-def measure_upload_speed(system: System) -> Optional[int]:
+def measure_upload_speed(
+        system: System,
+        timeout: Optional[int] = None
+) -> Optional[int]:
     """Measure the upload speed of the system in kbps."""
 
     try:
-        result = iperf3(system.ip_address, reverse=True)
+        result = iperf3(system.ip_address, reverse=True, timeout=timeout)
     except (CalledProcessError, TimeoutExpired):
         return None
 
