@@ -27,7 +27,7 @@ APPLICATION = Application('sysmon')
 @authenticated
 @authorized('sysmon')
 def list_latest_stats() -> JSON:
-    """Lists systems and their latest stats."""
+    """List systems and their latest stats."""
 
     return JSON(check_results_to_json(
         get_latest_check_results_per_system(ACCOUNT)
@@ -42,7 +42,7 @@ def list_latest_stats() -> JSON:
 @authenticated
 @authorized('sysmon')
 def list_stats(system: int) -> JSON:
-    """Lists systems and their stats."""
+    """List latest stats of a system."""
 
     return JSON(check_results_to_json(
         get_check_results_for_system(system, ACCOUNT)
@@ -57,7 +57,7 @@ def list_stats(system: int) -> JSON:
 @authenticated
 @authorized('sysmon')
 def do_check_system(system: int) -> JSON:
-    """Lists uptime details of a system."""
+    """List uptime details of a system."""
 
     system = get_system(system, ACCOUNT)
     check_result = check_system(system)
@@ -72,7 +72,7 @@ def do_check_system(system: int) -> JSON:
 @authenticated
 @authorized('sysmon')
 def get_screenshot(system: int) -> Union[Binary, JSONMessage]:
-    """Returns a screenshot of the system."""
+    """Return a screenshot of the system."""
 
     try:
         system = get_system(system, ACCOUNT)
@@ -94,7 +94,7 @@ def get_screenshot(system: int) -> Union[Binary, JSONMessage]:
 @authenticated
 @authorized('sysmon')
 def enduser_states() -> Union[JSON, JSONMessage]:
-    """Checks the system states for end-users."""
+    """Check the system states for end-users."""
 
     return JSON([
         check_result.to_json() for check_result in
@@ -106,7 +106,7 @@ def enduser_states() -> Union[JSON, JSONMessage]:
 @authenticated
 @authorized('sysmon')
 def hipster_status_() -> JSON:
-    """Returns the status of the HIPSTER daemon."""
+    """Return the status of the HIPSTER daemon."""
 
     return JSON(hipster_status())
 
@@ -119,6 +119,6 @@ def hipster_status_() -> JSON:
 @authenticated
 @authorized('sysmon')
 def current_application_version_(typ: str) -> JSON:
-    """Returns the status of the HIPSTER daemon."""
+    """Return the status of the HIPSTER daemon."""
 
     return JSON(current_application_version(typ))
