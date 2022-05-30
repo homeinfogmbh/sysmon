@@ -65,8 +65,10 @@ class CheckResults(SysmonModel):
         if not cascade:
             return super().select(*args)
 
+        lpt_address = Address.alias()
         return super().select(
-            cls, System, Deployment, Customer, Company, Address, *args
+            cls, System, Deployment, Customer, Company, Address, lpt_address,
+            *args
         ).join(System).join(
             Deployment, on=System.deployment == Deployment.id,
             join_type=JOIN.LEFT_OUTER
@@ -76,6 +78,10 @@ class CheckResults(SysmonModel):
             Company, join_type=JOIN.LEFT_OUTER
         ).join_from(
             Deployment, Address, on=Deployment.address == Address.id,
+            join_type=JOIN.LEFT_OUTER
+        ).join_from(
+            Deployment, lpt_address,
+            on=Deployment.lpt_address == lpt_address.id,
             join_type=JOIN.LEFT_OUTER
         )
 
