@@ -40,21 +40,18 @@ SSH_CAPABLE_OSS = {
     OperatingSystem.ARCH_LINUX,
     OperatingSystem.ARCH_LINUX_ARM
 }
-TIMEOUT = 15    # seconds
+IPERF_TIMEOUT = 15  # seconds
+TCP_TIMEOUT = 5     # seconds
 
 
-def check_system(
-        system: System,
-        *,
-        timeout: Optional[int] = TIMEOUT
-) -> CheckResults:
+def check_system(system: System) -> CheckResults:
     """Checks a system."""
 
     http_request, sysinfo = get_sysinfo(system)
     check_results = CheckResults(
         system=system,
-        icmp_request=check_icmp_request(system, timeout=timeout),
-        ssh_login=check_ssh(system, timeout=timeout),
+        icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
+        ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
         http_request=http_request,
         application_state=get_application_state(sysinfo),
         smart_check=get_smart_results(sysinfo),
@@ -64,8 +61,8 @@ def check_system(
         ram_free=get_ram_free(sysinfo),
         ram_available=get_ram_available(sysinfo),
         efi_mount_ok=efi_mount_ok(sysinfo),
-        download=measure_download_speed(system, timeout=timeout),
-        upload=measure_upload_speed(system, timeout=timeout)
+        download=measure_download_speed(system, timeout=IPERF_TIMEOUT),
+        upload=measure_upload_speed(system, timeout=IPERF_TIMEOUT)
     )
 
     try:
