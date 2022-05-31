@@ -40,7 +40,7 @@ SSH_CAPABLE_OSS = {
     OperatingSystem.ARCH_LINUX,
     OperatingSystem.ARCH_LINUX_ARM
 }
-TIMEOUT = 5     # seconds
+TIMEOUT = 15    # seconds
 
 
 def check_system(
