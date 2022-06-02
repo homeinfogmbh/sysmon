@@ -1,7 +1,7 @@
 """System checking."""
 
 from datetime import datetime
-from ipaddress import IPv6Address
+from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path
 from re import fullmatch
 from subprocess import DEVNULL
@@ -10,7 +10,7 @@ from subprocess import TimeoutExpired
 from subprocess import CalledProcessError
 from subprocess import check_call
 from subprocess import run
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Optional, Union
 
 from requests import ConnectionError, ReadTimeout, get
 
@@ -95,13 +95,8 @@ def get_sysinfo(
 ) -> tuple[SuccessFailedUnsupported, dict[str, Any]]:
     """Returns the system info dict per HTTP request."""
 
-    if isinstance(ip_address := system.ip_address, IPv6Address):
-        socket = f'[{ip_address}]:{port}'
-    else:
-        socket = f'{ip_address}:{port}'
-
     try:
-        response = get(f'http://{socket}', timeout=timeout)
+        response = get(get_url(system.ip_address, port=port), timeout=timeout)
     except (ConnectionError, ReadTimeout):
         return SuccessFailedUnsupported.UNSUPPORTED, {}
 
@@ -109,6 +104,33 @@ def get_sysinfo(
         return SuccessFailedUnsupported.FAILED, {}
 
     return SuccessFailedUnsupported.SUCCESS, response.json()
+
+
+def get_url(
+        ip_address: Union[IPv4Address, IPv6Address],
+        *,
+        port: Optional[int] = None,
+        protocol: str = 'http'
+) -> str:
+    """Returns the URL to the given IP address."""
+
+    return f'{protocol}://{get_socket(ip_address, port=port)}'
+
+
+def get_socket(
+        ip_address: Union[IPv4Address, IPv6Address],
+        *,
+        port: Optional[int] = None
+) -> str:
+    """Returns an IP socket as string."""
+
+    if port is None:
+        return str(ip_address)
+
+    if isinstance(ip_address, IPv6Address):
+        return f'[{ip_address}]:{port}'
+
+    return f'{ip_address}:{port}'
 
 
 def check_icmp_request(system: System, timeout: Optional[int] = None) -> bool:
