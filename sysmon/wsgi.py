@@ -63,6 +63,7 @@ def do_check_system(system: int) -> JSON:
 
     system = get_system(system, ACCOUNT)
     check_result = check_system(system)
+    check_result.save()
     return JSON(check_result.to_json())
 
 
