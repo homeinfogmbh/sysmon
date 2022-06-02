@@ -11,6 +11,7 @@ from sysmon.checks import check_system
 from sysmon.checks import get_sysinfo
 from sysmon.checks import hipster_status
 from sysmon.checks import current_application_version
+from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
@@ -132,7 +133,15 @@ def current_application_version_(typ: str) -> JSON:
 )
 @authenticated
 @authorized('sysmon')
-def sysinfo(ident: int) -> JSON:
+def sysinfo_(ident: int) -> Union[JSON, JSONMessage]:
     """Return the sysinfo dict of the given system."""
 
-    return JSON(get_sysinfo(get_system(ident, ACCOUNT)))
+    http_request, sysinfo = get_sysinfo(get_system(ident, ACCOUNT))
+
+    if http_request is SuccessFailedUnsupported.SUCCESS:
+        return JSON(sysinfo)
+
+    if http_request is SuccessFailedUnsupported.UNSUPPORTED:
+        return JSONMessage('Sysinfo unsupported on this system.', status=400)
+
+    return JSONMessage('Sysinfo failed on this system.', status=400)
