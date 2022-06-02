@@ -1,7 +1,6 @@
 """System checking."""
 
 from datetime import datetime
-from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path
 from re import fullmatch
 from subprocess import DEVNULL
@@ -10,7 +9,7 @@ from subprocess import TimeoutExpired
 from subprocess import CalledProcessError
 from subprocess import check_call
 from subprocess import run
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Iterable, Optional
 
 from requests import ConnectionError, ReadTimeout, get
 
@@ -20,6 +19,7 @@ from sysmon.config import LOGGER, get_config
 from sysmon.enumerations import ApplicationState
 from sysmon.enumerations import BaytrailFreezeState
 from sysmon.enumerations import SuccessFailedUnsupported
+from sysmon.functions import get_url
 from sysmon.iperf3 import iperf3
 from sysmon.orm import CheckResults
 
@@ -104,33 +104,6 @@ def get_sysinfo(
         return SuccessFailedUnsupported.FAILED, {}
 
     return SuccessFailedUnsupported.SUCCESS, response.json()
-
-
-def get_url(
-        ip_address: Union[IPv4Address, IPv6Address],
-        *,
-        port: Optional[int] = None,
-        protocol: str = 'http'
-) -> str:
-    """Returns the URL to the given IP address."""
-
-    return f'{protocol}://{get_socket(ip_address, port=port)}'
-
-
-def get_socket(
-        ip_address: Union[IPv4Address, IPv6Address],
-        *,
-        port: Optional[int] = None
-) -> str:
-    """Returns an IP socket as string."""
-
-    if port is None:
-        return str(ip_address)
-
-    if isinstance(ip_address, IPv6Address):
-        return f'[{ip_address}]:{port}'
-
-    return f'{ip_address}:{port}'
 
 
 def check_icmp_request(system: System, timeout: Optional[int] = None) -> bool:

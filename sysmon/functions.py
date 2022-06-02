@@ -1,6 +1,7 @@
 """Common functions."""
 
 from datetime import datetime
+from ipaddress import IPv4Address, IPv6Address
 from typing import Any, Iterable, Iterator, Optional, Union
 
 from peewee import ModelSelect, fn
@@ -17,6 +18,8 @@ from sysmon.orm import CheckResults
 
 __all__ = [
     'count',
+    'get_socket',
+    'get_url',
     'get_system',
     'get_systems',
     'get_check_results',
@@ -30,6 +33,33 @@ def count(items: Iterable[Any]) -> int:
     """Counts the items."""
 
     return sum(1 for _ in items)
+
+
+def get_url(
+        ip_address: Union[IPv4Address, IPv6Address],
+        *,
+        port: Optional[int] = None,
+        protocol: str = 'http'
+) -> str:
+    """Returns the URL to the given IP address."""
+
+    return f'{protocol}://{get_socket(ip_address, port=port)}'
+
+
+def get_socket(
+        ip_address: Union[IPv4Address, IPv6Address],
+        *,
+        port: Optional[int] = None
+) -> str:
+    """Returns an IP socket as string."""
+
+    if port is None:
+        return str(ip_address)
+
+    if isinstance(ip_address, IPv6Address):
+        return f'[{ip_address}]:{port}'
+
+    return f'{ip_address}:{port}'
 
 
 def get_customer_system_checks(customer: Union[Customer, int]) -> dict:
