@@ -8,6 +8,7 @@ from hwdb import SystemOffline, System
 from wsgilib import Binary, JSON, JSONMessage
 
 from sysmon.checks import check_system
+from sysmon.checks import get_sysinfo
 from sysmon.checks import hipster_status
 from sysmon.checks import current_application_version
 from sysmon.functions import get_check_results_for_system
@@ -122,3 +123,16 @@ def current_application_version_(typ: str) -> JSON:
     """Return the status of the HIPSTER daemon."""
 
     return JSON(current_application_version(typ))
+
+
+@APPLICATION.route(
+    '/sysinfo/<int:ident>',
+    methods=['GET'],
+    strict_slashes=False
+)
+@authenticated
+@authorized('sysmon')
+def sysinfo(ident: int) -> JSON:
+    """Return the sysinfo dict of the given system."""
+
+    return JSON(get_sysinfo(get_system(ident, ACCOUNT)))

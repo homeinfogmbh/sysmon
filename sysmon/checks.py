@@ -27,6 +27,7 @@ from sysmon.orm import CheckResults
 __all__ = [
     'check_system',
     'check_systems',
+    'get_sysinfo',
     'hipster_status',
     'current_application_version'
 ]
