@@ -1,6 +1,5 @@
 """Administrative systems monitoring."""
 
-from traceback import format_exc
 from typing import Union
 
 from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
