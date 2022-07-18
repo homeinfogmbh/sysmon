@@ -414,7 +414,7 @@ def check_system_sensors(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
             if crit is not None and current >= crit:
                 return SuccessFailedUnsupported.FAILED
 
-            if max_ is not None and current > max:
+            if max_ is not None and current > max_:
                 return SuccessFailedUnsupported.FAILED
 
     return SuccessFailedUnsupported.SUCCESS
