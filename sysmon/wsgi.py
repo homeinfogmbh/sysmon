@@ -1,7 +1,6 @@
 """Administrative systems monitoring."""
 
 from datetime import datetime, timedelta
-from traceback import format_exc
 from typing import Union
 
 from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
