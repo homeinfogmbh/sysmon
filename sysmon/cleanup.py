@@ -12,7 +12,7 @@ __all__ = ['cleanup']
 
 
 LOGGER = getLogger('sysmon-cleanup')
-MAX_RETENTION = timedelta(days=30)
+MAX_RETENTION = timedelta(days=90)
 
 
 def remove_checks_older_than(age: timedelta) -> int:
