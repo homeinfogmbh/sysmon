@@ -153,11 +153,13 @@ def get_latest_check_results_per_system(account: Account) -> ModelSelect:
 
 def get_authenticated_systems(
         systems: Iterable[Union[System, int]],
-        account: Account
+        *
+        account: Account,
+        cascade: bool = False
 ) -> ModelSelect:
     """Select systems with termacls authentication."""
 
-    return System.select(cascade=True).where(
+    return System.select(cascade=cascade).where(
         (System.id << systems)
         & get_system_admin_condition(account)
     )

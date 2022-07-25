@@ -158,4 +158,6 @@ def sysinfo_(ident: int) -> Union[JSON, JSONMessage]:
 def blacklist() -> JSON:
     """List blacklisted systems."""
 
-    return JSON(system.to_json() for system in load_blacklist(ACCOUNT))
+    return JSON([
+        system.to_json(cascade=True) for system in load_blacklist(ACCOUNT)
+    ])
