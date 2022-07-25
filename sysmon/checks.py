@@ -391,12 +391,11 @@ def get_blacklist(
 ) -> Iterator[System]:
     """Determine whether the given system is blacklisted."""
 
-    check_results = CheckResults.select(cascade=True).where(
-        CheckResults.timestamp > datetime.now() - retention
-    )
     system_check_results = defaultdict(list)
 
-    for check_result in check_results:
+    for check_result in CheckResults.select(cascade=True).where(
+            CheckResults.timestamp > datetime.now() - retention
+    ):
         system_check_results[check_result.system].append(check_result)
 
     for system, check_results in system_check_results.items():
