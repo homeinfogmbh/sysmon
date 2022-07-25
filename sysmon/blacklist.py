@@ -2,14 +2,19 @@
 
 from collections import defaultdict
 from datetime import datetime, timedelta
-from json import dump
+from json import dump, load
 from pathlib import Path
 from typing import Iterator, Sequence
 
+from peewee import ModelSelect
+
+from his import Account
+
+from sysmon.functions import get_authenticated_systems
 from sysmon.orm import CheckResults
 
 
-__all__ = ['generate_blacklist', 'get_blacklist']
+__all__ = ['generate_blacklist', 'load_blacklist', 'get_blacklist']
 
 
 BLACKLIST = Path('/tmp/sysmon-blacklist.json')
@@ -24,6 +29,15 @@ def generate_blacklist() -> int:
         dump(list(get_blacklist(datetime.now() - RETENTION)), file)
 
     return 0
+
+
+def load_blacklist(account: Account) -> ModelSelect:
+    """Loads the systems from the blacklist."""
+
+    with BLACKLIST.open('r', encoding='utf-8') as file:
+        systems = load(file)
+
+    return get_authenticated_systems(systems, account=account)
 
 
 def get_blacklist(
