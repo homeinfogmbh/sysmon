@@ -376,14 +376,6 @@ def extract_package_version(regex: str) -> str:
     raise ValueError('Could not determine any package version.')
 
 
-def offline_percent(check_results: Sequence[CheckResults]) -> float:
-    """Return the percentage the system was offline within the given checks."""
-
-    return len(
-        list(filter(lambda check: not check.online, check_results))
-    ) / len(check_results)
-
-
 def get_blacklist(
         *,
         retention: timedelta = timedelta(days=90),
@@ -410,14 +402,25 @@ def is_blacklisted(
 ) -> bool:
     """Determine whether the given system is blacklisted."""
 
-    total = len(check_results)
     return all(
         percentage > threshold for percentage in (
-            len(list(filter(
-                lambda check: not check.online, check_results
-            ))) / total,
-            len(list(filter(
-                lambda check: check.low_bandwidth(), check_results
-            ))) / total
+            offline_percent(check_results),
+            low_bandwidth_percent(check_results)
         )
     )
+
+
+def offline_percent(check_results: Sequence[CheckResults]) -> float:
+    """Return the percentage of checks that yielded offline."""
+
+    return len(list(filter(
+        lambda check: not check.online, check_results
+    ))) / len(check_results)
+
+
+def low_bandwidth_percent(check_results: Sequence[CheckResults]) -> float:
+    """Return the percentage of checks that yielded a low bandwidth."""
+
+    return len(list(filter(
+        lambda check: check.low_bandwidth(), check_results
+    ))) / len(check_results)
