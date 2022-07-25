@@ -153,7 +153,7 @@ def get_latest_check_results_per_system(account: Account) -> ModelSelect:
 
 def get_authenticated_systems(
         systems: Iterable[Union[System, int]],
-        *
+        *,
         account: Account,
         cascade: bool = False
 ) -> ModelSelect:
