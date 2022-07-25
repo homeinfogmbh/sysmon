@@ -397,7 +397,7 @@ def get_blacklist(
     system_check_results = defaultdict(list)
 
     for check_result in check_results:
-        system_check_results[check_result.system] = check_result
+        system_check_results[check_result.system].append(check_result)
 
     for system, check_results in system_check_results.items():
         if is_blacklisted(check_results, threshold=threshold):
