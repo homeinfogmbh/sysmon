@@ -414,13 +414,11 @@ def is_blacklisted(
     total = len(check_results)
     return all(
         percentage > threshold for percentage in (
-            len(
-                list(filter(lambda check: not check.online, check_results))
-            ) / total,
-            len(
-                list(filter(
-                    lambda check: check.low_bandwidth(), check_results)
-                )
-            ) / total
+            len(list(filter(
+                lambda check: not check.online, check_results
+            ))) / total,
+            len(list(filter(
+                lambda check: check.low_bandwidth(), check_results
+            ))) / total
         )
     )
