@@ -1,6 +1,7 @@
 """System checking."""
 
-from datetime import datetime
+from collections import defaultdict
+from datetime import datetime, timedelta
 from pathlib import Path
 from re import fullmatch
 from subprocess import DEVNULL
@@ -9,7 +10,7 @@ from subprocess import TimeoutExpired
 from subprocess import CalledProcessError
 from subprocess import check_call
 from subprocess import run
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Iterator, Optional, Sequence
 
 from requests import ConnectionError, ReadTimeout, get
 
@@ -29,7 +30,8 @@ __all__ = [
     'check_systems',
     'get_sysinfo',
     'hipster_status',
-    'current_application_version'
+    'current_application_version',
+    'get_blacklisted'
 ]
 
 
@@ -372,3 +374,53 @@ def extract_package_version(regex: str) -> str:
             return match.group(1)
 
     raise ValueError('Could not determine any package version.')
+
+
+def offline_percent(check_results: Sequence[CheckResults]) -> float:
+    """Return the percentage the system was offline within the given checks."""
+
+    return len(
+        list(filter(lambda check: not check.online, check_results))
+    ) / len(check_results)
+
+
+def get_blacklisted(
+        *,
+        retention: timedelta = timedelta(days=90),
+        threshold: float = 0.8
+) -> Iterator[System]:
+    """Determine whether the given system is blacklisted."""
+
+    check_results = CheckResults.select(cascade=True).where(
+        CheckResults.timestamp > datetime.now() - retention
+    )
+    system_check_results = defaultdict(list)
+
+    for check_result in check_results:
+        system_check_results[check_result.system] = check_result
+
+    for system, check_results in system_check_results.items():
+        if is_blacklisted(check_results, threshold=threshold):
+            yield system
+
+
+def is_blacklisted(
+        check_results: Sequence[CheckResults],
+        *,
+        threshold: float = 0.8
+) -> bool:
+    """Determine whether the given system is blacklisted."""
+
+    total = len(check_results)
+    return all(
+        percentage > threshold for percentage in (
+            len(
+                list(filter(lambda check: not check.online, check_results))
+            ) / total,
+            len(
+                list(filter(
+                    lambda check: check.low_bandwidth(), check_results)
+                )
+            ) / total
+        )
+    )

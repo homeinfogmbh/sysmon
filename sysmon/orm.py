@@ -92,3 +92,7 @@ class CheckResults(SysmonModel):
             self.icmp_request
             and self.ssh_login is SuccessFailedUnsupported.SUCCESS
         )
+
+    def low_bandwidth(self, required: int = 2000) -> bool:  # kbps
+        """Determine whether the system has a low bandwidth."""
+        return self.download < required
