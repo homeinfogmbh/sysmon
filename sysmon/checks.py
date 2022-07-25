@@ -1,6 +1,5 @@
 """System checking."""
 
-from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 from re import fullmatch
@@ -10,7 +9,7 @@ from subprocess import TimeoutExpired
 from subprocess import CalledProcessError
 from subprocess import check_call
 from subprocess import run
-from typing import Any, Iterable, Iterator, Optional, Sequence
+from typing import Any, Iterable, Optional
 
 from requests import ConnectionError, ReadTimeout, get
 
@@ -30,8 +29,7 @@ __all__ = [
     'check_systems',
     'get_sysinfo',
     'hipster_status',
-    'current_application_version',
-    'get_blacklist'
+    'current_application_version'
 ]
 
 
@@ -374,61 +372,3 @@ def extract_package_version(regex: str) -> str:
             return match.group(1)
 
     raise ValueError('Could not determine any package version.')
-
-
-def get_blacklist(
-        since: datetime,
-        *,
-        threshold: float = 0.8
-) -> Iterator[System]:
-    """Determine whether the given system is blacklisted."""
-
-    for system, check_results in get_check_results_by_system(since).items():
-        if is_blacklisted(check_results, threshold=threshold):
-            yield system
-
-
-def get_check_results_by_system(
-        since: datetime
-) -> dict[int, list[CheckResults]]:
-    """Return a dict of systems and their check results."""
-
-    system_check_results = defaultdict(list)
-
-    for check_result in CheckResults.select().where(
-            CheckResults.timestamp > since
-    ):
-        system_check_results[check_result.system].append(check_result)
-
-    return system_check_results
-
-
-def is_blacklisted(
-        check_results: Sequence[CheckResults],
-        *,
-        threshold: float = 0.8
-) -> bool:
-    """Determine whether the given system is blacklisted."""
-
-    return all(
-        percentage > threshold for percentage in (
-            offline_percent(check_results),
-            low_bandwidth_percent(check_results)
-        )
-    )
-
-
-def offline_percent(check_results: Sequence[CheckResults]) -> float:
-    """Return the percentage of checks that yielded offline."""
-
-    return len(list(filter(
-        lambda check_result: not check_result.online, check_results
-    ))) / len(check_results)
-
-
-def low_bandwidth_percent(check_results: Sequence[CheckResults]) -> float:
-    """Return the percentage of checks that yielded a low bandwidth."""
-
-    return len(list(filter(
-        lambda check_result: check_result.low_bandwidth(), check_results
-    ))) / len(check_results)

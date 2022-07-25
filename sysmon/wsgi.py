@@ -7,11 +7,11 @@ from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
 from hwdb import SystemOffline, System
 from wsgilib import Binary, JSON, JSONMessage
 
+from sysmon.blacklist import get_blacklist
 from sysmon.checks import check_system
 from sysmon.checks import get_sysinfo
 from sysmon.checks import hipster_status
 from sysmon.checks import current_application_version
-from sysmon.checks import get_blacklist
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
