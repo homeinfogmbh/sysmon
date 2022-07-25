@@ -383,6 +383,16 @@ def get_blacklist(
 ) -> Iterator[System]:
     """Determine whether the given system is blacklisted."""
 
+    for system, check_results in get_check_results_by_system(since).items():
+        if is_blacklisted(check_results, threshold=threshold):
+            yield system
+
+
+def get_check_results_by_system(
+        since: datetime
+) -> dict[System, list[CheckResults]]:
+    """Return a dict of systems and their check results."""
+
     system_check_results = defaultdict(list)
 
     for check_result in CheckResults.select(cascade=True).where(
@@ -390,9 +400,7 @@ def get_blacklist(
     ):
         system_check_results[check_result.system].append(check_result)
 
-    for system, check_results in system_check_results.items():
-        if is_blacklisted(check_results, threshold=threshold):
-            yield system
+    return system_check_results
 
 
 def is_blacklisted(
