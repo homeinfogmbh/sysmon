@@ -1,5 +1,5 @@
 [Unit]
-Description=Check all systems every six hours
+Description=Check all systems daily
 After=network.target mysql.service
 
 [Timer]
