@@ -414,7 +414,7 @@ def offline_percent(check_results: Sequence[CheckResults]) -> float:
     """Return the percentage of checks that yielded offline."""
 
     return len(list(filter(
-        lambda check: not check.online, check_results
+        lambda check_result: not check_result.online, check_results
     ))) / len(check_results)
 
 
@@ -422,5 +422,5 @@ def low_bandwidth_percent(check_results: Sequence[CheckResults]) -> float:
     """Return the percentage of checks that yielded a low bandwidth."""
 
     return len(list(filter(
-        lambda check: check.low_bandwidth(), check_results
+        lambda check_result: check_result.low_bandwidth(), check_results
     ))) / len(check_results)
