@@ -1,13 +1,12 @@
 """Administrative systems monitoring."""
 
-from datetime import datetime, timedelta
 from typing import Union
 
 from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
 from hwdb import SystemOffline, System
 from wsgilib import Binary, JSON, JSONMessage
 
-from sysmon.blacklist import get_blacklist
+from sysmon.blacklist import load_blacklist
 from sysmon.checks import check_system
 from sysmon.checks import get_sysinfo
 from sysmon.checks import hipster_status
@@ -159,6 +158,4 @@ def sysinfo_(ident: int) -> Union[JSON, JSONMessage]:
 def blacklist() -> JSON:
     """List blacklisted systems."""
 
-    return JSON(list(get_blacklist(
-        datetime.now() - timedelta(days=90)
-    )))
+    return JSON(system.to_json() for system in load_blacklist(ACCOUNT))
