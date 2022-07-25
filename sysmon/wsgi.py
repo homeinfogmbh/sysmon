@@ -1,5 +1,9 @@
 """Administrative systems monitoring."""
 
+<<<<<<< HEAD
+=======
+from datetime import datetime, timedelta
+>>>>>>> github/master
 from typing import Union
 
 from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
@@ -22,6 +26,7 @@ __all__ = ['APPLICATION']
 
 
 APPLICATION = Application('sysmon')
+LATEST_PERIOD = timedelta(days=30)
 
 
 @APPLICATION.route('/checks', methods=['GET'], strict_slashes=False)
@@ -46,7 +51,9 @@ def list_stats(system: int) -> JSON:
     """List latest stats of a system."""
 
     return JSON(check_results_to_json(
-        get_check_results_for_system(system, ACCOUNT)
+        get_check_results_for_system(
+            system, ACCOUNT, after=datetime.now() - LATEST_PERIOD
+        )
     ))
 
 

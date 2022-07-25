@@ -55,6 +55,8 @@ class CheckResults(SysmonModel):
     efi_mount_ok = EnumField(SuccessFailedUnsupported)
     download = IntegerField(null=True)      # kbps
     upload = IntegerField(null=True)        # kbps
+    root_not_ro = EnumField(SuccessFailedUnsupported)
+    sensors = EnumField(SuccessFailedUnsupported)
     # Failed-since timestamps
     offline_since = DateTimeField(null=True)
     blackscreen_since = DateTimeField(null=True)
