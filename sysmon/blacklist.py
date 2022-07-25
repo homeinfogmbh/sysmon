@@ -35,9 +35,7 @@ def load_blacklist(account: Account) -> ModelSelect:
     """Loads the systems from the blacklist."""
 
     with BLACKLIST.open('r', encoding='utf-8') as file:
-        systems = load(file)
-
-    return get_authenticated_systems(systems, account=account)
+        return get_authenticated_systems(load(file), account=account)
 
 
 def get_blacklist(
