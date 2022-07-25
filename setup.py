@@ -32,7 +32,8 @@ setup(
         'console_scripts': [
             'sysmon = sysmon.daemon:spawn',
             'sysmon-cleanup = sysmon.cleanup:main',
-            'sysmon-notify = sysmon.notify:notify'
+            'sysmon-notify = sysmon.notify:notify',
+            'sysmon-generate-blacklist = sysmon.blacklist:generate_blacklist'
         ]
     },
     data_files=[
