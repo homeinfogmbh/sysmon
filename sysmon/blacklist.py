@@ -14,6 +14,7 @@ __all__ = ['generate_blacklist', 'get_blacklist']
 
 BLACKLIST = Path('/tmp/sysmon-blacklist.json')
 RETENTION = timedelta(days=90)
+THRESHOLD = 0.8
 
 
 def generate_blacklist() -> int:
@@ -28,7 +29,7 @@ def generate_blacklist() -> int:
 def get_blacklist(
         since: datetime,
         *,
-        threshold: float = 0.8
+        threshold: float = THRESHOLD
 ) -> Iterator[int]:
     """Determine whether the given system is blacklisted."""
 
@@ -55,7 +56,7 @@ def get_check_results_by_system(
 def is_blacklisted(
         check_results: Sequence[CheckResults],
         *,
-        threshold: float = 0.8
+        threshold: float = THRESHOLD
 ) -> bool:
     """Determine whether the given system is blacklisted."""
 
