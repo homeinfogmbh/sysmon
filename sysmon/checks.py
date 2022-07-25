@@ -144,7 +144,29 @@ def check_ssh_login(
 ) -> SuccessFailedUnsupported:
     """Checks the SSH login on the system."""
 
-    command = [
+    try:
+        run(
+            get_ssh_command(system, user=user, timeout=timeout), check=True,
+            stdout=DEVNULL, stderr=PIPE, text=True, timeout=timeout+1
+        )
+    except CalledProcessError as error:
+        LOGGER.error('SSH connection error: %s', error.stderr)
+        return SuccessFailedUnsupported.FAILED
+    except TimeoutExpired:
+        return SuccessFailedUnsupported.FAILED
+
+    return SuccessFailedUnsupported.SUCCESS
+
+
+def get_ssh_command(
+        system: System,
+        *,
+        user: str,
+        timeout: int = 5
+) -> list[str]:
+    """Return a list of SSH command and parameters for subprocess.run()."""
+
+    return  [
         '/usr/bin/ssh',
         '-i', get_config().get('ssh', 'keyfile'),
         '-o', 'LogLevel=error',
@@ -154,19 +176,6 @@ def check_ssh_login(
         f'{user}@{system.ip_address}',
         '/usr/bin/true'
     ]
-
-    try:
-        run(
-            command, check=True, stdout=DEVNULL, stderr=PIPE, text=True,
-            timeout=timeout+1
-        )
-    except CalledProcessError as error:
-        LOGGER.error('SSH connection error: %s', error.stderr)
-        return SuccessFailedUnsupported.FAILED
-    except TimeoutExpired:
-        return SuccessFailedUnsupported.FAILED
-
-    return SuccessFailedUnsupported.SUCCESS
 
 
 def get_application_state(sysinfo: dict[str, Any]) -> ApplicationState:
