@@ -1,7 +1,7 @@
 """System checking."""
 
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from re import fullmatch
 from subprocess import DEVNULL
@@ -377,8 +377,8 @@ def extract_package_version(regex: str) -> str:
 
 
 def get_blacklist(
+        since: datetime,
         *,
-        retention: timedelta = timedelta(days=90),
         threshold: float = 0.8
 ) -> Iterator[System]:
     """Determine whether the given system is blacklisted."""
@@ -386,7 +386,7 @@ def get_blacklist(
     system_check_results = defaultdict(list)
 
     for check_result in CheckResults.select(cascade=True).where(
-            CheckResults.timestamp > datetime.now() - retention
+            CheckResults.timestamp > since
     ):
         system_check_results[check_result.system].append(check_result)
 

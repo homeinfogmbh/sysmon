@@ -1,5 +1,6 @@
 """Administrative systems monitoring."""
 
+from datetime import datetime, timedelta
 from typing import Union
 
 from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
@@ -158,4 +159,8 @@ def sysinfo_(ident: int) -> Union[JSON, JSONMessage]:
 def blacklist() -> JSON:
     """List blacklisted systems."""
 
-    return JSON([system.to_json() for system in get_blacklist()])
+    return JSON([
+        system.to_json() for system in get_blacklist(
+            datetime.now() - timedelta(days=90)
+        )
+    ])
