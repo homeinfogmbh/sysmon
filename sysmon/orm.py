@@ -95,4 +95,7 @@ class CheckResults(SysmonModel):
 
     def low_bandwidth(self, required: int = 2000) -> bool:  # kbps
         """Determine whether the system has a low bandwidth."""
+        if self.download is None:
+            return True
+
         return self.download < required
