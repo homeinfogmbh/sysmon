@@ -31,7 +31,7 @@ __all__ = [
     'get_sysinfo',
     'hipster_status',
     'current_application_version',
-    'get_blacklisted'
+    'get_blacklist'
 ]
 
 
@@ -384,7 +384,7 @@ def offline_percent(check_results: Sequence[CheckResults]) -> float:
     ) / len(check_results)
 
 
-def get_blacklisted(
+def get_blacklist(
         *,
         retention: timedelta = timedelta(days=90),
         threshold: float = 0.8

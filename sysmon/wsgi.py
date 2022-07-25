@@ -10,6 +10,7 @@ from sysmon.checks import check_system
 from sysmon.checks import get_sysinfo
 from sysmon.checks import hipster_status
 from sysmon.checks import current_application_version
+from sysmon.checks import get_blacklist
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
@@ -145,3 +146,16 @@ def sysinfo_(ident: int) -> Union[JSON, JSONMessage]:
         return JSONMessage('Sysinfo unsupported on this system.', status=400)
 
     return JSONMessage('Sysinfo failed on this system.', status=400)
+
+
+@APPLICATION.route(
+    '/blacklist',
+    methods=['GET'],
+    strict_slashes=False
+)
+@authenticated
+@authorized('sysmon')
+def blacklist() -> JSON:
+    """List blacklisted systems."""
+
+    return JSON([system.to_json() for system in get_blacklist()])
