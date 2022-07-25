@@ -41,7 +41,9 @@ setup(
             'files/sysmon.service',
             'files/sysmon.timer',
             'files/sysmon-cleanup.service',
-            'files/sysmon-cleanup.timer'
+            'files/sysmon-cleanup.timer',
+            'files/sysmon-generate-blacklist.service',
+            'files/sysmon-generate-blacklist.timer'
         ])
     ],
     license='GPLv3',
