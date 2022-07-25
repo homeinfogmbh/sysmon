@@ -166,7 +166,7 @@ def get_ssh_command(
 ) -> list[str]:
     """Return a list of SSH command and parameters for subprocess.run()."""
 
-    return  [
+    return [
         '/usr/bin/ssh',
         '-i', get_config().get('ssh', 'keyfile'),
         '-o', 'LogLevel=error',
