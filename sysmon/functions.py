@@ -110,21 +110,14 @@ def get_check_results(
 
 def get_check_results_for_system(
         system: Union[System, int],
-        account: Account,
-        *,
-        after: Optional[datetime] = None
+        account: Account
 ) -> ModelSelect:
     """Selects check results for the given system."""
 
-    condition = (
+    return CheckResults.select(cascade=True).where(
         (CheckResults.system == system)
         & get_system_admin_condition(account)
-    )
-
-    if after is not None:
-        condition &= CheckResults.timestamp > after
-
-    return CheckResults.select(cascade=True).where(condition).order_by(
+    ).order_by(
         CheckResults.timestamp.desc()
     )
 
