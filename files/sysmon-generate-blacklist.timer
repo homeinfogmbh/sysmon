@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily generate blacklist for Sysmon of unreliable systems
+After=network.target mysql.service
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=2h
+
+[Install]
+WantedBy=timers.target
