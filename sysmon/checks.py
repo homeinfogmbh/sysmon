@@ -390,12 +390,12 @@ def get_blacklist(
 
 def get_check_results_by_system(
         since: datetime
-) -> dict[System, list[CheckResults]]:
+) -> dict[int, list[CheckResults]]:
     """Return a dict of systems and their check results."""
 
     system_check_results = defaultdict(list)
 
-    for check_result in CheckResults.select(cascade=True).where(
+    for check_result in CheckResults.select().where(
             CheckResults.timestamp > since
     ):
         system_check_results[check_result.system].append(check_result)
