@@ -55,6 +55,7 @@ class CheckResults(SysmonModel):
     efi_mount_ok = EnumField(SuccessFailedUnsupported)
     download = IntegerField(null=True)      # kbps
     upload = IntegerField(null=True)        # kbps
+    in_sync = BooleanField(null=True)
     # Failed-since timestamps
     offline_since = DateTimeField(null=True)
     blackscreen_since = DateTimeField(null=True)

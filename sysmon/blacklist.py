@@ -73,7 +73,8 @@ def is_blacklisted(
     return all(
         percentage > threshold for percentage in (
             offline_percent(check_results),
-            low_bandwidth_percent(check_results)
+            low_bandwidth_percent(check_results),
+            out_of_sync_percent(check_results)
         )
     )
 
@@ -91,4 +92,12 @@ def low_bandwidth_percent(check_results: Sequence[CheckResults]) -> float:
 
     return len(list(filter(
         lambda check_result: check_result.low_bandwidth(), check_results
+    ))) / len(check_results)
+
+
+def out_of_sync_percent(check_results: Sequence[CheckResults]) -> float:
+    """Return the percentage of checks that yielded an out-of-sync system."""
+
+    return len(list(filter(
+        lambda check_result: not check_result.in_sync, check_results
     ))) / len(check_results)

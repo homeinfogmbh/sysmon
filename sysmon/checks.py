@@ -1,6 +1,6 @@
 """System checking."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from re import fullmatch
 from subprocess import DEVNULL
@@ -41,6 +41,7 @@ SSH_CAPABLE_OSS = {
     OperatingSystem.ARCH_LINUX,
     OperatingSystem.ARCH_LINUX_ARM
 }
+SYNC_INTERVAL = timedelta(days=1)
 IPERF_TIMEOUT = 15  # seconds
 TCP_TIMEOUT = 5     # seconds
 
@@ -63,7 +64,8 @@ def check_system(system: System) -> CheckResults:
         ram_available=get_ram_available(sysinfo),
         efi_mount_ok=efi_mount_ok(sysinfo),
         download=measure_download_speed(system, timeout=IPERF_TIMEOUT),
-        upload=measure_upload_speed(system, timeout=IPERF_TIMEOUT)
+        upload=measure_upload_speed(system, timeout=IPERF_TIMEOUT),
+        in_sync=is_in_sync(system)
     )
 
     try:
@@ -372,3 +374,12 @@ def extract_package_version(regex: str) -> str:
             return match.group(1)
 
     raise ValueError('Could not determine any package version.')
+
+
+def is_in_sync(system: System) -> bool:
+    """Determine whether the system is synchronized."""
+
+    if system.last_sync is None:
+        return False
+
+    return system.last_sync > datetime.now() - SYNC_INTERVAL
