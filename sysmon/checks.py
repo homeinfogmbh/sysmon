@@ -65,6 +65,8 @@ def check_system(system: System) -> CheckResults:
         efi_mount_ok=efi_mount_ok(sysinfo),
         download=measure_download_speed(system, timeout=IPERF_TIMEOUT),
         upload=measure_upload_speed(system, timeout=IPERF_TIMEOUT),
+        root_not_ro=check_root_not_ro(sysinfo),
+        sensors=check_system_sensors(sysinfo),
         in_sync=is_in_sync(system)
     )
 
@@ -364,6 +366,60 @@ def current_application_version(typ: str) -> Optional[str]:
         return extract_package_version(APPLICATION_AIR)
 
     return None
+
+
+
+def check_root_not_ro(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
+    """Check whether the / partition is not mounted read-only."""
+
+    if (root_ro := sysinfo.get('root_ro')) is None:
+        return SuccessFailedUnsupported.UNSUPPORTED
+
+    if root_ro:
+        return SuccessFailedUnsupported.FAILED
+
+    return SuccessFailedUnsupported.SUCCESS
+
+
+def check_system_sensors(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
+    """Check whether all system sensor values are ok."""
+
+    if (sensors := sysinfo.get('sensors')) is None:
+        return SuccessFailedUnsupported.UNSUPPORTED
+
+    for sensor, fields in sensors.items():
+        for field, temps in fields.items():
+            if field == 'Adapter':
+                continue
+
+            if not isinstance(temps, dict):
+                continue
+
+            current = max_ = crit = None
+
+            for name, value in temps.items():
+                if name.endswith('_input'):
+                    current = value
+
+                if name.endswith('_max'):
+                    max_ = value
+
+                if name.endswith('_crit'):
+                    crit = value
+
+                if name.endswith('_crit_alarm') and value:
+                    return SuccessFailedUnsupported.FAILED
+
+            if current is None:
+                continue
+
+            if crit is not None and current >= crit:
+                return SuccessFailedUnsupported.FAILED
+
+            if max_ is not None and current > max_:
+                return SuccessFailedUnsupported.FAILED
+
+    return SuccessFailedUnsupported.SUCCESS
 
 
 def extract_package_version(regex: str) -> str:
