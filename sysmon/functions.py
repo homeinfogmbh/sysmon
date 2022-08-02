@@ -157,7 +157,7 @@ def get_authenticated_systems(
 ) -> ModelSelect:
     """Select systems with termacls authentication."""
 
-    return System.select().where(
+    return System.select(cascade=True).where(
         (System.id << systems)
         & get_system_admin_condition(account)
     )
