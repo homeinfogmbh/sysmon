@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from ipaddress import IPv4Address, IPv6Address
 from typing import Any, Iterable, Iterator, Optional, Union
 
-from peewee import ModelSelect, fn
+from peewee import DateTimeField, ModelSelect, fn
 
 from his import Account
 from hwdb import Deployment, System
@@ -139,25 +139,17 @@ def get_latest_check_results_per_system(
 ) -> ModelSelect:
     """Yields the latest check results for each system."""
 
-    check_results_alias = CheckResults.alias()
-    subquery_condition = True
-
-    if date_ is not None:
-        start, end = date_to_datetime_range(date_)
-        subquery_condition &= (
-            (check_results_alias.timestamp >= start)
-            & (check_results_alias.timestamp < end)
-        )
-
     return CheckResults.select(cascade=True).join_from(
         CheckResults,
-        subquery := check_results_alias.select(
-            check_results_alias.system,
-            fn.MAX(check_results_alias.timestamp).alias('latest_timestamp')
+        subquery := (CheckResultsAlias := CheckResults.alias()).select(
+            CheckResultsAlias.system,
+            fn.MAX(CheckResultsAlias.timestamp).alias('latest_timestamp')
         ).where(
-            subquery_condition
+            True if date_ is None else get_datetime_range_condition(
+                CheckResultsAlias.timestamp, date_
+            )
         ).group_by(
-            check_results_alias.system
+            CheckResultsAlias.system
         ),
         on=(
             (CheckResults.timestamp == subquery.c.latest_timestamp) &
@@ -178,6 +170,18 @@ def get_authenticated_systems(
         (System.id << systems)
         & get_system_admin_condition(account)
     )
+
+
+def get_datetime_range_condition(
+        date_time_field: DateTimeField,
+        date_: date
+) -> bool:
+    """Return an expression to restrict the
+    date time field to the given date.
+    """
+
+    start, end = date_to_datetime_range(date_)
+    return (date_time_field >= start) & (date_time_field < end)
 
 
 def date_to_datetime_range(date_: date) -> tuple[datetime, datetime]:
