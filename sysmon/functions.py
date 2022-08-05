@@ -1,6 +1,6 @@
 """Common functions."""
 
-from datetime import datetime
+from datetime import date, datetime
 from ipaddress import IPv4Address, IPv6Address
 from typing import Any, Iterable, Iterator, Optional, Union
 
@@ -133,19 +133,39 @@ def get_customer_check_results(
     ))
 
 
-def get_latest_check_results_per_system(account: Account) -> ModelSelect:
+def get_latest_check_results_per_system(
+        account: Account,
+        date_: Optional[date] = None
+) -> ModelSelect:
     """Yields the latest check results for each system."""
+
+    check_results_alias = CheckResults.alias()
+    subquery_condition = True
+
+    if date_ is not None:
+        subquery_condition &= check_results_alias.timestamp == date_
+
+    subquery = check_results_alias.select(
+        check_results_alias.system,
+        fn.MAX(check_results_alias.timestamp).alias('latest_timestamp')
+    ).where(
+        subquery_condition
+    ).group_by(
+        check_results_alias.system
+    )
+
+    outer_condition = (
+        (CheckResults.timestamp == subquery.c.latest_timestamp) &
+        (CheckResults.system == subquery.c.system)
+    )
+
+    if date_ is not None:
+        outer_condition &= CheckResults.timestamp == date_
 
     return CheckResults.select(cascade=True).join_from(
         CheckResults,
-        subquery := (CheckResultsAlias := CheckResults.alias()).select(
-            CheckResultsAlias.system,
-            fn.MAX(CheckResultsAlias.timestamp).alias('latest_timestamp')
-        ).group_by(CheckResultsAlias.system),
-        on=(
-            (CheckResults.timestamp == subquery.c.latest_timestamp) &
-            (CheckResults.system == subquery.c.system)
-        )
+        subquery,
+        on=outer_condition
     ).where(
         get_system_admin_condition(account)
     )
