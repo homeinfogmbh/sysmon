@@ -1,5 +1,6 @@
 """Administrative systems monitoring."""
 
+from datetime import date, timedelta
 from typing import Union
 
 from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
@@ -25,15 +26,25 @@ __all__ = ['APPLICATION']
 APPLICATION = Application('sysmon')
 
 
-@APPLICATION.route('/checks', methods=['GET'], strict_slashes=False)
+@APPLICATION.route(
+    '/checks',
+    defaults={'days_ago': 0},
+    methods=['GET'],
+    strict_slashes=False
+)
+@APPLICATION.route(
+    '/checks/<int:days_ago>',
+    methods=['GET'],
+    strict_slashes=False
+)
 @authenticated
 @authorized('sysmon')
-def list_latest_stats() -> JSON:
+def list_latest_stats(days_ago: int) -> JSON:
     """List systems and their latest stats."""
 
-    return JSON(check_results_to_json(
-        get_latest_check_results_per_system(ACCOUNT)
-    ))
+    return JSON(check_results_to_json(get_latest_check_results_per_system(
+        ACCOUNT, date.today() - timedelta(days=days_ago)
+    )))
 
 
 @APPLICATION.route(
