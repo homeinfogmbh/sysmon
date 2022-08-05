@@ -186,6 +186,7 @@ def get_datetime_range_condition(
 
 def date_to_datetime_range(date_: date) -> tuple[datetime, datetime]:
     """Convert a date to datetime boundaries."""
+
     return (
         datetime(year=date_.year, month=date_.month, day=date_.day),
         datetime(
