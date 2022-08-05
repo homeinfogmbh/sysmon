@@ -139,33 +139,20 @@ def get_latest_check_results_per_system(
 ) -> ModelSelect:
     """Yields the latest check results for each system."""
 
-    check_results_alias = CheckResults.alias()
-    subquery_condition = True
-
-    if date_ is not None:
-        subquery_condition &= check_results_alias.timestamp == date_
-
-    subquery = check_results_alias.select(
-        check_results_alias.system,
-        fn.MAX(check_results_alias.timestamp).alias('latest_timestamp')
-    ).where(
-        subquery_condition
-    ).group_by(
-        check_results_alias.system
-    )
-
-    outer_condition = (
-        (CheckResults.timestamp == subquery.c.latest_timestamp) &
-        (CheckResults.system == subquery.c.system)
-    )
-
-    if date_ is not None:
-        outer_condition &= CheckResults.timestamp == date_
-
     return CheckResults.select(cascade=True).join_from(
         CheckResults,
-        subquery,
-        on=outer_condition
+        subquery := (CheckResultsAlias := CheckResults.alias()).select(
+            CheckResultsAlias.system,
+            fn.MAX(CheckResultsAlias.timestamp).alias('latest_timestamp')
+        ).where(
+            True if date_ is None else (CheckResultsAlias.timestamp == date_)
+        ).group_by(
+            CheckResultsAlias.system
+        ),
+        on=(
+            (CheckResults.timestamp == subquery.c.latest_timestamp) &
+            (CheckResults.system == subquery.c.system)
+        )
     ).where(
         get_system_admin_condition(account)
     )
