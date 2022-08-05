@@ -1,6 +1,6 @@
 """Common functions."""
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from ipaddress import IPv4Address, IPv6Address
 from typing import Any, Iterable, Iterator, Optional, Union
 
@@ -139,13 +139,19 @@ def get_latest_check_results_per_system(
 ) -> ModelSelect:
     """Yields the latest check results for each system."""
 
+    if date_ is not None:
+        start, end = date_to_datetime_range(date_)
+
     return CheckResults.select(cascade=True).join_from(
         CheckResults,
         subquery := (CheckResultsAlias := CheckResults.alias()).select(
             CheckResultsAlias.system,
             fn.MAX(CheckResultsAlias.timestamp).alias('latest_timestamp')
         ).where(
-            True if date_ is None else (CheckResultsAlias.timestamp == date_)
+            True if date_ is None else (
+                (CheckResultsAlias.timestamp >= start)
+                & (CheckResultsAlias.timestamp < end)
+            )
         ).group_by(
             CheckResultsAlias.system
         ),
@@ -167,4 +173,15 @@ def get_authenticated_systems(
     return System.select(cascade=True).where(
         (System.id << systems)
         & get_system_admin_condition(account)
+    )
+
+
+def date_to_datetime_range(date_: date) -> tuple[datetime, datetime]:
+    """Convert a date to datetime boundaries."""
+    return (
+        datetime(year=date_.year, month=date_.month, day=date_.day),
+        datetime(
+            year=(next_day := date_ + timedelta(days=1)).year,
+            month=next_day.month, day=next_day.day
+        )
     )
