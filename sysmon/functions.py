@@ -139,21 +139,25 @@ def get_latest_check_results_per_system(
 ) -> ModelSelect:
     """Yields the latest check results for each system."""
 
+    check_results_alias = CheckResults.alias()
+    subquery_condition = True
+
     if date_ is not None:
         start, end = date_to_datetime_range(date_)
+        subquery_condition &= (
+            (check_results_alias.timestamp >= start)
+            & (check_results_alias.timestamp < end)
+        )
 
     return CheckResults.select(cascade=True).join_from(
         CheckResults,
-        subquery := (CheckResultsAlias := CheckResults.alias()).select(
-            CheckResultsAlias.system,
-            fn.MAX(CheckResultsAlias.timestamp).alias('latest_timestamp')
+        subquery := check_results_alias.select(
+            check_results_alias.system,
+            fn.MAX(check_results_alias.timestamp).alias('latest_timestamp')
         ).where(
-            True if date_ is None else (
-                (CheckResultsAlias.timestamp >= start)
-                & (CheckResultsAlias.timestamp < end)
-            )
+            subquery_condition
         ).group_by(
-            CheckResultsAlias.system
+            check_results_alias.system
         ),
         on=(
             (CheckResults.timestamp == subquery.c.latest_timestamp) &
