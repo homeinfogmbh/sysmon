@@ -26,7 +26,8 @@ __all__ = [
     'get_check_results_for_system',
     'get_customer_check_results',
     'get_latest_check_results_per_system',
-    'get_authenticated_systems'
+    'get_authenticated_systems',
+    'get_latest_check_results_per_system_span'
 ]
 
 
@@ -194,3 +195,19 @@ def date_to_datetime_range(date_: date) -> tuple[datetime, datetime]:
             month=next_day.month, day=next_day.day
         )
     )
+
+
+def get_latest_check_results_per_system_span(
+        account: Account,
+        days: int,
+        start: date
+) -> Iterator[tuple[date, list[CheckResults]]]:
+    """Return a dict of system checks for
+    each day for the given amount of days.
+    """
+
+    for offset in range(days):
+        day = start - timedelta(days=offset)
+        yield day, get_latest_check_results_per_system(
+            account, day
+        )

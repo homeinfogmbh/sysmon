@@ -17,6 +17,7 @@ from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
+from sysmon.functions import get_latest_check_results_per_system_span
 from sysmon.json import check_results_to_json
 
 
@@ -162,3 +163,22 @@ def blacklist() -> JSON:
     return JSON([
         system.to_json(cascade=True) for system in load_blacklist(ACCOUNT)
     ])
+
+
+@APPLICATION.route(
+    '/check-history/<int:days>',
+    methods=['GET'],
+    strict_slashes=False
+)
+@authenticated
+@authorized('sysmon')
+def list_latest_stats(days: int) -> JSON:
+    """List systems and their latest stats."""
+
+    return JSON({
+        day.isoformat(): check_results_to_json(check_results)
+        for day, check_results in get_latest_check_results_per_system_span(
+            ACCOUNT, days, start=date.today()
+        )
+    })
+
