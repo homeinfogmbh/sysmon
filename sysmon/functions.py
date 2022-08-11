@@ -27,7 +27,8 @@ __all__ = [
     'get_customer_check_results',
     'get_latest_check_results_per_system',
     'get_authenticated_systems',
-    'get_latest_check_results_per_system_span'
+    'get_latest_check_results_per_system_span',
+    'get_latest_offline_count_span'
 ]
 
 
@@ -211,3 +212,24 @@ def get_latest_check_results_per_system_span(
         yield day, get_latest_check_results_per_system(
             account, day
         )
+
+
+def get_latest_offline_count_span(
+        account: Account,
+        days: int,
+        start: date
+) -> Iterator[tuple[date, list[CheckResults]]]:
+    """Return a dict of system checks for
+    each day for the given amount of days.
+    """
+
+    for offset in range(days):
+        day = start - timedelta(days=offset)
+        yield day, {
+            system.id: sum(
+                not check_result.online for check_result in check_results
+            )
+            for system, check_results in check_results_by_systems(
+                get_latest_check_results_per_system(account, day)
+            )
+        }

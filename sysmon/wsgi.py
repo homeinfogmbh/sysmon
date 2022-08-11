@@ -18,6 +18,7 @@ from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
 from sysmon.functions import get_latest_check_results_per_system_span
+from sysmon.functions import get_latest_offline_count_span
 from sysmon.json import check_results_to_json
 
 
@@ -181,4 +182,19 @@ def check_history(days: int) -> JSON:
             ACCOUNT, days, start=date.today()
         )
     })
+
+
+@APPLICATION.route(
+    '/offline-history/<int:days>',
+    methods=['GET'],
+    strict_slashes=False
+)
+@authenticated
+@authorized('sysmon')
+def offline_history(days: int) -> JSON:
+    """List systems and their latest stats."""
+
+    return JSON(get_latest_offline_count_span(
+        ACCOUNT, days, start=date.today()
+    ))
 
