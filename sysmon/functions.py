@@ -227,7 +227,5 @@ def get_latest_offline_count_span(
         day = start - timedelta(days=offset)
         yield day, sum(
             not check_results.online for check_results in
-            check_results_by_systems(
-                get_latest_check_results_per_system(account, day)
-            )
+            get_latest_check_results_per_system(account, day)
         )
