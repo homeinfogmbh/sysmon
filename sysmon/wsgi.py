@@ -172,7 +172,7 @@ def blacklist() -> JSON:
 )
 @authenticated
 @authorized('sysmon')
-def list_latest_stats(days: int) -> JSON:
+def check_history(days: int) -> JSON:
     """List systems and their latest stats."""
 
     return JSON({
