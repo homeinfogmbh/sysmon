@@ -174,7 +174,7 @@ def blacklist() -> JSON:
 @authenticated
 @authorized('sysmon')
 def check_history(days: int) -> JSON:
-    """List systems and their latest stats."""
+    """List systems check history for the given amount of days."""
 
     return JSON({
         day.isoformat(): check_results_to_json(check_results)
@@ -192,7 +192,7 @@ def check_history(days: int) -> JSON:
 @authenticated
 @authorized('sysmon')
 def offline_history(days: int) -> JSON:
-    """List systems and their latest stats."""
+    """List offline systems count for the given amount of days."""
 
     return JSON(get_latest_offline_count_span(
         ACCOUNT, days, start=date.today()
