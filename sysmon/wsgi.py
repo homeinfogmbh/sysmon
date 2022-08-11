@@ -194,7 +194,10 @@ def check_history(days: int) -> JSON:
 def offline_history(days: int) -> JSON:
     """List offline systems count for the given amount of days."""
 
-    return JSON(get_latest_offline_count_span(
-        ACCOUNT, days, start=date.today()
-    ))
+    return JSON({
+        day.isoformat(): offline
+        for day, offline in get_latest_offline_count_span(
+            ACCOUNT, days, start=date.today()
+        )
+    })
 
