@@ -9,7 +9,7 @@ from peewee import DateTimeField, Expression, ModelSelect, fn
 from his import Account
 from hwdb import Deployment, Group, System
 from mdb import Customer
-from termacls import GroupAdmin, get_system_admin_condition
+from termacls import get_administerable_groups, get_system_admin_condition
 
 from sysmon.filtering import check_results_by_systems
 from sysmon.filtering import last_check_of_each_system
@@ -237,15 +237,6 @@ def update_offline_systems(timestamp: date) -> None:
         offline_systems.save()
 
 
-def get_allowed_groups(account: Account) -> Iterator[int]:
-    """Yield allowed groups for the given account."""
-
-    for group_admin in GroupAdmin.select().where(
-            GroupAdmin.account == account.id
-    ):
-        yield group_admin.group
-
-
 def get_offline_systems_by_group(group: int, since: date) -> ModelSelect:
     """Select offline history entries for the respective group."""
 
@@ -263,6 +254,6 @@ def get_offline_systems(account: Account, since: date) -> dict[str, Any]:
     return {
         str(group): [
             history_item.to_json() for history_item in
-            get_offline_systems_by_group(group, since)
-        ] for group in get_allowed_groups(account)
+            get_offline_systems_by_group(group.id, since)
+        ] for group in get_administerable_groups(account)
     }
