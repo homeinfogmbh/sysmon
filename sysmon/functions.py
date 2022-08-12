@@ -9,7 +9,7 @@ from peewee import DateTimeField, Expression, ModelSelect, fn
 from his import Account
 from hwdb import Deployment, Group, System
 from mdb import Customer
-from termacls import get_system_admin_condition
+from termacls import GroupAdmin, get_system_admin_condition
 
 from sysmon.filtering import check_results_by_systems
 from sysmon.filtering import last_check_of_each_system
@@ -28,7 +28,7 @@ __all__ = [
     'get_latest_check_results_per_system',
     'get_authenticated_systems',
     'update_offline_systems',
-    'get_offline_systems_in_group'
+    'get_offline_systems'
 ]
 
 
@@ -237,12 +237,32 @@ def update_offline_systems(timestamp: date) -> None:
         offline_systems.save()
 
 
-def get_offline_systems_in_group(group: int, since: date) -> ModelSelect:
-    """Select offline system counts for the given group."""
+def get_allowed_groups(account: Account) -> Iterator[int]:
+    """Yield allowed groups for the given account."""
 
-    return OfflineHistory.select(OfflineHistory, Group).join(
-        Group, on=OfflineHistory.group == Group.id
-    ).where(
+    for group_admin in GroupAdmin.select().where(
+            GroupAdmin.account == account.id
+    ):
+        yield group_admin.group
+
+
+def get_offline_systems_by_group(group: int, since: date) -> ModelSelect:
+    """Select offline history entries for the respective group."""
+
+    return OfflineHistory.select().where(
         (OfflineHistory.group == group)
         & (OfflineHistory.timestamp >= since)
-    ).order_by(OfflineHistory.timestamp)
+    ).order_by(
+        OfflineHistory.timestamp
+    )
+
+
+def get_offline_systems(account: Account, since: date) -> dict[str, Any]:
+    """Return offline system counts for the given account."""
+
+    return {
+        str(group): [
+            history_item.to_json() for history_item in
+            get_offline_systems_by_group(group, since)
+        ] for group in get_allowed_groups(account)
+    }

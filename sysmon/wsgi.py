@@ -17,7 +17,7 @@ from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
-from sysmon.functions import get_offline_systems_in_group
+from sysmon.functions import get_offline_systems
 from sysmon.functions import update_offline_systems
 from sysmon.json import check_results_to_json
 
@@ -168,19 +168,15 @@ def blacklist() -> JSON:
 
 
 @APPLICATION.route(
-    '/offline-history/<int:group>/<int:days>',
+    '/offline-history/<int:days>',
     methods=['GET'],
     strict_slashes=False
 )
 @authenticated
 @authorized('sysmon')
-def offline_history(group: int, days: int) -> JSON:
+def offline_history(days: int) -> JSON:
     """List offline systems count for the given amount of days."""
 
-    return JSON([
-        history_item.to_json() for history_item
-        in get_offline_systems_in_group(
-            group,
-            date.today() - timedelta(days=days)
-        )
-    ])
+    return JSON(get_offline_systems(
+        ACCOUNT, date.today() - timedelta(days=days)
+    ))
