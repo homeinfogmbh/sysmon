@@ -4,7 +4,7 @@ from argparse import ArgumentParser, Namespace
 from datetime import datetime, timedelta
 from logging import INFO, basicConfig, getLogger
 
-from sysmon.config import LOG_FORMAT
+from sysmon.config import LOG_FORMAT, MAX_RETENTION
 from sysmon.orm import CheckResults
 
 
@@ -12,7 +12,6 @@ __all__ = ['cleanup']
 
 
 LOGGER = getLogger('sysmon-cleanup')
-MAX_RETENTION = timedelta(days=30)
 
 
 def remove_checks_older_than(age: timedelta) -> int:

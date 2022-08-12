@@ -1,7 +1,7 @@
 """Blacklist generation and loading."""
 
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 from json import dump, load
 from pathlib import Path
 from typing import Iterator, Sequence
@@ -10,6 +10,7 @@ from peewee import ModelSelect
 
 from his import Account
 
+from sysmon.config import MAX_RETENTION
 from sysmon.functions import get_authenticated_systems
 from sysmon.orm import CheckResults
 
@@ -18,7 +19,6 @@ __all__ = ['generate_blacklist', 'load_blacklist', 'get_blacklist']
 
 
 BLACKLIST = Path('/tmp/sysmon-blacklist.json')
-RETENTION = timedelta(days=90)
 THRESHOLD = 0.8
 
 
@@ -26,7 +26,7 @@ def generate_blacklist() -> None:
     """Genrates the blacklist."""
 
     with BLACKLIST.open('w', encoding='utf-8') as file:
-        dump(list(get_blacklist(datetime.now() - RETENTION)), file)
+        dump(list(get_blacklist(datetime.now() - MAX_RETENTION)), file)
 
 
 def load_blacklist(account: Account) -> ModelSelect:
