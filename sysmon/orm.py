@@ -1,11 +1,12 @@
 """ORM models."""
 
 from __future__ import annotations
-from datetime import datetime
+from datetime import date, datetime
 
 from peewee import JOIN
 from peewee import BooleanField
 from peewee import CharField
+from peewee import DateField
 from peewee import DateTimeField
 from peewee import ForeignKeyField
 from peewee import IntegerField
@@ -21,7 +22,7 @@ from sysmon.enumerations import BaytrailFreezeState
 from sysmon.enumerations import SuccessFailedUnsupported
 
 
-__all__ = ['DATABASE', 'SysmonModel', 'CheckResults']
+__all__ = ['DATABASE', 'SysmonModel', 'CheckResults', 'OfflineHistory']
 
 
 DATABASE = MySQLDatabaseProxy('sysmon')
@@ -103,3 +104,24 @@ class CheckResults(SysmonModel):
             return True
 
         return self.download < required
+
+
+class OfflineHistory(SysmonModel):
+    """History entries for offline systems."""
+
+    group = IntegerField()
+    timestamp = DateField()
+    offline = IntegerField()
+
+    @classmethod
+    def create_or_update(cls, group: int, timestamp: date) -> OfflineHistory:
+        """Creates or updates the record for the given group and date."""
+        try:
+            return cls.get((cls.group == group) & (cls.timestamp == timestamp))
+        except cls.DoesNotExist:
+            return cls(group=group, timestamp=timestamp)
+
+    @classmethod
+    def since(cls, timestamp: date) -> ModelSelect:
+        """Selects entries for the given period of time"""
+        return cls.select().where(cls.timestamp >= timestamp)
