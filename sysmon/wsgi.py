@@ -18,6 +18,7 @@ from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
 from sysmon.functions import get_offline_systems_in_group
+from sysmon.functions import update_offline_systems
 from sysmon.json import check_results_to_json
 
 
@@ -66,6 +67,7 @@ def do_check_system(system: int) -> JSON:
     system = get_system(system, ACCOUNT)
     check_result = check_system(system)
     check_result.save()
+    update_offline_systems(date.today())
     return JSON(check_result.to_json())
 
 
