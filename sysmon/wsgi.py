@@ -7,7 +7,7 @@ from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
 from hwdb import SystemOffline, System
 from wsgilib import Binary, JSON, JSONMessage, get_int
 
-from sysmon.blacklist import load_blacklist
+from sysmon.blacklist import authorized_blacklist
 from sysmon.checks import check_system
 from sysmon.checks import get_sysinfo
 from sysmon.checks import hipster_status
@@ -17,8 +17,8 @@ from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
-from sysmon.functions import get_offline_systems
-from sysmon.functions import update_offline_systems
+from sysmon.offline_history import get_offline_systems
+from sysmon.offline_history import update_offline_systems
 from sysmon.json import check_results_to_json
 
 
@@ -163,7 +163,8 @@ def blacklist() -> JSON:
     """List blacklisted systems."""
 
     return JSON([
-        system.to_json(cascade=True) for system in load_blacklist(ACCOUNT)
+        system.to_json(cascade=True) for system
+        in authorized_blacklist(ACCOUNT)
     ])
 
 

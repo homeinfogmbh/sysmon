@@ -7,13 +7,13 @@ from typing import Any, Iterable, Iterator, Optional, Union
 from peewee import DateTimeField, Expression, ModelSelect, fn
 
 from his import Account
-from hwdb import Deployment, Group, System
+from hwdb import Deployment, System
 from mdb import Customer
-from termacls import get_administerable_groups, get_system_admin_condition
+from termacls import get_system_admin_condition
 
 from sysmon.filtering import check_results_by_systems
 from sysmon.filtering import last_check_of_each_system
-from sysmon.orm import CheckResults, OfflineHistory
+from sysmon.orm import CheckResults
 
 
 __all__ = [
@@ -26,9 +26,8 @@ __all__ = [
     'get_check_results_for_system',
     'get_customer_check_results',
     'get_latest_check_results_per_system',
-    'get_authenticated_systems',
-    'update_offline_systems',
-    'get_offline_systems'
+    'get_latest_check_results_per_group',
+    'get_authenticated_systems'
 ]
 
 
@@ -215,45 +214,3 @@ def date_to_datetime_range(date_: date) -> tuple[datetime, datetime]:
             month=next_day.month, day=next_day.day
         )
     )
-
-
-def count_offline_systems_in_group(group: int, timestamp: date) -> int:
-    """Counts the offline systems of the given group on the given day."""
-
-    return sum(
-        not check_results.online for check_results in
-        get_latest_check_results_per_group(group, timestamp)
-    )
-
-
-def update_offline_systems(timestamp: date) -> None:
-    """Updates the offline systems for the given date."""
-
-    for group in Group.select().where(True):
-        offline_systems = OfflineHistory.create_or_update(group.id, timestamp)
-        offline_systems.offline = count_offline_systems_in_group(
-            group.id, timestamp
-        )
-        offline_systems.save()
-
-
-def get_offline_systems_by_group(group: int, since: date) -> ModelSelect:
-    """Select offline history entries for the respective group."""
-
-    return OfflineHistory.select().where(
-        (OfflineHistory.group == group)
-        & (OfflineHistory.timestamp >= since)
-    ).order_by(
-        OfflineHistory.timestamp
-    )
-
-
-def get_offline_systems(account: Account, since: date) -> dict[str, Any]:
-    """Return offline system counts for the given account."""
-
-    return {
-        str(group): [
-            history_item.to_json() for history_item in
-            get_offline_systems_by_group(group.id, since)
-        ] for group in get_administerable_groups(account)
-    }

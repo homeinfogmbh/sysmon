@@ -15,7 +15,12 @@ from sysmon.functions import get_authenticated_systems
 from sysmon.orm import CheckResults
 
 
-__all__ = ['generate_blacklist', 'load_blacklist', 'get_blacklist']
+__all__ = [
+    'generate_blacklist',
+    'load_blacklist',
+    'authorized_blacklist',
+    'get_blacklist'
+]
 
 
 BLACKLIST = Path('/tmp/sysmon-blacklist.json')
@@ -29,11 +34,17 @@ def generate_blacklist() -> None:
         dump(list(get_blacklist(datetime.now() - MAX_RETENTION)), file)
 
 
-def load_blacklist(account: Account) -> ModelSelect:
+def load_blacklist() -> list[int]:
     """Loads the systems from the blacklist."""
 
     with BLACKLIST.open('r', encoding='utf-8') as file:
-        return get_authenticated_systems(load(file), account=account)
+        return load(file)
+
+
+def authorized_blacklist(account: Account) -> ModelSelect:
+    """Loads the systems from the blacklist."""
+
+    return get_authenticated_systems(load_blacklist(), account=account)
 
 
 def get_blacklist(
