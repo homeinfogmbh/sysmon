@@ -4,16 +4,16 @@ from datetime import date, datetime, timedelta
 from ipaddress import IPv4Address, IPv6Address
 from typing import Any, Iterable, Iterator, Optional, Union
 
-from peewee import DateTimeField, ModelSelect, fn
+from peewee import DateTimeField, Expression, ModelSelect, fn
 
 from his import Account
-from hwdb import Deployment, System
+from hwdb import Deployment, Group, System
 from mdb import Customer
 from termacls import get_system_admin_condition
 
 from sysmon.filtering import check_results_by_systems
 from sysmon.filtering import last_check_of_each_system
-from sysmon.orm import CheckResults
+from sysmon.orm import CheckResults, OfflineHistory
 
 
 __all__ = [
@@ -27,8 +27,8 @@ __all__ = [
     'get_customer_check_results',
     'get_latest_check_results_per_system',
     'get_authenticated_systems',
-    'get_latest_check_results_per_system_span',
-    'get_latest_offline_count_span'
+    'update_offline_systems',
+    'get_offline_systems_in_group'
 ]
 
 
@@ -135,8 +135,8 @@ def get_customer_check_results(
     ))
 
 
-def get_latest_check_results_per_system(
-        account: Account,
+def get_latest_check_results(
+        condition: Union[bool, Expression],
         date_: Optional[date] = None
 ) -> ModelSelect:
     """Yields the latest check results for each system."""
@@ -157,9 +157,28 @@ def get_latest_check_results_per_system(
             (CheckResults.timestamp == subquery.c.latest_timestamp) &
             (CheckResults.system == subquery.c.system)
         )
-    ).where(
-        get_system_admin_condition(account)
+    ).where(condition)
+
+
+def get_latest_check_results_per_system(
+        account: Account,
+        date_: Optional[date] = None
+) -> ModelSelect:
+    """Yields the latest check results for each system by account."""
+
+    return get_latest_check_results(
+        get_system_admin_condition(account),
+        date_
     )
+
+
+def get_latest_check_results_per_group(
+        group: int,
+        date_: Optional[date] = None
+) -> ModelSelect:
+    """Yields the latest check results for each system by group."""
+
+    return get_latest_check_results(System.group == group, date_)
 
 
 def get_authenticated_systems(
@@ -198,34 +217,32 @@ def date_to_datetime_range(date_: date) -> tuple[datetime, datetime]:
     )
 
 
-def get_latest_check_results_per_system_span(
-        account: Account,
-        days: int,
-        start: date
-) -> Iterator[tuple[date, list[CheckResults]]]:
-    """Return a dict of system checks for
-    each day for the given amount of days.
-    """
+def count_offline_systems_in_group(group: int, timestamp: date) -> int:
+    """Counts the offline systems of the given group on the given day."""
 
-    for offset in range(days):
-        day = start - timedelta(days=offset)
-        yield day, get_latest_check_results_per_system(
-            account, day
+    return sum(
+        not check_results.online for check_results in
+        get_latest_check_results_per_group(group, timestamp)
+    )
+
+
+def update_offline_systems(timestamp: date) -> None:
+    """Updates the offline systems for the given date."""
+
+    for group in Group.select().where(True):
+        offline_systems = OfflineHistory.create_or_update(group.id, timestamp)
+        offline_systems.offline = count_offline_systems_in_group(
+            group.id, timestamp
         )
+        offline_systems.save()
 
 
-def get_latest_offline_count_span(
-        account: Account,
-        days: int,
-        start: date
-) -> Iterator[tuple[date, int]]:
-    """Return a dict of system checks for
-    each day for the given amount of days.
-    """
+def get_offline_systems_in_group(group: int, since: date) -> ModelSelect:
+    """Select offline system counts for the given group."""
 
-    for offset in range(days):
-        day = start - timedelta(days=offset)
-        yield day, sum(
-            not check_results.online for check_results in
-            get_latest_check_results_per_system(account, day)
-        )
+    return OfflineHistory.select(OfflineHistory, Group).join(
+        Group, on=OfflineHistory.group == Group.id
+    ).where(
+        (OfflineHistory.group == group)
+        & (OfflineHistory.timestamp >= since)
+    ).order_by(OfflineHistory.timestamp)
