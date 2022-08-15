@@ -7,7 +7,7 @@ from hwdb import System
 
 from sysmon.checks import check_systems
 from sysmon.config import LOG_FORMAT
-from sysmon.functions import update_offline_systems
+from sysmon.offline_history import update_offline_systems
 
 
 __all__ = ['spawn']
