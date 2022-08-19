@@ -3,18 +3,12 @@
 from __future__ import annotations
 from enum import Enum
 from ipaddress import IPv4Address, IPv6Address
-from re import Match, fullmatch
+from json import loads
 from subprocess import DEVNULL, PIPE, run
-from typing import NamedTuple, Optional, Union
+from typing import Any, NamedTuple, Optional, Union
 
 
 __all__ = ['SpeedUnit', 'Speed', 'iperf3']
-
-
-REGEX = (
-    r'\[\s*(\d+)]\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S*)'
-    r'\s+(\S+)'
-)
 
 
 class SpeedUnit(str, Enum):
@@ -79,38 +73,24 @@ def iperf3(
 ) -> Iperf3Result:
     """Return the transmission speed."""
 
-    command = ['/usr/bin/iperf3', '-c', str(host)]
+    command = ['/usr/bin/iperf3', '-c', str(host), '-J']
 
     if reverse:
         command.append('-R')
 
-    return parse_result(run(
+    return parse_result(loads(run(
         command, check=True, stdout=PIPE, stderr=DEVNULL, text=True,
         timeout=timeout
-    ).stdout)
+    ).stdout))
 
 
-def parse_result(text: str) -> Iperf3Result:
+def parse_result(result: dict[str, Any]) -> Iperf3Result:
     """Parse the iperf3 result."""
 
     return Iperf3Result(
-        parse_speed(text, 'sender'),
-        parse_speed(text, 'receiver')
+        Speed(
+            (stream := result['streams'][0])['sender']['bits_per_second'],
+            SpeedUnit.BPS
+        ),
+        Speed(stream['receiver']['bits_per_second'], SpeedUnit.BPS)
     )
-
-
-def parse_speed(text: str, typ: str) -> Speed:
-    """Parse the sender speed."""
-
-    for line in text.split('\n'):
-        if match := fullmatch(REGEX, line.strip()):
-            if match.group(9) == typ:
-                return extract_speed(match)
-
-    raise ValueError('Could not parse speed from text.')
-
-
-def extract_speed(match: Match) -> Speed:
-    """Extract the speed from the regex match."""
-
-    return Speed(float(match.group(6)), SpeedUnit(match.group(7)))
