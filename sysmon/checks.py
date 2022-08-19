@@ -1,6 +1,7 @@
 """System checking."""
 
 from datetime import datetime, timedelta
+from multiprocessing import Pool
 from pathlib import Path
 from re import fullmatch
 from subprocess import DEVNULL
@@ -57,11 +58,11 @@ def check_system(system: System) -> CheckResults:
     return system_check
 
 
-def check_systems(systems: Iterable[System]) -> None:
+def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
     """Checks the given systems."""
 
-    for system in systems:
-        create_check(system)
+    with Pool() as pool:
+        pool.map(check_system, systems, chunksize=chunk_size)
 
 
 def create_check(system: System) -> CheckResults:
