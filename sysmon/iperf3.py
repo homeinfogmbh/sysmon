@@ -5,7 +5,7 @@ from enum import Enum
 from ipaddress import IPv4Address, IPv6Address
 from json import loads
 from subprocess import DEVNULL, PIPE, run
-from typing import Any, NamedTuple, Optional, Union
+from typing import NamedTuple, Optional, Union
 
 
 __all__ = ['SpeedUnit', 'Speed', 'iperf3']
@@ -78,19 +78,22 @@ def iperf3(
     if reverse:
         command.append('-R')
 
-    return parse_result(loads(run(
-        command, check=True, stdout=PIPE, stderr=DEVNULL, text=True,
-        timeout=timeout
-    ).stdout))
+    return parse_result(
+        loads(
+            run(
+                command, check=True, stdout=PIPE, stderr=DEVNULL, text=True,
+                timeout=timeout
+            ).stdout
+        )['end']['streams'][0]
+    )
 
 
-def parse_result(result: dict[str, Any]) -> Iperf3Result:
+def parse_result(
+        stream: dict[str, dict[str, Union[int, float, bool]]]
+) -> Iperf3Result:
     """Parse the iperf3 result."""
 
     return Iperf3Result(
-        Speed(
-            (stream := result['streams'][0])['sender']['bits_per_second'],
-            SpeedUnit.BPS
-        ),
+        Speed(stream['sender']['bits_per_second'], SpeedUnit.BPS),
         Speed(stream['receiver']['bits_per_second'], SpeedUnit.BPS)
     )
