@@ -17,10 +17,14 @@ from sysmon.orm import OfflineHistory
 __all__ = ['update_offline_systems', 'get_offline_systems']
 
 
-def count_offline_systems_in_group(group: int, timestamp: date) -> int:
+def count_offline_systems_in_group(
+        group: int,
+        timestamp: date,
+        *,
+        blacklist: set[int] = frozenset()
+) -> int:
     """Counts the offline systems of the given group on the given day."""
 
-    blacklist = set(load_blacklist())
     return sum(
         not check_results.online for check_results in
         get_latest_check_results_per_group(group, timestamp)
@@ -34,7 +38,7 @@ def update_offline_systems(timestamp: date) -> None:
     for group in Group.select().where(True):
         offline_systems = OfflineHistory.create_or_update(group.id, timestamp)
         offline_systems.offline = count_offline_systems_in_group(
-            group.id, timestamp
+            group.id, timestamp, blacklist=set(load_blacklist())
         )
         offline_systems.save()
 
