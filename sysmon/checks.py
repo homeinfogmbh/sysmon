@@ -375,7 +375,6 @@ def current_application_version(typ: str) -> Optional[str]:
     return None
 
 
-
 def check_root_not_ro(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
     """Check whether the / partition is not mounted read-only."""
 
