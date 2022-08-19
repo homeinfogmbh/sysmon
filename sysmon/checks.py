@@ -162,7 +162,7 @@ def check_ssh_login(
     try:
         run(
             get_ssh_command(system, user=user, timeout=timeout), check=True,
-            stdout=DEVNULL, stderr=DEVNULL, text=True, timeout=timeout+1
+            stdout=DEVNULL, stderr=DEVNULL, text=True, timeout=timeout + 1
         )
     except CalledProcessError:
         return SuccessFailedUnsupported.FAILED
