@@ -20,9 +20,43 @@ REGEX = (
 class SpeedUnit(str, Enum):
     """Available speed units."""
 
+    BPS = 'bits/sec'
     KBPS = 'Kbits/sec'
     MBPS = 'Mbits/sec'
-    BPS = 'bits/sec'
+
+    def factor_to(self: SpeedUnit, dst: SpeedUnit) -> float:
+        """Returns the respective conversion factor."""
+        if self is self.BPS:
+            if dst is self.BPS:
+                return 1
+
+            if dst is self.KBPS:
+                return 1 / 1024
+
+            if dst is self.MBPS:
+                return 1 / 1024 / 1024
+
+        if self is self.KBPS:
+            if dst is self.BPS:
+                return 1024
+
+            if dst is self.KBPS:
+                return 1
+
+            if dst is self.MBPS:
+                return 1 / 1024
+
+        if self is self.MBPS:
+            if dst is self.BPS:
+                return 1024 * 1024
+
+            if dst is self.KBPS:
+                return 1024
+
+            if dst is self.MBPS:
+                return 1
+
+        raise ValueError(f'Cannot convert from {self} to {dst}.')
 
 
 class Speed(NamedTuple):
@@ -33,16 +67,7 @@ class Speed(NamedTuple):
 
     def to_kbps(self) -> float:
         """Convert the speed to kbps."""
-        if self.unit is SpeedUnit.KBPS:
-            return self.value
-
-        if self.unit is SpeedUnit.MBPS:
-            return self.value * 1024
-
-        if self.unit is SpeedUnit.BPS:
-            return self.value / 1024
-
-        raise ValueError('Cannot convert unit:', self.unit)
+        return self.value * self.unit.factor_to(SpeedUnit.KBPS)
 
 
 class Iperf3Result(NamedTuple):
