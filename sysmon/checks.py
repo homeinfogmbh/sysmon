@@ -48,6 +48,22 @@ TCP_TIMEOUT = 5     # seconds
 RECENT_TOUCH_EVENTS = timedelta(days=3)
 
 
+def check_system(system: System) -> CheckResults:
+    """Check the given system."""
+
+    LOGGER.info('Checking system: %i', system.id)
+    system_check = create_check(system)
+    system_check.save()
+    return system_check
+
+
+def check_systems(systems: Iterable[System]) -> None:
+    """Checks the given systems."""
+
+    for system in systems:
+        create_check(system)
+
+
 def create_check(system: System) -> CheckResults:
     """Checks a system."""
 
@@ -84,22 +100,6 @@ def create_check(system: System) -> CheckResults:
         check_results, last_check
     )
     return check_results
-
-
-def check_system(system: System) -> CheckResults:
-    """Check the given system."""
-
-    LOGGER.info('Checking system: %i', system.id)
-    system_check = create_check(system)
-    system_check.save()
-    return system_check
-
-
-def check_systems(systems: Iterable[System]) -> None:
-    """Checks the given systems."""
-
-    for system in systems:
-        create_check(system)
 
 
 def get_sysinfo(
