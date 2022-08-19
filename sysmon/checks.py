@@ -443,10 +443,10 @@ def count_recent_touch_events(
     ).count()
 
 
-def extract_package_version(regex: str) -> str:
+def extract_package_version(regex: str, *, repo: Path = REPO_DIR) -> str:
     """Extracts the package version."""
 
-    for file in REPO_DIR.iterdir():
+    for file in repo.iterdir():
         if match := fullmatch(regex, file.name):
             return match.group(1)
 
