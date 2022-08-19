@@ -5,7 +5,6 @@ from multiprocessing import Pool
 from pathlib import Path
 from re import fullmatch
 from subprocess import DEVNULL
-from subprocess import PIPE
 from subprocess import TimeoutExpired
 from subprocess import CalledProcessError
 from subprocess import check_call
@@ -163,10 +162,9 @@ def check_ssh_login(
     try:
         run(
             get_ssh_command(system, user=user, timeout=timeout), check=True,
-            stdout=DEVNULL, stderr=PIPE, text=True, timeout=timeout+1
+            stdout=DEVNULL, stderr=DEVNULL, text=True, timeout=timeout+1
         )
-    except CalledProcessError as error:
-        LOGGER.error('SSH connection error: %s', error.stderr)
+    except CalledProcessError:
         return SuccessFailedUnsupported.FAILED
     except TimeoutExpired:
         return SuccessFailedUnsupported.FAILED
