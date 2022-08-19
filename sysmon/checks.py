@@ -426,7 +426,7 @@ def check_system_sensors(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
 
 
 def count_recent_touch_events(
-        deployment: Union[Deployment, int, None],
+        deployment: Optional[Union[Deployment, int]],
         start: datetime,
         *,
         span: timedelta = RECENT_TOUCH_EVENTS
