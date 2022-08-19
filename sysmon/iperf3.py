@@ -3,7 +3,7 @@
 from __future__ import annotations
 from ipaddress import IPv4Address, IPv6Address
 from re import Match, fullmatch
-from subprocess import PIPE, run
+from subprocess import DEVNULL, PIPE, run
 from typing import NamedTuple, Optional, Union
 
 
@@ -60,7 +60,8 @@ def iperf3(
         command.append('-R')
 
     return parse_result(run(
-        command, check=True, stdout=PIPE, text=True, timeout=timeout
+        command, check=True, stdout=PIPE, stderr=DEVNULL, text=True,
+        timeout=timeout
     ).stdout)
 
 
