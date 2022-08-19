@@ -25,16 +25,16 @@ class Speed(NamedTuple):
     value: float
     unit: str
 
-    def to_kbps(self) -> Speed:
+    def to_kbps(self) -> float:
         """Convert the speed to kbps."""
         if self.unit == KBPS:
-            return self
+            return self.value
 
         if self.unit == MBPS:
-            return Speed(self.value * 1024, KBPS)
+            return self.value * 1024
 
         if self.unit == BPS:
-            return Speed(self.value / 1024, KBPS)
+            return self.value / 1024
 
         raise ValueError('Cannot convert unit:', self.unit)
 

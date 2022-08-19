@@ -338,7 +338,7 @@ def measure_download_speed(
     except (CalledProcessError, TimeoutExpired):
         return None
 
-    return round(result.receiver.to_kbps().value)
+    return round(result.receiver.to_kbps())
 
 
 def measure_upload_speed(
@@ -352,7 +352,7 @@ def measure_upload_speed(
     except (CalledProcessError, TimeoutExpired):
         return None
 
-    return round(result.receiver.to_kbps().value)
+    return round(result.receiver.to_kbps())
 
 
 def hipster_status() -> bool:
