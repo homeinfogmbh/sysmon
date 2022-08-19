@@ -10,6 +10,7 @@ setup(
     setup_requires=['setuptools_scm'],
     install_requires=[
         'configlib',
+        'digsigdb',
         'emaillib',
         'flask',
         'functoolsplus',

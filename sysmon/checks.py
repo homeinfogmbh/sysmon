@@ -9,11 +9,12 @@ from subprocess import TimeoutExpired
 from subprocess import CalledProcessError
 from subprocess import check_call
 from subprocess import run
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Optional, Union
 
 from requests import ConnectionError, ReadTimeout, get
 
-from hwdb import OperatingSystem, System
+from digsigdb import Statistics
+from hwdb import Deployment, OperatingSystem, System
 
 from sysmon.config import LOGGER, get_config
 from sysmon.enumerations import ApplicationState
@@ -44,6 +45,7 @@ SSH_CAPABLE_OSS = {
 SYNC_INTERVAL = timedelta(days=1)
 IPERF_TIMEOUT = 15  # seconds
 TCP_TIMEOUT = 5     # seconds
+RECENT_TOUCH_EVENTS = timedelta(days=3)
 
 
 def check_system(system: System) -> CheckResults:
@@ -67,7 +69,12 @@ def check_system(system: System) -> CheckResults:
         upload=measure_upload_speed(system, timeout=IPERF_TIMEOUT),
         root_not_ro=check_root_not_ro(sysinfo),
         sensors=check_system_sensors(sysinfo),
-        in_sync=is_in_sync(system)
+        in_sync=is_in_sync(system),
+        recent_touch_events=count_recent_touch_events(
+            system.deployment,
+            (now := datetime.now()) - RECENT_TOUCH_EVENTS,
+            now
+        )
     )
 
     try:
@@ -420,6 +427,23 @@ def check_system_sensors(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
                 return SuccessFailedUnsupported.FAILED
 
     return SuccessFailedUnsupported.SUCCESS
+
+
+def count_recent_touch_events(
+        deployment: Union[Deployment, int, None],
+        start: datetime,
+        end: datetime
+) -> Optional[int]:
+    """Count recent touch events."""
+
+    if deployment is None:
+        return None
+
+    return Statistics.select().where(
+        (Statistics.deployment == deployment)
+        & (Statistics.timestamp >= start)
+        & (Statistics.timestamp <= end)
+    ).count()
 
 
 def extract_package_version(regex: str) -> str:

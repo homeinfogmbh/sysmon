@@ -60,6 +60,7 @@ class CheckResults(SysmonModel):
     root_not_ro = EnumField(SuccessFailedUnsupported)
     sensors = EnumField(SuccessFailedUnsupported)
     in_sync = BooleanField(null=True)
+    recent_touch_events = IntegerField(null=True)
     # Failed-since timestamps
     offline_since = DateTimeField(null=True)
     blackscreen_since = DateTimeField(null=True)
