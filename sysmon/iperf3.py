@@ -1,39 +1,45 @@
 """Iperf3 speed measuring."""
 
 from __future__ import annotations
+from enum import Enum
 from ipaddress import IPv4Address, IPv6Address
 from re import Match, fullmatch
 from subprocess import DEVNULL, PIPE, run
 from typing import NamedTuple, Optional, Union
 
 
-__all__ = ['iperf3']
+__all__ = ['SpeedUnit', 'Speed', 'iperf3']
 
 
 REGEX = (
     r'\[\s*(\d+)]\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S*)'
     r'\s+(\S+)'
 )
-KBPS = 'Kbits/sec'
-MBPS = 'Mbits/sec'
-BPS = 'bits/sec'
+
+
+class SpeedUnit(str, Enum):
+    """Available speed units."""
+
+    KBPS = 'Kbits/sec'
+    MBPS = 'Mbits/sec'
+    BPS = 'bits/sec'
 
 
 class Speed(NamedTuple):
     """Transmission speed."""
 
     value: float
-    unit: str
+    unit: SpeedUnit
 
     def to_kbps(self) -> float:
         """Convert the speed to kbps."""
-        if self.unit == KBPS:
+        if self.unit is SpeedUnit.KBPS:
             return self.value
 
-        if self.unit == MBPS:
+        if self.unit is SpeedUnit.MBPS:
             return self.value * 1024
 
-        if self.unit == BPS:
+        if self.unit is SpeedUnit.BPS:
             return self.value / 1024
 
         raise ValueError('Cannot convert unit:', self.unit)
@@ -88,4 +94,4 @@ def parse_speed(text: str, typ: str) -> Speed:
 def extract_speed(match: Match) -> Speed:
     """Extract the speed from the regex match."""
 
-    return Speed(float(match.group(6)), match.group(7))
+    return Speed(float(match.group(6)), SpeedUnit(match.group(7)))
