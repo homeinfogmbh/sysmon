@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from typing import Union
 
 from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
-from hwdb import SystemOffline, System
+from hwdb import SystemOffline, Deployment, System
 from wsgilib import Binary, JSON, JSONMessage, get_int
 
 from sysmon.blacklist import authorized_blacklist
@@ -20,6 +20,7 @@ from sysmon.functions import get_latest_check_results_per_system
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
 from sysmon.json import check_results_to_json
+from sysmon.preview import generate_preview_token
 
 
 __all__ = ['APPLICATION']
@@ -181,3 +182,21 @@ def offline_history(days: int) -> JSON:
     return JSON(get_offline_systems(
         ACCOUNT, date.today() - timedelta(days=days)
     ))
+
+
+@APPLICATION.route(
+    '/preview/<int:deployment>',
+    methods=['GET'],
+    strict_slashes=False
+)
+@authenticated
+@authorized('sysmon')
+def gen_preview_token(deployment: int) -> Union[JSON, JSONMessage]:
+    """Generate a preview token for the given deployment."""
+
+    try:
+        token = generate_preview_token(deployment, ACCOUNT)
+    except Deployment.DoesNotExist:
+        return JSONMessage('No such deployment.', status=404)
+
+    return JSON({'token': token.token.hex})

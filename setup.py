@@ -18,6 +18,7 @@ setup(
         'mdb',
         'peewee',
         'peeweeplus',
+        'previewlib',
         'requests',
         'setuptools',
         'termacls',
