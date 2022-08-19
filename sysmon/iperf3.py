@@ -25,7 +25,7 @@ class SpeedUnit(str, Enum):
     MBPS = 'Mbits/sec'
 
     def factor_to(self: SpeedUnit, dst: SpeedUnit) -> float:
-        """Returns the respective conversion factor."""
+        """Return the respective conversion factor."""
         if self is dst:
             return 1
 
