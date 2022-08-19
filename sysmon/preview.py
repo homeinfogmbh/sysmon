@@ -27,6 +27,11 @@ def generate_preview_token(
 def _generate_preview_token(deployment: Deployment) -> DeploymentPreviewToken:
     """Generate a deployment preview token."""
 
-    token = DeploymentPreviewToken(obj=deployment)
-    token.save()
-    return token
+    try:
+        return DeploymentPreviewToken.get(
+            DeploymentPreviewToken.obj == deployment
+        )
+    except DeploymentPreviewToken.DoesNotExist:
+        token = DeploymentPreviewToken(obj=deployment)
+        token.save()
+        return token
