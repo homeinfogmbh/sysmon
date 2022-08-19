@@ -77,7 +77,7 @@ def iperf3(
         reverse: bool = False,
         timeout: Optional[int] = None
 ) -> Iperf3Result:
-    """Returns the transmission speed."""
+    """Return the transmission speed."""
 
     command = ['/usr/bin/iperf3', '-c', str(host)]
 
@@ -91,7 +91,7 @@ def iperf3(
 
 
 def parse_result(text: str) -> Iperf3Result:
-    """Parses the iperf3 result."""
+    """Parse the iperf3 result."""
 
     return Iperf3Result(
         parse_speed(text, 'sender'),
