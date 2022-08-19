@@ -5,6 +5,7 @@ from logging import INFO, basicConfig
 
 from hwdb import System
 
+from sysmon.blacklist import load_blacklist
 from sysmon.checks import check_systems
 from sysmon.config import LOG_FORMAT
 from sysmon.offline_history import update_offline_systems
@@ -18,4 +19,4 @@ def spawn() -> None:
 
     basicConfig(level=INFO, format=LOG_FORMAT)
     check_systems(System.select(cascade=True))
-    update_offline_systems(date.today())
+    update_offline_systems(date.today(), blacklist=set(load_blacklist()))

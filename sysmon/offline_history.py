@@ -9,7 +9,6 @@ from his import Account
 from hwdb import Group
 from termacls import get_administerable_groups
 
-from sysmon.blacklist import load_blacklist
 from sysmon.functions import get_latest_check_results_per_group
 from sysmon.orm import OfflineHistory
 
@@ -32,13 +31,17 @@ def count_offline_systems_in_group(
     )
 
 
-def update_offline_systems(timestamp: date) -> None:
+def update_offline_systems(
+        timestamp: date,
+        *,
+        blacklist: set[int] = frozenset()
+) -> None:
     """Updates the offline systems for the given date."""
 
     for group in Group.select().where(True):
         offline_systems = OfflineHistory.create_or_update(group.id, timestamp)
         offline_systems.offline = count_offline_systems_in_group(
-            group.id, timestamp, blacklist=set(load_blacklist())
+            group.id, timestamp, blacklist=blacklist
         )
         offline_systems.save()
 
