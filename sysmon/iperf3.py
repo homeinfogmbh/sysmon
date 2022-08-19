@@ -26,35 +26,29 @@ class SpeedUnit(str, Enum):
 
     def factor_to(self: SpeedUnit, dst: SpeedUnit) -> float:
         """Returns the respective conversion factor."""
-        if self is self.BPS:
-            if dst is self.BPS:
-                return 1
+        if self is dst:
+            return 1
 
+        if self is self.BPS:
             if dst is self.KBPS:
                 return 1 / 1024
 
             if dst is self.MBPS:
-                return 1 / 1024 / 1024
+                return self.factor_to(self.KBPS) ** 2
 
         if self is self.KBPS:
             if dst is self.BPS:
                 return 1024
 
-            if dst is self.KBPS:
-                return 1
-
             if dst is self.MBPS:
-                return 1 / 1024
+                return 1 / self.factor_to(self.BPS)
 
         if self is self.MBPS:
             if dst is self.BPS:
-                return 1024 * 1024
+                return self.factor_to(self.KBPS) ** 2
 
             if dst is self.KBPS:
                 return 1024
-
-            if dst is self.MBPS:
-                return 1
 
         raise ValueError(f'Cannot convert from {self} to {dst}.')
 
