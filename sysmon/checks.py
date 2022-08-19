@@ -51,6 +51,7 @@ RECENT_TOUCH_EVENTS = timedelta(days=3)
 def check_system(system: System) -> CheckResults:
     """Checks a system."""
 
+    now = datetime.now()
     http_request, sysinfo = get_sysinfo(system)
     check_results = CheckResults(
         system=system,
@@ -69,12 +70,8 @@ def check_system(system: System) -> CheckResults:
         upload=measure_upload_speed(system, timeout=IPERF_TIMEOUT),
         root_not_ro=check_root_not_ro(sysinfo),
         sensors=check_system_sensors(sysinfo),
-        in_sync=is_in_sync(system),
-        recent_touch_events=count_recent_touch_events(
-            system.deployment,
-            (now := datetime.now()) - RECENT_TOUCH_EVENTS,
-            now
-        )
+        in_sync=is_in_sync(system, now),
+        recent_touch_events=count_recent_touch_events(system.deployment, now)
     )
 
     try:
@@ -431,7 +428,8 @@ def check_system_sensors(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
 def count_recent_touch_events(
         deployment: Union[Deployment, int, None],
         start: datetime,
-        end: datetime
+        *,
+        span: timedelta = RECENT_TOUCH_EVENTS
 ) -> Optional[int]:
     """Count recent touch events."""
 
@@ -440,8 +438,8 @@ def count_recent_touch_events(
 
     return Statistics.select().where(
         (Statistics.deployment == deployment)
-        & (Statistics.timestamp >= start)
-        & (Statistics.timestamp <= end)
+        & (Statistics.timestamp >= start - span)
+        & (Statistics.timestamp <= start)
     ).count()
 
 
@@ -455,10 +453,15 @@ def extract_package_version(regex: str) -> str:
     raise ValueError('Could not determine any package version.')
 
 
-def is_in_sync(system: System) -> bool:
+def is_in_sync(
+        system: System,
+        timestamp: datetime,
+        *,
+        threshold: timedelta = SYNC_INTERVAL
+) -> bool:
     """Determine whether the system is synchronized."""
 
     if system.last_sync is None:
         return False
 
-    return system.last_sync > datetime.now() - SYNC_INTERVAL
+    return system.last_sync > timestamp - threshold
