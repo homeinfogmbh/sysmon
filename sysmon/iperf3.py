@@ -32,7 +32,7 @@ def iperf3(
 
 
 def receiver_kbps(result: dict[str, Any]) -> int:
-    """Return the receiver speed in kilobits per second rounded as int."""
+    """Return the rounded receiver speed in kilobits per second."""
 
     return round(
         result['end']['streams'][0]['receiver']['bits_per_second'] / 1024
