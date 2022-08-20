@@ -21,7 +21,7 @@ from sysmon.enumerations import ApplicationState
 from sysmon.enumerations import BaytrailFreezeState
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.functions import get_url
-from sysmon.iperf3 import iperf3
+from sysmon.iperf3 import iperf3, receiver_kbps
 from sysmon.orm import CheckResults
 
 
@@ -334,13 +334,9 @@ def measure_download_speed(
     """Measure the download speed of the system in kbps."""
 
     try:
-        result = iperf3(system.ip_address, timeout=timeout)
+        return receiver_kbps(iperf3(system.ip_address, timeout=timeout))
     except (CalledProcessError, TimeoutExpired):
         return None
-
-    return round(
-        result['end']['streams'][0]['receiver']['bits_per_second'] / 1024
-    )
 
 
 def measure_upload_speed(
@@ -350,13 +346,11 @@ def measure_upload_speed(
     """Measure the upload speed of the system in kbps."""
 
     try:
-        result = iperf3(system.ip_address, reverse=True, timeout=timeout)
+        return receiver_kbps(iperf3(
+            system.ip_address, reverse=True, timeout=timeout
+        ))
     except (CalledProcessError, TimeoutExpired):
         return None
-
-    return round(
-        result['end']['streams'][0]['receiver']['bits_per_second'] / 1024
-    )
 
 
 def hipster_status() -> bool:
