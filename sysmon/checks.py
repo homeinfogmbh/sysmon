@@ -334,7 +334,7 @@ def measure_download_speed(
     """Measure the download speed of the system in kbps."""
 
     try:
-        return receiver_kbps(iperf3(system.ip_address, timeout=timeout))
+        return round(receiver_kbps(iperf3(system.ip_address, timeout=timeout)))
     except (CalledProcessError, TimeoutExpired):
         return None
 
@@ -346,9 +346,9 @@ def measure_upload_speed(
     """Measure the upload speed of the system in kbps."""
 
     try:
-        return receiver_kbps(iperf3(
+        return round(receiver_kbps(iperf3(
             system.ip_address, reverse=True, timeout=timeout
-        ))
+        )))
     except (CalledProcessError, TimeoutExpired):
         return None
 
