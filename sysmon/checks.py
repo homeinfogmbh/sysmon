@@ -333,7 +333,7 @@ def measure_speed(
         reverse: bool = False,
         timeout: Optional[int] = None
 ) -> Optional[int]:
-    """Measure the download speed of the system in kbps."""
+    """Measure the up- or download speed of the system in kbps."""
 
     try:
         result = iperf3(system.ip_address, reverse=reverse, timeout=timeout)
