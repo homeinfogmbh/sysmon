@@ -4,17 +4,10 @@ from __future__ import annotations
 from ipaddress import IPv4Address, IPv6Address
 from json import loads
 from subprocess import DEVNULL, PIPE, run
-from typing import NamedTuple, Optional, Union
+from typing import Any, Optional, Union
 
 
 __all__ = ['iperf3']
-
-
-class Iperf3Result(NamedTuple):
-    """Iperf3 measurement results in bits/sec."""
-
-    sender: float
-    receiver: float
 
 
 def iperf3(
@@ -22,7 +15,7 @@ def iperf3(
         *,
         reverse: bool = False,
         timeout: Optional[int] = None
-) -> Iperf3Result:
+) -> dict[str, Any]:
     """Return the transmission speed."""
 
     command = ['/usr/bin/iperf3', '-c', str(host), '-J']
@@ -30,22 +23,9 @@ def iperf3(
     if reverse:
         command.append('-R')
 
-    return parse_result(
-        loads(
-            run(
-                command, check=True, stdout=PIPE, stderr=DEVNULL, text=True,
-                timeout=timeout
-            ).stdout
-        )['end']['streams'][0]
-    )
-
-
-def parse_result(
-        stream: dict[str, dict[str, Union[int, float, bool]]]
-) -> Iperf3Result:
-    """Parse the iperf3 result."""
-
-    return Iperf3Result(
-        stream['sender']['bits_per_second'],
-        stream['receiver']['bits_per_second']
+    return loads(
+        run(
+            command, check=True, stdout=PIPE, stderr=DEVNULL, text=True,
+            timeout=timeout
+        ).stdout
     )
