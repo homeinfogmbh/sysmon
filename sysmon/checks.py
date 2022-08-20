@@ -21,7 +21,7 @@ from sysmon.enumerations import ApplicationState
 from sysmon.enumerations import BaytrailFreezeState
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.functions import get_url
-from sysmon.iperf3 import iperf3, receiver_kbps
+from sysmon.iperf3 import iperf3
 from sysmon.orm import CheckResults
 
 
@@ -82,8 +82,8 @@ def create_check(system: System) -> CheckResults:
         ram_free=get_ram_free(sysinfo),
         ram_available=get_ram_available(sysinfo),
         efi_mount_ok=efi_mount_ok(sysinfo),
-        download=measure_download_speed(system, timeout=IPERF_TIMEOUT),
-        upload=measure_upload_speed(system, timeout=IPERF_TIMEOUT),
+        download=measure_speed(system, timeout=IPERF_TIMEOUT),
+        upload=measure_speed(system, reverse=True, timeout=IPERF_TIMEOUT),
         root_not_ro=check_root_not_ro(sysinfo),
         sensors=check_system_sensors(sysinfo),
         in_sync=is_in_sync(system, now),
@@ -327,30 +327,22 @@ def efi_mount_ok(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
     return SuccessFailedUnsupported.FAILED
 
 
-def measure_download_speed(
+def measure_speed(
         system: System,
+        *,
+        reverse: bool = False,
         timeout: Optional[int] = None
 ) -> Optional[int]:
     """Measure the download speed of the system in kbps."""
 
     try:
-        return round(receiver_kbps(iperf3(system.ip_address, timeout=timeout)))
+        result = iperf3(system.ip_address, reverse=reverse, timeout=timeout)
     except (CalledProcessError, TimeoutExpired):
         return None
 
-
-def measure_upload_speed(
-        system: System,
-        timeout: Optional[int] = None
-) -> Optional[int]:
-    """Measure the upload speed of the system in kbps."""
-
-    try:
-        return round(receiver_kbps(iperf3(
-            system.ip_address, reverse=True, timeout=timeout
-        )))
-    except (CalledProcessError, TimeoutExpired):
-        return None
+    return round(
+        result['end']['streams'][0]['receiver']['bits_per_second'] / 1024
+    )
 
 
 def hipster_status() -> bool:

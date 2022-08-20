@@ -7,7 +7,7 @@ from subprocess import DEVNULL, PIPE, run
 from typing import Any, Optional, Union
 
 
-__all__ = ['iperf3', 'receiver_kbps']
+__all__ = ['iperf3']
 
 
 def iperf3(
@@ -29,9 +29,3 @@ def iperf3(
             timeout=timeout
         ).stdout
     )
-
-
-def receiver_kbps(result: dict[str, Any]) -> float:
-    """Return the receiver speed in kilobits per second."""
-
-    return result['end']['streams'][0]['receiver']['bits_per_second'] / 1024
