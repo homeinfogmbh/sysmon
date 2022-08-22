@@ -7,7 +7,7 @@ from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
 from hwdb import SystemOffline, Deployment, System
 from wsgilib import Binary, JSON, JSONMessage, get_int
 
-from sysmon.blacklist import authorized_blacklist
+from sysmon.blacklist import authorized_blacklist, load_blacklist
 from sysmon.checks import check_system
 from sysmon.checks import get_sysinfo
 from sysmon.checks import hipster_status
@@ -67,8 +67,7 @@ def do_check_system(system: int) -> JSON:
 
     system = get_system(system, ACCOUNT)
     check_result = check_system(system)
-    check_result.save()
-    update_offline_systems(date.today())
+    update_offline_systems(date.today(), blacklist=set(load_blacklist()))
     return JSON(check_result.to_json())
 
 

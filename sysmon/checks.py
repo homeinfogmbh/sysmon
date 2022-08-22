@@ -1,10 +1,10 @@
 """System checking."""
 
 from datetime import datetime, timedelta
+from multiprocessing import Pool
 from pathlib import Path
 from re import fullmatch
 from subprocess import DEVNULL
-from subprocess import PIPE
 from subprocess import TimeoutExpired
 from subprocess import CalledProcessError
 from subprocess import check_call
@@ -49,6 +49,22 @@ RECENT_TOUCH_EVENTS = timedelta(days=7)
 
 
 def check_system(system: System) -> CheckResults:
+    """Check the given system."""
+
+    LOGGER.info('Checking system: %i', system.id)
+    system_check = create_check(system)
+    system_check.save()
+    return system_check
+
+
+def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
+    """Checks the given systems."""
+
+    with Pool() as pool:
+        pool.map(check_system, systems, chunksize=chunk_size)
+
+
+def create_check(system: System) -> CheckResults:
     """Checks a system."""
 
     now = datetime.now()
@@ -66,8 +82,8 @@ def check_system(system: System) -> CheckResults:
         ram_free=get_ram_free(sysinfo),
         ram_available=get_ram_available(sysinfo),
         efi_mount_ok=efi_mount_ok(sysinfo),
-        download=measure_download_speed(system, timeout=IPERF_TIMEOUT),
-        upload=measure_upload_speed(system, timeout=IPERF_TIMEOUT),
+        download=measure_speed(system, timeout=IPERF_TIMEOUT),
+        upload=measure_speed(system, reverse=True, timeout=IPERF_TIMEOUT),
         root_not_ro=check_root_not_ro(sysinfo),
         sensors=check_system_sensors(sysinfo),
         in_sync=is_in_sync(system, now),
@@ -84,15 +100,6 @@ def check_system(system: System) -> CheckResults:
         check_results, last_check
     )
     return check_results
-
-
-def check_systems(systems: Iterable[System]) -> None:
-    """Checks the given systems."""
-
-    for system in systems:
-        LOGGER.info('Checking system: %i', system.id)
-        system_check = check_system(system)
-        system_check.save()
 
 
 def get_sysinfo(
@@ -155,10 +162,9 @@ def check_ssh_login(
     try:
         run(
             get_ssh_command(system, user=user, timeout=timeout), check=True,
-            stdout=DEVNULL, stderr=PIPE, text=True, timeout=timeout+1
+            stdout=DEVNULL, stderr=DEVNULL, text=True, timeout=timeout + 1
         )
-    except CalledProcessError as error:
-        LOGGER.error('SSH connection error: %s', error.stderr)
+    except CalledProcessError:
         return SuccessFailedUnsupported.FAILED
     except TimeoutExpired:
         return SuccessFailedUnsupported.FAILED
@@ -321,32 +327,22 @@ def efi_mount_ok(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
     return SuccessFailedUnsupported.FAILED
 
 
-def measure_download_speed(
+def measure_speed(
         system: System,
+        *,
+        reverse: bool = False,
         timeout: Optional[int] = None
 ) -> Optional[int]:
-    """Measure the download speed of the system in kbps."""
+    """Measure the up- or download speed of the system in kbps."""
 
     try:
-        result = iperf3(system.ip_address, timeout=timeout)
+        result = iperf3(system.ip_address, reverse=reverse, timeout=timeout)
     except (CalledProcessError, TimeoutExpired):
         return None
 
-    return round(result.receiver.to_kbps().value)
-
-
-def measure_upload_speed(
-        system: System,
-        timeout: Optional[int] = None
-) -> Optional[int]:
-    """Measure the upload speed of the system in kbps."""
-
-    try:
-        result = iperf3(system.ip_address, reverse=True, timeout=timeout)
-    except (CalledProcessError, TimeoutExpired):
-        return None
-
-    return round(result.receiver.to_kbps().value)
+    return round(
+        result['end']['streams'][0]['receiver']['bits_per_second'] / 1024
+    )
 
 
 def hipster_status() -> bool:
@@ -426,7 +422,7 @@ def check_system_sensors(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
 
 
 def count_recent_touch_events(
-        deployment: Union[Deployment, int, None],
+        deployment: Optional[Union[Deployment, int]],
         start: datetime,
         *,
         span: timedelta = RECENT_TOUCH_EVENTS
@@ -443,10 +439,10 @@ def count_recent_touch_events(
     ).count()
 
 
-def extract_package_version(regex: str) -> str:
+def extract_package_version(regex: str, *, repo: Path = REPO_DIR) -> str:
     """Extracts the package version."""
 
-    for file in REPO_DIR.iterdir():
+    for file in repo.iterdir():
         if match := fullmatch(regex, file.name):
             return match.group(1)
 
