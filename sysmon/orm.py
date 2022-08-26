@@ -96,7 +96,7 @@ class CheckResults(SysmonModel):
         """Determines whether the system is online."""
         return (
             self.icmp_request
-            and self.ssh_login is SuccessFailedUnsupported.SUCCESS
+            and self.ssh_login is not SuccessFailedUnsupported.FAILED
         )
 
     def low_bandwidth(self, required: int = MIN_BANDWIDTH) -> bool:
