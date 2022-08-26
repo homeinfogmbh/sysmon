@@ -107,18 +107,10 @@ class CheckResults(SysmonModel):
 
         return self.download < required
 
-    def to_json(
-            self,
-            *,
-            blacklist: Optional[set[int]] = None
-    ) -> dict[str, Any]:
+    def to_json(self, *args, **kwargs) -> dict[str, Any]:
         """Return a JSON-ish dict."""
-        json = super().to_json()
+        json = super().to_json(*args, **kwargs)
         json['online'] = self.online
-
-        if blacklist is not None:
-            json['blacklisted'] = self.id in blacklist
-
         return json
 
 
@@ -139,5 +131,5 @@ class OfflineHistory(SysmonModel):
 
     @classmethod
     def since(cls, timestamp: date) -> ModelSelect:
-        """Selects entries for the given period of time"""
+        """Selects entries for the given period of time."""
         return cls.select().where(cls.timestamp >= timestamp)
