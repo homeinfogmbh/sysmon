@@ -30,7 +30,10 @@ def count_offline_systems_in_group(
         if (
                 (system := check_results.system).id not in blacklist
                 and system.fitted
-                and not system.testing
+                and (
+                    (deployment := system.deployment)
+                    and not deployment.testing
+                )
         )
     )
 
