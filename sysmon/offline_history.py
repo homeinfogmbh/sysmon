@@ -6,7 +6,7 @@ from typing import Any
 from peewee import ModelSelect
 
 from his import Account
-from hwdb import Group
+from hwdb import Group, System
 from termacls import get_administerable_groups
 
 from sysmon.functions import get_latest_check_results_per_group
@@ -27,15 +27,23 @@ def count_offline_systems_in_group(
     return sum(
         not check_results.online for check_results in
         get_latest_check_results_per_group(group, timestamp)
-        if (
-                (system := check_results.system).id not in blacklist
-                and system.fitted
-                and (
-                    (deployment := system.deployment)
-                    and not deployment.testing
-                )
-        )
+        if is_productive(check_results.system, blacklist)
     )
+
+
+def is_productive(system: System, blacklist: set[int]) -> bool:
+    """Return whether the system is considered productive."""
+
+    if system.id in blacklist:
+        return False
+
+    if not system.fitted:
+        return False
+
+    if not (deployment := system.deployment):
+        return False
+
+    return not deployment.testing
 
 
 def update_offline_systems(
