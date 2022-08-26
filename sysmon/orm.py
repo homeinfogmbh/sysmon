@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from datetime import date, datetime
+from typing import Any
 
 from peewee import JOIN
 from peewee import BooleanField
@@ -105,6 +106,12 @@ class CheckResults(SysmonModel):
             return True
 
         return self.download < required
+
+    def to_json(self) -> dict[str, Any]:
+        """Return a JSON-ish dict."""
+        json = super().to_json()
+        json['online'] = self.online
+        return json
 
 
 class OfflineHistory(SysmonModel):
