@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from datetime import date, datetime
-from typing import Any
+from typing import Any, Optional
 
 from peewee import JOIN
 from peewee import BooleanField
@@ -107,10 +107,14 @@ class CheckResults(SysmonModel):
 
         return self.download < required
 
-    def to_json(self) -> dict[str, Any]:
+    def to_json(self, blacklist: Optional[set[int]] = None) -> dict[str, Any]:
         """Return a JSON-ish dict."""
         json = super().to_json()
         json['online'] = self.online
+
+        if blacklist is not None:
+            json['blacklisted'] = self.id in blacklist
+
         return json
 
 
