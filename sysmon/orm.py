@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from datetime import date, datetime
-from typing import Any, Optional
+from typing import Any
 
 from peewee import JOIN
 from peewee import BooleanField

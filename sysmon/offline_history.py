@@ -27,7 +27,11 @@ def count_offline_systems_in_group(
     return sum(
         not check_results.online for check_results in
         get_latest_check_results_per_group(group, timestamp)
-        if check_results.system.id not in blacklist
+        if (
+                (system := check_results.system).id not in blacklist
+                and system.fitted
+                and not system.testing
+        )
     )
 
 
