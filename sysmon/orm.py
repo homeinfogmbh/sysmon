@@ -107,7 +107,11 @@ class CheckResults(SysmonModel):
 
         return self.download < required
 
-    def to_json(self, blacklist: Optional[set[int]] = None) -> dict[str, Any]:
+    def to_json(
+            self,
+            *,
+            blacklist: Optional[set[int]] = None
+    ) -> dict[str, Any]:
         """Return a JSON-ish dict."""
         json = super().to_json()
         json['online'] = self.online

@@ -35,9 +35,13 @@ APPLICATION = Application('sysmon')
 def list_latest_stats() -> JSON:
     """List systems and their latest stats."""
 
-    return JSON(check_results_to_json(get_latest_check_results_per_system(
-        ACCOUNT, date.today() - timedelta(days=get_int('days-ago', default=0))
-    )))
+    return JSON(check_results_to_json(
+        get_latest_check_results_per_system(
+            ACCOUNT,
+            date.today() - timedelta(days=get_int('days-ago', default=0))
+        ),
+        blacklist=load_blacklist()
+    ))
 
 
 @APPLICATION.route(
@@ -51,7 +55,8 @@ def list_stats(system: int) -> JSON:
     """List latest stats of a system."""
 
     return JSON(check_results_to_json(
-        get_check_results_for_system(system, ACCOUNT)
+        get_check_results_for_system(system, ACCOUNT),
+        blacklist=load_blacklist()
     ))
 
 
@@ -67,8 +72,9 @@ def do_check_system(system: int) -> JSON:
 
     system = get_system(system, ACCOUNT)
     check_result = check_system(system)
-    update_offline_systems(date.today(), blacklist=set(load_blacklist()))
-    return JSON(check_result.to_json())
+    blacklist = load_blacklist()
+    update_offline_systems(date.today(), blacklist=blacklist)
+    return JSON(check_result.to_json(blacklist=blacklist))
 
 
 @APPLICATION.route(
@@ -159,7 +165,7 @@ def sysinfo_(ident: int) -> Union[JSON, JSONMessage]:
 )
 @authenticated
 @authorized('sysmon')
-def blacklist() -> JSON:
+def get_blacklist() -> JSON:
     """List blacklisted systems."""
 
     return JSON([
