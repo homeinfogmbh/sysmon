@@ -45,7 +45,7 @@ SSH_CAPABLE_OSS = {
 SYNC_INTERVAL = timedelta(days=1)
 IPERF_TIMEOUT = 15  # seconds
 TCP_TIMEOUT = 5     # seconds
-RECENT_TOUCH_EVENTS = timedelta(days=7)
+RECENT_TOUCH_EVENTS = timedelta(days=21)
 
 
 def check_system(system: System) -> CheckResults:
