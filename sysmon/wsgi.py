@@ -11,6 +11,7 @@ from sysmon.blacklist import authorized_blacklist, load_blacklist
 from sysmon.checks import check_system
 from sysmon.checks import get_sysinfo
 from sysmon.checks import hipster_status
+from sysmon.checks import sysmon_status
 from sysmon.checks import current_application_version
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.functions import get_check_results_for_system
@@ -124,6 +125,15 @@ def hipster_status_() -> JSON:
     """Return the status of the HIPSTER daemon."""
 
     return JSON(hipster_status())
+
+
+@APPLICATION.route('/sysmon-status', methods=['GET'], strict_slashes=False)
+@authenticated
+@authorized('sysmon')
+def sysmon_status_() -> JSON:
+    """Return the status of the sysmon daemon."""
+
+    return JSON(sysmon_status())
 
 
 @APPLICATION.route(

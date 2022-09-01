@@ -29,8 +29,9 @@ __all__ = [
     'check_system',
     'check_systems',
     'get_sysinfo',
+    'current_application_version',
     'hipster_status',
-    'current_application_version'
+    'sysmon_status'
 ]
 
 
@@ -345,21 +346,6 @@ def measure_speed(
     )
 
 
-def hipster_status() -> bool:
-    """Determine the status of the HIPSTER daemon on the server."""
-
-    try:
-        check_call(
-            ['/bin/systemctl', 'status', 'hipster.service', '--quiet'],
-            stdout=PIPE,
-            stderr=PIPE
-        )
-    except CalledProcessError:
-        return False
-
-    return True
-
-
 def current_application_version(typ: str) -> Optional[str]:
     """Returns the current application version in the repo."""
 
@@ -465,3 +451,30 @@ def is_in_sync(
         return False
 
     return system.last_sync > timestamp - threshold
+
+
+def unit_status(service: str) -> bool:
+    """Determine the status of a systemd unit on the server."""
+
+    try:
+        check_call(
+            ['/bin/systemctl', 'status', service, '--quiet'],
+            stdout=PIPE,
+            stderr=PIPE
+        )
+    except CalledProcessError:
+        return False
+
+    return True
+
+
+def hipster_status() -> bool:
+    """Determine the status of the HIPSTER daemon on the server."""
+
+    return unit_status('hipster.service')
+
+
+def sysmon_status() -> bool:
+    """Determine the status of the sysmon daemon on the server."""
+
+    return unit_status('sysmon.service')
