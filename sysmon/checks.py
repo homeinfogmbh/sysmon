@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from multiprocessing import Pool
 from pathlib import Path
 from re import fullmatch
-from subprocess import DEVNULL
+from subprocess import PIPE
 from subprocess import TimeoutExpired
 from subprocess import CalledProcessError
 from subprocess import check_call
@@ -162,7 +162,7 @@ def check_ssh_login(
     try:
         run(
             get_ssh_command(system, user=user, timeout=timeout), check=True,
-            stdout=DEVNULL, stderr=DEVNULL, text=True, timeout=timeout + 1
+            stdout=PIPE, stderr=PIPE, text=True, timeout=timeout + 1
         )
     except CalledProcessError:
         return SuccessFailedUnsupported.FAILED
@@ -349,7 +349,11 @@ def hipster_status() -> bool:
     """Determine the status of the HIPSTER daemon on the server."""
 
     try:
-        check_call(['/bin/systemctl', 'status', 'hipster.service', '--quiet'])
+        check_call(
+            ['/bin/systemctl', 'status', 'hipster.service', '--quiet'],
+            stdout=PIPE,
+            stderr=PIPE
+        )
     except CalledProcessError:
         return False
 
