@@ -76,7 +76,7 @@ def do_check_system(system: int) -> JSON:
     check_result = check_system(system)
     blacklist = load_blacklist()
     update_offline_systems(date.today(), blacklist=blacklist)
-    return JSON(check_result.to_json(blacklist=blacklist))
+    return JSON(check_result.to_json())
 
 
 @APPLICATION.route(
