@@ -30,8 +30,7 @@ __all__ = [
     'check_systems',
     'get_sysinfo',
     'current_application_version',
-    'hipster_status',
-    'sysmon_status'
+    'unit_status'
 ]
 
 
@@ -466,15 +465,3 @@ def unit_status(service: str) -> bool:
         return False
 
     return True
-
-
-def hipster_status() -> bool:
-    """Determine the status of the HIPSTER daemon on the server."""
-
-    return unit_status('hipster.service')
-
-
-def sysmon_status() -> bool:
-    """Determine the status of the sysmon daemon on the server."""
-
-    return unit_status('sysmon.service')

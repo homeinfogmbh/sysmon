@@ -10,8 +10,7 @@ from wsgilib import Binary, JSON, JSONMessage, get_int
 from sysmon.blacklist import authorized_blacklist, load_blacklist
 from sysmon.checks import check_system
 from sysmon.checks import get_sysinfo
-from sysmon.checks import hipster_status
-from sysmon.checks import sysmon_status
+from sysmon.checks import unit_status
 from sysmon.checks import current_application_version
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.functions import get_check_results_for_system
@@ -28,6 +27,10 @@ __all__ = ['APPLICATION']
 
 
 APPLICATION = Application('sysmon')
+SERVICE_UNITS = {
+    'hipster': 'hipster.service',
+    'sysmon': 'sysmon.service'
+}
 
 
 @APPLICATION.route('/checks', methods=['GET'], strict_slashes=False)
@@ -118,22 +121,18 @@ def enduser_states() -> Union[JSON, JSONMessage]:
     ])
 
 
-@APPLICATION.route('/hipster-status', methods=['GET'], strict_slashes=False)
+@APPLICATION.route('/<service>-status', methods=['GET'], strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def hipster_status_() -> JSON:
-    """Return the status of the HIPSTER daemon."""
+def service_status(service: str) -> Union[JSON, JSONMessage]:
+    """Return the status of the given system service."""
 
-    return JSON(hipster_status())
+    try:
+        unit = SERVICE_UNITS[service]
+    except KeyError:
+        return JSONMessage('Invalid service.', service=service, status=400)
 
-
-@APPLICATION.route('/sysmon-status', methods=['GET'], strict_slashes=False)
-@authenticated
-@authorized('sysmon')
-def sysmon_status_() -> JSON:
-    """Return the status of the sysmon daemon."""
-
-    return JSON(sysmon_status())
+    return JSON(unit_status(unit))
 
 
 @APPLICATION.route(
