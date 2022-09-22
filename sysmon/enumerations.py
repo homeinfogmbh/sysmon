@@ -15,6 +15,8 @@ class ApplicationState(str, Enum):
 
     AIR = 'air'
     HTML = 'html'
+    INSTALLATION_INSTRUCTIONS = 'installation instructions'
+    NOT_CONFIGURED = 'not configured'
     CONFLICT = 'conflict'
     NOT_ENABLED = 'not enabled'
     NOT_RUNNING = 'not running'
