@@ -9,9 +9,9 @@ from wsgilib import Binary, JSON, JSONMessage, get_int
 
 from sysmon.blacklist import authorized_blacklist, load_blacklist
 from sysmon.checks import check_system
-from sysmon.checks import get_sysinfo
-from sysmon.checks import unit_status
-from sysmon.checks import current_application_version
+from sysmon.checks.common import get_sysinfo
+from sysmon.checks.systemd import unit_status
+from sysmon.checks.application import current_application_version
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
