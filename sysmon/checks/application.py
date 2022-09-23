@@ -4,6 +4,15 @@ from typing import Any, Optional
 
 from sysmon.enumerations import ApplicationState
 
+from sysmon.checks.common import extract_package_version
+
+
+__all__ = [
+    'current_application_version',
+    'get_application_state',
+    'get_application_version'
+]
+
 
 APPLICATION_AIR_REGEX = r'application-air-(.+)-any\.pkg\.tar\.zst'
 APPLICATION_HTML_REGEX = r'application-html-(.+)-any\.pkg\.tar\.zst'
