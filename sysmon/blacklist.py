@@ -37,6 +37,9 @@ def generate_blacklist() -> None:
 def load_blacklist() -> list[int]:
     """Loads the systems from the blacklist."""
 
+    if not BLACKLIST.exists():
+        generate_blacklist()
+
     with BLACKLIST.open('r', encoding='utf-8') as file:
         return load(file)
 
