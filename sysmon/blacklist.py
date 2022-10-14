@@ -34,14 +34,14 @@ def generate_blacklist() -> None:
         dump(list(get_blacklist(datetime.now() - MAX_RETENTION)), file)
 
 
-def load_blacklist() -> list[int]:
+def load_blacklist() -> set[int]:
     """Loads the systems from the blacklist."""
 
     if not BLACKLIST.exists():
         generate_blacklist()
 
     with BLACKLIST.open('r', encoding='utf-8') as file:
-        return load(file)
+        return set(load(file))
 
 
 def authorized_blacklist(account: Account) -> ModelSelect:

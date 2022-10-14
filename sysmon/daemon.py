@@ -19,4 +19,4 @@ def spawn() -> None:
 
     basicConfig(level=INFO, format=LOG_FORMAT)
     check_systems(System.select(cascade=True))
-    update_offline_systems(date.today(), blacklist=set(load_blacklist()))
+    update_offline_systems(date.today(), blacklist=load_blacklist())

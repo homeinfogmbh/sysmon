@@ -22,7 +22,7 @@ def check_results_to_json(
 
 
 def serialize_by_system(
-        system_checks: dict[System, list[CheckResults]]
+        system_checks: dict[System, list[CheckResults]],
 ) -> Iterator[tuple[int, dict[str, Any]]]:
     """Serialize check results grouped by system."""
 
@@ -32,7 +32,7 @@ def serialize_by_system(
 
 def serialize_system_and_checks(
         system: System,
-        check_results: Iterable[CheckResults]
+        check_results: Iterable[CheckResults],
 ) -> dict[str, Any]:
     """Serialize a systems and its check results."""
 

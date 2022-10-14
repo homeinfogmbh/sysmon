@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from datetime import date, datetime
+from typing import Any
 
 from peewee import JOIN
 from peewee import BooleanField
@@ -96,7 +97,7 @@ class CheckResults(SysmonModel):
         """Determines whether the system is online."""
         return (
             self.icmp_request
-            and self.ssh_login is SuccessFailedUnsupported.SUCCESS
+            and self.ssh_login is not SuccessFailedUnsupported.FAILED
         )
 
     def low_bandwidth(self, required: int = MIN_BANDWIDTH) -> bool:
@@ -105,6 +106,12 @@ class CheckResults(SysmonModel):
             return True
 
         return self.download < required
+
+    def to_json(self, *args, **kwargs) -> dict[str, Any]:
+        """Return a JSON-ish dict."""
+        json = super().to_json(*args, **kwargs)
+        json['online'] = self.online
+        return json
 
 
 class OfflineHistory(SysmonModel):
@@ -124,5 +131,5 @@ class OfflineHistory(SysmonModel):
 
     @classmethod
     def since(cls, timestamp: date) -> ModelSelect:
-        """Selects entries for the given period of time"""
+        """Selects entries for the given period of time."""
         return cls.select().where(cls.timestamp >= timestamp)

@@ -9,9 +9,9 @@ from wsgilib import Binary, JSON, JSONMessage, get_int
 
 from sysmon.blacklist import authorized_blacklist, load_blacklist
 from sysmon.checks import check_system
-from sysmon.checks import get_sysinfo
-from sysmon.checks import hipster_status
-from sysmon.checks import current_application_version
+from sysmon.checks.common import get_sysinfo
+from sysmon.checks.systemd import unit_status
+from sysmon.checks.application import current_application_version
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
@@ -27,6 +27,10 @@ __all__ = ['APPLICATION']
 
 
 APPLICATION = Application('sysmon')
+SERVICE_UNITS = {
+    'hipster': 'hipster.service',
+    'sysmon': 'sysmon.service'
+}
 
 
 @APPLICATION.route('/checks', methods=['GET'], strict_slashes=False)
@@ -35,9 +39,14 @@ APPLICATION = Application('sysmon')
 def list_latest_stats() -> JSON:
     """List systems and their latest stats."""
 
-    return JSON(check_results_to_json(get_latest_check_results_per_system(
-        ACCOUNT, date.today() - timedelta(days=get_int('days-ago', default=0))
-    )))
+    return JSON(
+        check_results_to_json(
+            get_latest_check_results_per_system(
+                ACCOUNT,
+                date.today() - timedelta(days=get_int('days-ago', default=0))
+            )
+        )
+    )
 
 
 @APPLICATION.route(
@@ -50,9 +59,11 @@ def list_latest_stats() -> JSON:
 def list_stats(system: int) -> JSON:
     """List latest stats of a system."""
 
-    return JSON(check_results_to_json(
-        get_check_results_for_system(system, ACCOUNT)
-    ))
+    return JSON(
+        check_results_to_json(
+            get_check_results_for_system(system, ACCOUNT)
+        )
+    )
 
 
 @APPLICATION.route(
@@ -67,7 +78,8 @@ def do_check_system(system: int) -> JSON:
 
     system = get_system(system, ACCOUNT)
     check_result = check_system(system)
-    update_offline_systems(date.today(), blacklist=set(load_blacklist()))
+    blacklist = load_blacklist()
+    update_offline_systems(date.today(), blacklist=blacklist)
     return JSON(check_result.to_json())
 
 
@@ -109,13 +121,18 @@ def enduser_states() -> Union[JSON, JSONMessage]:
     ])
 
 
-@APPLICATION.route('/hipster-status', methods=['GET'], strict_slashes=False)
+@APPLICATION.route('/<service>-status', methods=['GET'], strict_slashes=False)
 @authenticated
 @authorized('sysmon')
-def hipster_status_() -> JSON:
-    """Return the status of the HIPSTER daemon."""
+def service_status(service: str) -> Union[JSON, JSONMessage]:
+    """Return the status of the given system service."""
 
-    return JSON(hipster_status())
+    try:
+        unit = SERVICE_UNITS[service]
+    except KeyError:
+        return JSONMessage('Invalid service.', service=service, status=400)
+
+    return JSON(unit_status(unit))
 
 
 @APPLICATION.route(
@@ -159,7 +176,7 @@ def sysinfo_(ident: int) -> Union[JSON, JSONMessage]:
 )
 @authenticated
 @authorized('sysmon')
-def blacklist() -> JSON:
+def get_blacklist() -> JSON:
     """List blacklisted systems."""
 
     return JSON([
