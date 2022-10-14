@@ -28,7 +28,7 @@ THRESHOLD = 0.8
 
 
 def generate_blacklist() -> None:
-    """Genrates the blacklist."""
+    """Generates the blacklist."""
 
     with BLACKLIST.open('w', encoding='utf-8') as file:
         dump(list(get_blacklist(datetime.now() - MAX_RETENTION)), file)
