@@ -64,6 +64,7 @@ def create_check(system: System) -> CheckResults:
         application_state=get_application_state(sysinfo),
         smart_check=get_smart_results(sysinfo),
         baytrail_freeze=get_baytrail_freeze_state(sysinfo),
+        fsck_repair=sysinfo.get('fsck.repair'),
         application_version=get_application_version(sysinfo),
         ram_total=get_ram_total(sysinfo),
         ram_free=get_ram_free(sysinfo),
