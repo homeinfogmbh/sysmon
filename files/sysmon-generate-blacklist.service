@@ -1,7 +1,7 @@
 [Unit]
 Description=Generate blacklist for Sysmon of unreliable systems
 After=network.target mysql.service
-OnFailure=notify-failed@%n
+OnFailure=notify-failed@%n.service
 
 [Service]
 User=sysmon
