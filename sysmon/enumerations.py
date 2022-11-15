@@ -17,10 +17,12 @@ class ApplicationState(str, Enum):
     HTML = 'html'
     INSTALLATION_INSTRUCTIONS = 'installation instructions'
     NOT_CONFIGURED = 'not configured'
+    UNKNOWN = 'unknown'
+    OFF = 'off'
+    # Legacy modes for database compatibility:
     CONFLICT = 'conflict'
     NOT_ENABLED = 'not enabled'
     NOT_RUNNING = 'not running'
-    UNKNOWN = 'unknown'
 
 
 class BaytrailFreezeState(str, Enum):
