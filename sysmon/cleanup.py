@@ -44,6 +44,6 @@ def main() -> None:
 
     args = get_args()
     basicConfig(format=LOG_FORMAT, level=INFO)
-    LOGGER.info('Deleting records older than %i days.', args.days)
+    LOGGER.info('Deleting records older than %s days.', args.days)
     count = remove_checks_older_than(args.days)
     LOGGER.info('Deleted %i records.', count)
