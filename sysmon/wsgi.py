@@ -78,8 +78,7 @@ def do_check_system(system: int) -> JSON:
 
     system = get_system(system, ACCOUNT)
     check_result = check_system(system)
-    blacklist = load_blacklist()
-    update_offline_systems(date.today(), blacklist=blacklist)
+    update_offline_systems(date.today(), blacklist=load_blacklist())
     return JSON(check_result.to_json())
 
 
