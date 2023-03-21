@@ -4,7 +4,6 @@ from subprocess import PIPE
 from subprocess import TimeoutExpired
 from subprocess import CalledProcessError
 from subprocess import run
-from typing import Optional
 
 from hwdb import OperatingSystem, System
 
@@ -22,10 +21,7 @@ SSH_CAPABLE_OSS = {
 }
 
 
-def check_ssh(
-        system: System,
-        timeout: Optional[int] = None
-) -> SuccessFailedUnsupported:
+def check_ssh(system: System, timeout: int) -> SuccessFailedUnsupported:
     """Checks the SSH connection to the system."""
 
     if system.operating_system not in SSH_CAPABLE_OSS:
