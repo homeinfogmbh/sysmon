@@ -3,7 +3,7 @@ Description=Periodic SysMon user mailing
 After=network.target mysql.service
 
 [Timer]
-OnCalendar=monthly
+OnCalendar=*-*-01 05:00:00
 
 [Install]
 WantedBy=timers.target
