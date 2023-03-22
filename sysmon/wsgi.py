@@ -219,14 +219,12 @@ def gen_preview_token(deployment: int) -> Union[JSON, JSONMessage]:
     return JSON({'token': token.token.hex})
 
 
-get_mne, set_mne = get_wsgi_funcs('sysmon', UserNotificationEmail)
-APPLICATION.route(
-    '/user-notification-emails',
-    methods=['GET'],
-    strict_slashes=False
-)(get_mne)
-APPLICATION.route(
-    '/user-notification-emails',
-    methods=['POST'],
-    strict_slashes=False
-)(set_mne)
+for function, method in zip(
+        get_wsgi_funcs('sysmon', UserNotificationEmail),
+        ['GET', 'POST']
+):
+    APPLICATION.route(
+        '/user-notification-emails',
+        methods=[method],
+        strict_slashes=False
+    )(function)
