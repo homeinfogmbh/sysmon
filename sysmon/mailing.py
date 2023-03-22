@@ -14,7 +14,7 @@ from sysmon.mean_stats import MeanStats
 from sysmon.orm import CheckResults, UserNotificationEmail
 
 
-__all__ = ['send_mailing']
+__all__ = ['main', 'send_mailing']
 
 
 BODY = '''Sehr geehrter Kunde,
@@ -35,6 +35,12 @@ technik@homeinfo-medienservice.de
 '''
 SENDER = 'info@homeinfo.de'
 SUBJECT = 'HOMEINFO: Displaystatistik {date}'
+
+
+def main() -> int:
+    """Main function for script invocation."""
+
+    return 0 if send_mailing() else 1
 
 
 def send_mailing() -> bool:
