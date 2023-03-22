@@ -10,7 +10,7 @@ from hwdb import Deployment, System
 from mdb import Customer
 
 from sysmon.mean_stats import MeanStats
-from sysmon.orm import CheckResults
+from sysmon.orm import CheckResults, UserNotificationEmail
 
 
 __all__ = ['create_emails']
@@ -85,7 +85,10 @@ def get_text(
 def get_recipients(customer: Customer) -> Iterator[str]:
     """Yield email addresses for the given customer."""
 
-    raise NotImplementedError()
+    for user_notification_email in UserNotificationEmail.select().where(
+            UserNotificationEmail.customer == customer
+    ):
+        yield user_notification_email.email
 
 
 def check_results_by_system(
