@@ -9,7 +9,7 @@ from emaillib import EMail
 from hwdb import Deployment, System
 from mdb import Customer
 
-from sysmon.monthly_stats import MonthlyStats
+from sysmon.mean_stats import MeanStats
 from sysmon.orm import CheckResults
 
 
@@ -45,7 +45,7 @@ def create_emails(
     subject = SUBJECT.format(date=today.strftime('%b %Y'))
     text = get_text(
         customer,
-        MonthlyStats.from_system_check_results(
+        MeanStats.from_system_check_results(
             check_results_by_system(
                 get_check_results_for_month(
                     customer, today
@@ -66,7 +66,7 @@ def create_emails(
 
 def get_text(
         customer: Customer,
-        stats: MonthlyStats,
+        stats: MeanStats,
         today: date
 ) -> str:
     """Return the email body's text."""

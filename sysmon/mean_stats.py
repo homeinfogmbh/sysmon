@@ -1,4 +1,4 @@
-"""Monthly stats."""
+"""Mean system statistics."""
 
 from __future__ import annotations
 from math import floor
@@ -10,15 +10,15 @@ from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.orm import CheckResults
 
 
-__all__ = ['MonthlyStats']
+__all__ = ['MeanStats']
 
 
 MIN_DOWNLOAD = 1953.125     # Kilobits/s
 MIN_UPLOAD = 488.28125      # Kilobits/s
 
 
-class MonthlyStats(NamedTuple):
-    """Monthly display stats."""
+class MeanStats(NamedTuple):
+    """Mean system check result statistics."""
 
     systems: frozenset[System]
     online: frozenset[System]
@@ -41,8 +41,8 @@ class MonthlyStats(NamedTuple):
     def from_system_check_results(
             cls,
             system_check_results: dict[System, Iterable[CheckResults]]
-    ) -> MonthlyStats:
-        """Create monthly stats from monthly check results."""
+    ) -> MeanStats:
+        """Create mean system stats from system-mapped check results."""
         online = set()
         download_critical = set()
         upload_critical = set()
