@@ -17,6 +17,7 @@ setup(
         'his',
         'hwdb',
         'mdb',
+        'notificationlib',
         'peewee',
         'peeweeplus',
         'previewlib',

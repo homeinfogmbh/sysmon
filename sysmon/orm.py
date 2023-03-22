@@ -15,6 +15,7 @@ from peewee import ModelSelect
 
 from hwdb import Deployment, System
 from mdb import Address, Company, Customer
+from notificationlib import get_email_orm_model
 from peeweeplus import EnumField, JSONModel, MySQLDatabaseProxy
 
 from sysmon.config import MIN_BANDWIDTH
@@ -23,7 +24,13 @@ from sysmon.enumerations import BaytrailFreezeState
 from sysmon.enumerations import SuccessFailedUnsupported
 
 
-__all__ = ['DATABASE', 'SysmonModel', 'CheckResults', 'OfflineHistory']
+__all__ = [
+    'DATABASE',
+    'SysmonModel',
+    'CheckResults',
+    'OfflineHistory',
+    'MonthlyUserNotificationEmail'
+]
 
 
 DATABASE = MySQLDatabaseProxy('sysmon')
@@ -134,3 +141,11 @@ class OfflineHistory(SysmonModel):
     def since(cls, timestamp: date) -> ModelSelect:
         """Selects entries for the given period of time."""
         return cls.select().where(cls.timestamp >= timestamp)
+
+
+MonthlyUserNotificationEmail = get_email_orm_model(
+    SysmonModel,
+    table_name='monthly_user_notification_emails',
+    subject_field=False,
+    html_field=False
+)
