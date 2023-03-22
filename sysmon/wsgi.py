@@ -5,6 +5,7 @@ from typing import Union
 
 from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
 from hwdb import SystemOffline, Deployment, System
+from notificationlib import get_wsgi_funcs
 from wsgilib import Binary, JSON, JSONMessage, get_int
 
 from sysmon.blacklist import authorized_blacklist, load_blacklist
@@ -19,6 +20,7 @@ from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
+from sysmon.orm import MonthlyUserNotificationEmail
 from sysmon.json import check_results_to_json
 from sysmon.preview import generate_preview_token
 
@@ -215,3 +217,16 @@ def gen_preview_token(deployment: int) -> Union[JSON, JSONMessage]:
         return JSONMessage('No such deployment.', status=404)
 
     return JSON({'token': token.token.hex})
+
+
+get_mne, set_mne = get_wsgi_funcs('sysmon', MonthlyUserNotificationEmail)
+APPLICATION.route(
+    '/monthly-user-notification-emails',
+    methods=['GET'],
+    strict_slashes=False
+)(get_mne)
+APPLICATION.route(
+    '/monthly-user-notification-emails',
+    methods=['POST'],
+    strict_slashes=False
+)(set_mne)
