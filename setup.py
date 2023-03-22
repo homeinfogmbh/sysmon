@@ -39,7 +39,8 @@ setup(
             'sysmon = sysmon.daemon:spawn',
             'sysmon-cleanup = sysmon.cleanup:main',
             'sysmon-notify = sysmon.notify:notify',
-            'sysmon-generate-blacklist = sysmon.blacklist:generate_blacklist'
+            'sysmon-generate-blacklist = sysmon.blacklist:generate_blacklist',
+            'sysmon-send-mailing = sysmon.mailing:main'
         ]
     },
     data_files=[
