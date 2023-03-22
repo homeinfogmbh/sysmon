@@ -1,0 +1,9 @@
+[Unit]
+Description=SysMon user mailing
+After=network.target mysql.service
+OnFailure=notify-failed@%n
+
+[Service]
+User=sysmon
+Group=sysmon
+ExecStart=/usr/local/bin/sysmon-send-mailing
