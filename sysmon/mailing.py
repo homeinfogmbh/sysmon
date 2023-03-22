@@ -56,7 +56,7 @@ def create_emails(
     )
 
     for recipient in get_recipients(customer):
-        return EMail(
+        yield EMail(
             subject=subject,
             sender=SENDER,
             recipient=recipient,
