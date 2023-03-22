@@ -50,7 +50,9 @@ setup(
             'files/sysmon-cleanup.service',
             'files/sysmon-cleanup.timer',
             'files/sysmon-generate-blacklist.service',
-            'files/sysmon-generate-blacklist.timer'
+            'files/sysmon-generate-blacklist.timer',
+            'files/sysmon-mailing.service',
+            'files/sysmon-mailing.timer'
         ])
     ],
     license='GPLv3',
