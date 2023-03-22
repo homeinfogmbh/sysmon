@@ -5,15 +5,16 @@ from collections import defaultdict
 from datetime import date, timedelta
 from typing import Iterable, Iterator
 
-from emaillib import EMail
+from emaillib import EMail, Mailer
 from hwdb import Deployment, System
 from mdb import Customer
 
+from sysmon.config import get_config
 from sysmon.mean_stats import MeanStats
 from sysmon.orm import CheckResults, UserNotificationEmail
 
 
-__all__ = ['create_emails']
+__all__ = ['send_mailing']
 
 
 BODY = '''Sehr geehrter Kunde,
@@ -36,13 +37,61 @@ SENDER = 'info@homeinfo.de'
 SUBJECT = 'HOMEINFO: Displaystatistik {date}'
 
 
-def create_emails(
+def send_mailing() -> bool:
+    """Send the mailing."""
+
+    return get_mailer().send(
+        list(
+            create_emails_for_customers(
+                get_target_customers(),
+                date.today()
+            )
+        )
+    )
+
+
+def get_target_customers() -> set[Customer]:
+    """Yield customers that shall receive the mailing."""
+
+    customers = set()
+
+    for system in System.select(cascade=True).where(
+            ~(System.deployment >> None)
+    ):
+        customers.add(system.deployment.customer)
+
+    return customers
+
+
+def get_mailer() -> Mailer:
+    """Return the mailer."""
+
+    return Mailer.from_config(get_config())
+
+
+def create_emails_for_customers(
+        customers: Iterable[Customer],
+        today: date
+) -> Iterator[EMail]:
+    """Create monthly notification emails for the given customers."""
+
+    subject = SUBJECT.format(date=today.strftime('%b %Y'))
+
+    for customer in customers:
+        yield from create_customer_emails(
+            customer,
+            subject=subject,
+            today=today
+        )
+
+
+def create_customer_emails(
         customer: Customer,
+        subject: str,
         today: date
 ) -> Iterator[EMail]:
     """Create the system status summary emails for the given month."""
 
-    subject = SUBJECT.format(date=today.strftime('%b %Y'))
     text = get_text(
         customer,
         MeanStats.from_system_check_results(
