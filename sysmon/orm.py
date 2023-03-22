@@ -29,7 +29,7 @@ __all__ = [
     'SysmonModel',
     'CheckResults',
     'OfflineHistory',
-    'MonthlyUserNotificationEmail'
+    'UserNotificationEmail'
 ]
 
 
@@ -143,9 +143,9 @@ class OfflineHistory(SysmonModel):
         return cls.select().where(cls.timestamp >= timestamp)
 
 
-MonthlyUserNotificationEmail = get_email_orm_model(
+UserNotificationEmail = get_email_orm_model(
     SysmonModel,
-    table_name='monthly_user_notification_emails',
+    table_name='user_notification_email',
     subject_field=False,
     html_field=False
 )

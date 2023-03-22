@@ -20,7 +20,7 @@ from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
-from sysmon.orm import MonthlyUserNotificationEmail
+from sysmon.orm import UserNotificationEmail
 from sysmon.json import check_results_to_json
 from sysmon.preview import generate_preview_token
 
@@ -219,14 +219,14 @@ def gen_preview_token(deployment: int) -> Union[JSON, JSONMessage]:
     return JSON({'token': token.token.hex})
 
 
-get_mne, set_mne = get_wsgi_funcs('sysmon', MonthlyUserNotificationEmail)
+get_mne, set_mne = get_wsgi_funcs('sysmon', UserNotificationEmail)
 APPLICATION.route(
-    '/monthly-user-notification-emails',
+    '/user-notification-emails',
     methods=['GET'],
     strict_slashes=False
 )(get_mne)
 APPLICATION.route(
-    '/monthly-user-notification-emails',
+    '/user-notification-emails',
     methods=['POST'],
     strict_slashes=False
 )(set_mne)
