@@ -40,6 +40,7 @@ SUBJECT = 'HOMEINFO: Displaystatistik {date}'
 def main() -> int:
     """Main function for script invocation."""
 
+    setlocale(LC_TIME, 'de_DE.UTF-8')
     return 0 if send_mailing() else 1
 
 
@@ -81,7 +82,6 @@ def create_emails_for_customers(
 ) -> Iterator[EMail]:
     """Create monthly notification emails for the given customers."""
 
-    setlocale(LC_TIME, 'de_DE.UTF-8')
     subject = SUBJECT.format(date=today.strftime('%B %Y'))
     sender = get_config().get('email', 'sender', fallback='info@homeinfo.de')
 
