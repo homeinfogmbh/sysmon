@@ -80,7 +80,7 @@ def create_emails_for_customers(
 ) -> Iterator[EMail]:
     """Create monthly notification emails for the given customers."""
 
-    subject = SUBJECT.format(date=today.strftime('%b %Y'))
+    subject = SUBJECT.format(date=today.strftime('%B %Y'))
     sender = get_config().get('email', 'sender', fallback='info@homeinfo.de')
 
     for customer in customers:
@@ -129,7 +129,7 @@ def get_text(
     """Return the email body's text."""
 
     return BODY.format(
-        month=today.strftime('%b'),
+        month=today.strftime('%B'),
         year=today.strftime('%Y'),
         customer_name=customer.name,
         percent_online=stats.percent_online,
