@@ -33,7 +33,6 @@ HOMEINFO Medienservice GmbH
 Mobil: +49 172 5113221
 technik@homeinfo-medienservice.de
 '''
-SENDER = 'info@homeinfo.de'
 SUBJECT = 'HOMEINFO: Displaystatistik {date}'
 
 
@@ -82,11 +81,13 @@ def create_emails_for_customers(
     """Create monthly notification emails for the given customers."""
 
     subject = SUBJECT.format(date=today.strftime('%b %Y'))
+    sender = get_config().get('email', 'sender', 'info@homeinfo.de')
 
     for customer in customers:
         yield from create_customer_emails(
             customer,
             subject=subject,
+            sender=sender,
             today=today
         )
 
@@ -94,6 +95,7 @@ def create_emails_for_customers(
 def create_customer_emails(
         customer: Customer,
         subject: str,
+        sender: str,
         today: date
 ) -> Iterator[EMail]:
     """Create the system status summary emails for the given month."""
@@ -113,7 +115,7 @@ def create_customer_emails(
     for recipient in get_recipients(customer):
         yield EMail(
             subject=subject,
-            sender=SENDER,
+            sender=sender,
             recipient=recipient,
             plain=text
         )
