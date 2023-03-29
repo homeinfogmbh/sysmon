@@ -3,6 +3,7 @@
 from __future__ import annotations
 from collections import defaultdict
 from datetime import date, timedelta
+from locale import LC_TIME, setlocale
 from typing import Iterable, Iterator
 
 from emaillib import EMail, Mailer
@@ -80,6 +81,7 @@ def create_emails_for_customers(
 ) -> Iterator[EMail]:
     """Create monthly notification emails for the given customers."""
 
+    setlocale(LC_TIME, 'de_DE.UTF-8')
     subject = SUBJECT.format(date=today.strftime('%B %Y'))
     sender = get_config().get('email', 'sender', fallback='info@homeinfo.de')
 
