@@ -54,13 +54,15 @@ class MeanStats(NamedTuple):
                 online.add(system)
 
             if all(
-                    check_result.download < MIN_DOWNLOAD
+                    check_result.download is None
+                    or check_result.download < MIN_DOWNLOAD
                     for check_result in check_results
             ):
                 download_critical.add(system)
 
             if all(
-                    check_result.upload < MIN_UPLOAD
+                    check_result.download is None
+                    or check_result.upload < MIN_UPLOAD
                     for check_result in check_results
             ):
                 upload_critical.add(system)
