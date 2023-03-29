@@ -61,7 +61,7 @@ class MeanStats(NamedTuple):
                 download_critical.add(system)
 
             if all(
-                    check_result.download is None
+                    check_result.upload is None
                     or check_result.upload < MIN_UPLOAD
                     for check_result in check_results
             ):
