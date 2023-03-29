@@ -70,8 +70,15 @@ class MeanStats(NamedTuple):
             if system.deployment is not None and not system.fitted:
                 not_fitted.add(system)
 
+            # System is considered overheated, iff it was never measured as
+            # not overheated, but measured as overheated.
+            # Thus the system was always either overheated or could not be
+            # measured.
             if not any(
                     check_result.sensors is SuccessFailedUnsupported.SUCCESS
+                    for check_result in check_results
+            ) and any(
+                    check_result.sensors is SuccessFailedUnsupported.FAILED
                     for check_result in check_results
             ):
                 overheated.add(system)
