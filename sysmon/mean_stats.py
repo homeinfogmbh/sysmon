@@ -70,8 +70,8 @@ class MeanStats(NamedTuple):
             if system.deployment is not None and not system.fitted:
                 not_fitted.add(system)
 
-            if all(
-                    check_result.sensors is SuccessFailedUnsupported.FAILED
+            if not any(
+                    check_result.sensors is SuccessFailedUnsupported.SUCCESS
                     for check_result in check_results
             ):
                 overheated.add(system)
