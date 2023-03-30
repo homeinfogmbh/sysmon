@@ -40,13 +40,13 @@ SUBJECT = 'HOMEINFO: Displaystatistik {date}'
 def main() -> int:
     """Main function for script invocation."""
 
-    setlocale(LC_TIME, 'de_DE.UTF-8')
     return 0 if send_mailing() else 1
 
 
 def send_mailing() -> bool:
     """Send the mailing."""
 
+    setlocale(LC_TIME, 'de_DE.UTF-8')
     return get_mailer().send(
         list(
             create_emails_for_customers(
