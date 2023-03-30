@@ -229,7 +229,7 @@ def gen_preview_token(deployment: int) -> Union[JSON, JSONMessage]:
 @authorized('sysmon')
 @root
 def _send_mailing() -> Union[JSON, JSONMessage]:
-    """Generate a preview token for the given deployment."""
+    """Send monthly customer statistics mailing manually."""
 
     return JSON(send_mailing())
 
