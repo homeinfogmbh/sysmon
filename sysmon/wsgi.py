@@ -3,7 +3,7 @@
 from datetime import date, timedelta
 from typing import Union
 
-from his import ACCOUNT, CUSTOMER, authenticated, authorized, Application
+from his import ACCOUNT, CUSTOMER, Application, authenticated, authorized, root
 from hwdb import SystemOffline, Deployment, System
 from notificationlib import get_wsgi_funcs
 from wsgilib import Binary, JSON, JSONMessage, get_int
@@ -18,6 +18,7 @@ from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
+from sysmon.mailing import send_mailing
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
 from sysmon.orm import UserNotificationEmail
@@ -217,6 +218,20 @@ def gen_preview_token(deployment: int) -> Union[JSON, JSONMessage]:
         return JSONMessage('No such deployment.', status=404)
 
     return JSON({'token': token.token.hex})
+
+
+@APPLICATION.route(
+    '/send-mailing',
+    methods=['GET'],
+    strict_slashes=False
+)
+@authenticated
+@authorized('sysmon')
+@root
+def _send_mailing() -> Union[JSON, JSONMessage]:
+    """Generate a preview token for the given deployment."""
+
+    return JSON(send_mailing())
 
 
 for function, method in zip(
