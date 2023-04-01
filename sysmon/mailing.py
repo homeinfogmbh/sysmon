@@ -7,7 +7,7 @@ from locale import LC_TIME, setlocale
 from logging import basicConfig, getLogger
 from typing import Iterable, Iterator
 
-from emaillib import EMail, Mailer
+from emaillib import EMailsNotSent, EMail, Mailer
 from hwdb import Deployment, System
 from mdb import Customer
 
@@ -44,15 +44,18 @@ def main() -> None:
 
     basicConfig()
 
-    if not send_mailing():
-        LOGGER.warning('Some emails could not be sent.')
+    try:
+        send_mailing()
+    except EMailsNotSent as not_sent:
+        for email in not_sent.emails:
+            LOGGER.error('Email not sent: %s', email)
 
 
-def send_mailing() -> bool:
+def send_mailing() -> None:
     """Send the mailing."""
 
     setlocale(LC_TIME, 'de_DE.UTF-8')
-    return get_mailer().send(
+    get_mailer().send(
         list(
             create_emails_for_customers(
                 get_target_customers(),
