@@ -102,15 +102,15 @@ def create_customer_emails(
 ) -> Iterator[EMail]:
     """Create the system status summary emails for the given month."""
 
+    if not (check_results := check_results_by_system(
+            get_check_results_for_month(customer, today)
+        )
+    ):
+        return
+
     text = get_text(
         customer,
-        MeanStats.from_system_check_results(
-            check_results_by_system(
-                get_check_results_for_month(
-                    customer, today
-                )
-            )
-        ),
+        MeanStats.from_system_check_results(check_results),
         today
     )
 
