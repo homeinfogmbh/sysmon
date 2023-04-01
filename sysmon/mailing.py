@@ -4,6 +4,7 @@ from __future__ import annotations
 from collections import defaultdict
 from datetime import date, timedelta
 from locale import LC_TIME, setlocale
+from logging import basicConfig, getLogger
 from typing import Iterable, Iterator
 
 from emaillib import EMail, Mailer
@@ -34,13 +35,17 @@ HOMEINFO Medienservice GmbH
 Mobil: +49 172 5113221
 technik@homeinfo-medienservice.de
 '''
+LOGGER = getLogger('sysmon-mailing')
 SUBJECT = 'HOMEINFO: Displaystatistik {date}'
 
 
-def main() -> int:
+def main() -> None:
     """Main function for script invocation."""
 
-    return 0 if send_mailing() else 1
+    basicConfig()
+
+    if not send_mailing():
+        LOGGER.warning('Some emails could not be sent.')
 
 
 def send_mailing() -> bool:
