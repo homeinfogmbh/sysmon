@@ -45,7 +45,7 @@ def send_mailing() -> None:
         list(
             create_emails_for_customers(
                 get_target_customers(),
-                date.today()
+                first_day_of_last_month(date.today())
             )
         )
     )
@@ -72,11 +72,11 @@ def get_mailer() -> Mailer:
 
 def create_emails_for_customers(
         customers: Iterable[Customer],
-        today: date
+        last_month: date
 ) -> Iterator[EMail]:
     """Create monthly notification emails for the given customers."""
 
-    subject = SUBJECT.format(date=today.strftime('%B %Y'))
+    subject = SUBJECT.format(date=last_month.strftime('%B %Y'))
     sender = get_config().get('email', 'sender', fallback='info@homeinfo.de')
 
     for customer in customers:
@@ -84,7 +84,7 @@ def create_emails_for_customers(
             customer,
             subject=subject,
             sender=sender,
-            today=today
+            last_month=last_month
         )
 
 
@@ -92,12 +92,12 @@ def create_customer_emails(
         customer: Customer,
         subject: str,
         sender: str,
-        today: date
+        last_month: date
 ) -> Iterator[EMail]:
     """Create the system status summary emails for the given month."""
 
     if not (check_results := check_results_by_system(
-            get_check_results_for_month(customer, today)
+            get_check_results_for_month(customer, last_month)
         )
     ):
         return
@@ -105,7 +105,7 @@ def create_customer_emails(
     html = get_html(
         customer,
         MeanStats.from_system_check_results(check_results),
-        today
+        last_month
     )
 
     for recipient in get_recipients(customer):
@@ -120,7 +120,7 @@ def create_customer_emails(
 def get_html(
         customer: Customer,
         stats: MeanStats,
-        today: date
+        last_month: date
 ) -> str:
     """Return the email body's text."""
 
@@ -128,8 +128,8 @@ def get_html(
         template = file.read()
 
     return template.format(
-        month=today.strftime('%B'),
-        year=today.strftime('%Y'),
+        month=last_month.strftime('%B'),
+        year=last_month.strftime('%Y'),
         customer=customer,
         percent_online=stats.percent_online,
         upload_download_critical=len(stats.upload_download_critical),
@@ -179,3 +179,9 @@ def first_day_of_next_month(month: date) -> date:
     """Return the date of the first day of the next month."""
 
     return (month.replace(day=28) + timedelta(days=4)).replace(day=1)
+
+
+def first_day_of_last_month(today: date) -> date:
+    """Return the first day of the last month."""
+
+    return today.replace(day=1) - timedelta(days=1)
