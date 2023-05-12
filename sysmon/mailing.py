@@ -130,7 +130,7 @@ def get_html(
     return template.format(
         month=today.strftime('%B'),
         year=today.strftime('%Y'),
-        customer_name=customer.name,
+        customer=customer,
         percent_online=stats.percent_online,
         upload_download_critical=len(stats.upload_download_critical),
         systems_not_fitted=len(stats.not_fitted),
