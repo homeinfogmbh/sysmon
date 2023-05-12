@@ -5,6 +5,7 @@ from collections import defaultdict
 from datetime import date, timedelta
 from locale import LC_TIME, setlocale
 from logging import basicConfig, getLogger
+from pathlib import Path
 from typing import Iterable, Iterator
 
 from emaillib import EMailsNotSent, EMail, Mailer
@@ -19,22 +20,7 @@ from sysmon.orm import CheckResults, UserNotificationEmail
 __all__ = ['main', 'send_mailing']
 
 
-BODY = '''Sehr geehrter Kunde,
-
-hiermit erhalten Sie eine Übersicht für den Monat {month} {year} Ihrer 
-Systeme.
-
-Im Monat {month} sind {percent_online}% der {customer_name} Displays Online gewesen.
-Sie haben {upload_download_critical} Systeme bei denen der Download/Upload unter den Mindestanforderungen liegt.
-Die Anzahl der bereits bereitgestellten, jedoch noch nicht verbaute Displays ist {systems_not_fitted}.
-Durch Überhitzung sind möglicherweise {overheated_systems} Systeme gefährdet.
-
-Mit freundlichen Grüßen Ihre...
-
-HOMEINFO Medienservice GmbH
-Mobil: +49 172 5113221
-technik@homeinfo-medienservice.de
-'''
+TEMPLATE = Path('/usr/local/etc/sysmon.d/customers-email.htt')
 LOGGER = getLogger('sysmon-mailing')
 SUBJECT = 'HOMEINFO: Displaystatistik {date}'
 
@@ -116,7 +102,7 @@ def create_customer_emails(
     ):
         return
 
-    text = get_text(
+    html = get_html(
         customer,
         MeanStats.from_system_check_results(check_results),
         today
@@ -127,18 +113,21 @@ def create_customer_emails(
             subject=subject,
             sender=sender,
             recipient=recipient,
-            plain=text
+            html=html
         )
 
 
-def get_text(
+def get_html(
         customer: Customer,
         stats: MeanStats,
         today: date
 ) -> str:
     """Return the email body's text."""
 
-    return BODY.format(
+    with TEMPLATE.open('r', encoding='utf-8') as file:
+        template = file.read()
+
+    return template.format(
         month=today.strftime('%B'),
         year=today.strftime('%Y'),
         customer_name=customer.name,
