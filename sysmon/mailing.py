@@ -22,7 +22,7 @@ __all__ = ['main', 'send_mailing']
 
 TEMPLATE = Path('/usr/local/etc/sysmon.d/customers-email.htt')
 LOGGER = getLogger('sysmon-mailing')
-SUBJECT = 'HOMEINFO: Displaystatistik {date}'
+SUBJECT = 'Service - Report digitales Brett: {customer.name}'
 
 
 def main() -> None:
@@ -76,13 +76,11 @@ def create_emails_for_customers(
 ) -> Iterator[EMail]:
     """Create monthly notification emails for the given customers."""
 
-    subject = SUBJECT.format(date=last_month.strftime('%B %Y'))
     sender = get_config().get('email', 'sender', fallback='info@homeinfo.de')
 
     for customer in customers:
         yield from create_customer_emails(
             customer,
-            subject=subject,
             sender=sender,
             last_month=last_month
         )
@@ -90,7 +88,6 @@ def create_emails_for_customers(
 
 def create_customer_emails(
         customer: Customer,
-        subject: str,
         sender: str,
         last_month: date
 ) -> Iterator[EMail]:
@@ -110,7 +107,7 @@ def create_customer_emails(
 
     for recipient in get_recipients(customer):
         yield EMail(
-            subject=subject,
+            subject=SUBJECT.format(customer=customer),
             sender=sender,
             recipient=recipient,
             html=html
