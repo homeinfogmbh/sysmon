@@ -7,6 +7,7 @@ from typing import Iterable, NamedTuple
 from hwdb import System
 
 from sysmon.enumerations import SuccessFailedUnsupported
+from sysmon.functions import is_in_sync
 from sysmon.orm import CheckResults
 
 
@@ -36,6 +37,11 @@ class MeanStats(NamedTuple):
     def upload_download_critical(self) -> frozenset[System]:
         """Return the systems where upload and/or download are critical."""
         return self.download_critical | self.upload_critical
+
+    @property
+    def out_of_date(self) -> frozenset[System]:
+        """Returns systems that are online but out of date."""
+        return frozenset(filter(is_in_sync, self.online))
 
     @classmethod
     def from_system_check_results(

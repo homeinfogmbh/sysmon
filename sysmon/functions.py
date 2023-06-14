@@ -27,8 +27,12 @@ __all__ = [
     'get_customer_check_results',
     'get_latest_check_results_per_system',
     'get_latest_check_results_per_group',
-    'get_authenticated_systems'
+    'get_authenticated_systems',
+    'is_in_sync'
 ]
+
+
+MAX_SYNC_AGE = timedelta(hours=241)
 
 
 def count(items: Iterable[Any]) -> int:
@@ -214,3 +218,12 @@ def date_to_datetime_range(date_: date) -> tuple[datetime, datetime]:
             month=next_day.month, day=next_day.day
         )
     )
+
+
+def is_in_sync(system: System, now: datetime) -> bool:
+    """Checks whether the system is in sync."""
+
+    if system.last_sync is None:
+        return False
+
+    return system.last_sync + MAX_SYNC_AGE > now
