@@ -183,6 +183,6 @@ def first_day_of_next_month(month: date) -> date:
 
 
 def last_day_of_last_month(today: date) -> date:
-    """Return the first day of the last month."""
+    """Return the last day of the last month."""
 
     return today.replace(day=1) - timedelta(days=1)
