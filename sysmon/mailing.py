@@ -45,7 +45,7 @@ def send_mailing() -> None:
         list(
             create_emails_for_customers(
                 get_target_customers(),
-                first_day_of_last_month(date.today())
+                last_day_of_last_month(date.today())
             )
         )
     )
@@ -182,7 +182,7 @@ def first_day_of_next_month(month: date) -> date:
     return (month.replace(day=28) + timedelta(days=4)).replace(day=1)
 
 
-def first_day_of_last_month(today: date) -> date:
+def last_day_of_last_month(today: date) -> date:
     """Return the first day of the last month."""
 
     return today.replace(day=1) - timedelta(days=1)
