@@ -77,7 +77,7 @@ def create_emails_for_customers(
     """Create monthly notification emails for the given customers."""
 
     sender = get_config().get(
-        'email',
+        'mailing',
         'sender',
         fallback='serivce@dasdigitalebrett.de'
     )
