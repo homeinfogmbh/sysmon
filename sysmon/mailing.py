@@ -76,7 +76,11 @@ def create_emails_for_customers(
 ) -> Iterator[EMail]:
     """Create monthly notification emails for the given customers."""
 
-    sender = get_config().get('email', 'sender', fallback='info@homeinfo.de')
+    sender = get_config().get(
+        'email',
+        'sender',
+        fallback='serivce@dasdigitalebrett.de'
+    )
 
     for customer in customers:
         yield from create_customer_emails(
