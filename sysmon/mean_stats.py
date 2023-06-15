@@ -1,6 +1,8 @@
 """Mean system statistics."""
 
 from __future__ import annotations
+from datetime import datetime
+from functools import partial
 from math import floor
 from typing import Iterable, NamedTuple
 
@@ -38,10 +40,9 @@ class MeanStats(NamedTuple):
         """Return the systems where upload and/or download are critical."""
         return self.download_critical | self.upload_critical
 
-    @property
-    def out_of_date(self) -> frozenset[System]:
+    def out_of_date(self, now: datetime) -> frozenset[System]:
         """Returns systems that are online but out of date."""
-        return frozenset(filter(is_in_sync, self.online))
+        return frozenset(filter(partial(is_in_sync, now=now), self.online))
 
     @classmethod
     def from_system_check_results(

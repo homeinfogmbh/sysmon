@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from locale import LC_TIME, setlocale
 from logging import basicConfig, getLogger
 from pathlib import Path
@@ -133,9 +133,9 @@ def get_html(
         year=last_month.strftime('%Y'),
         customer=customer,
         percent_online=stats.percent_online,
-        upload_download_critical=len(stats.upload_download_critical),
-        systems_not_fitted=len(stats.not_fitted),
-        overheated_systems=len(stats.overheated)
+        out_of_sync_but_online=len(
+            stats.out_of_date(datetime.now()) - stats.online
+        )
     )
 
 

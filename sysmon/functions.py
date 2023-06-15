@@ -220,7 +220,7 @@ def date_to_datetime_range(date_: date) -> tuple[datetime, datetime]:
     )
 
 
-def is_in_sync(system: System, now: datetime) -> bool:
+def is_in_sync(system: System, *, now: datetime) -> bool:
     """Checks whether the system is in sync."""
 
     if system.last_sync is None:
