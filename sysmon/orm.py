@@ -18,7 +18,7 @@ from mdb import Address, Company, Customer
 from notificationlib import get_email_orm_model
 from peeweeplus import EnumField, JSONModel, MySQLDatabaseProxy
 
-from sysmon.config import MIN_BANDWIDTH
+from sysmon.config import MIN_DOWNLOAD
 from sysmon.enumerations import ApplicationState
 from sysmon.enumerations import BaytrailFreezeState
 from sysmon.enumerations import SuccessFailedUnsupported
@@ -108,7 +108,7 @@ class CheckResults(SysmonModel):
             and self.ssh_login is not SuccessFailedUnsupported.FAILED
         )
 
-    def low_bandwidth(self, required: int = MIN_BANDWIDTH) -> bool:
+    def low_bandwidth(self, required: int = MIN_DOWNLOAD) -> bool:
         """Determine whether the system has a low bandwidth."""
         if self.download is None:
             return True

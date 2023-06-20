@@ -8,16 +8,13 @@ from typing import Iterable, NamedTuple
 
 from hwdb import System
 
+from sysmon.config import MIN_DOWNLOAD, MIN_UPLOAD
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.functions import is_in_sync
 from sysmon.orm import CheckResults
 
 
 __all__ = ['MeanStats']
-
-
-MIN_DOWNLOAD = 1953.125     # Kilobits/s
-MIN_UPLOAD = 488.28125      # Kilobits/s
 
 
 class MeanStats(NamedTuple):

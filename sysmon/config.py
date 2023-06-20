@@ -11,7 +11,8 @@ __all__ = [
     'LOGGER',
     'LOG_FORMAT',
     'MAX_RETENTION',
-    'MIN_BANDWIDTH',
+    'MIN_DOWNLOAD',
+    'MIN_UPLOAD',
     'get_config'
 ]
 
@@ -19,5 +20,6 @@ __all__ = [
 LOGGER = getLogger('sysmon')
 LOG_FORMAT = '[%(levelname)s] %(name)s: %(message)s'
 MAX_RETENTION = timedelta(days=90)
-MIN_BANDWIDTH = 2000    # kbps
+MIN_DOWNLOAD = 1945.6   # Kilobits/s
+MIN_UPLOAD = 358.4      # Kilobits/s
 get_config = partial(cache(load_config), 'sysmon.conf')
