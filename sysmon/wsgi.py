@@ -104,6 +104,8 @@ def get_screenshot(system: int) -> Union[Binary, JSONMessage]:
         response = system.screenshot()
     except SystemOffline:
         return JSONMessage('System is offline.', status=503)
+    except Exception as error:
+        return JSONMessage(f'Unexpected error: {error}.', status=503)
 
     if response.status_code != 200:
         return JSONMessage('Could not take screenshot.', status=500)
