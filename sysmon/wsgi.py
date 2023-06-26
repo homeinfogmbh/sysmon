@@ -6,6 +6,7 @@ from typing import Union
 from his import ACCOUNT, CUSTOMER, Application, authenticated, authorized, root
 from hwdb import SystemOffline, Deployment, System
 from notificationlib import get_wsgi_funcs
+from requests.exceptions import Timeout
 from wsgilib import Binary, JSON, JSONMessage, get_int
 
 from sysmon.blacklist import authorized_blacklist, load_blacklist
@@ -104,8 +105,16 @@ def get_screenshot(system: int) -> Union[Binary, JSONMessage]:
         response = system.screenshot()
     except SystemOffline:
         return JSONMessage('System is offline.', status=503)
-    except Exception as error:
-        return JSONMessage(f'Unexpected error: {error}.', status=503)
+    except ConnectionError:
+        return JSONMessage(
+            'Connection error while requesting screenshot.',
+            status=503
+        )
+    except Timeout:
+        return JSONMessage(
+            'Connection timed out while receiving screenshot.',
+            status=503
+        )
 
     if response.status_code != 200:
         return JSONMessage('Could not take screenshot.', status=500)
