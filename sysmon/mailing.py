@@ -133,9 +133,7 @@ def get_html(
         year=last_month.strftime('%Y'),
         customer=customer,
         percent_online=stats.percent_online,
-        out_of_sync_but_online=len(
-            stats.out_of_date(datetime.now()) - stats.online
-        )
+        out_of_sync_but_online=len(stats.out_of_date(datetime.now()))
     )
 
 
