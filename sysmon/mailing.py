@@ -22,7 +22,7 @@ __all__ = ['main', 'send_mailing']
 
 TEMPLATE = Path('/usr/local/etc/sysmon.d/customers-email.htt')
 LOGGER = getLogger('sysmon-mailing')
-SUBJECT = 'Service - Report digitales Brett: {customer.name}'
+SUBJECT = 'Service - Report Digitales Brett: {customer.name}'
 
 
 def main() -> None:
