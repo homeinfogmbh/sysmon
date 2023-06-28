@@ -80,7 +80,7 @@ class MeanStats(NamedTuple):
 
             # System is considered overheated, iff it was never measured as
             # not overheated, but measured as overheated.
-            # Thus the system was always either overheated or could not be
+            # Thus, the system was always either overheated or could not be
             # measured.
             if not any(
                     check_result.sensors is SuccessFailedUnsupported.SUCCESS
