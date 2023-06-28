@@ -32,7 +32,7 @@ __all__ = [
 ]
 
 
-MAX_SYNC_AGE = timedelta(hours=241)
+MAX_SYNC_AGE = timedelta(hours=24)
 
 
 def count(items: Iterable[Any]) -> int:
