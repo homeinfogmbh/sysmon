@@ -3,6 +3,7 @@
 from __future__ import annotations
 from datetime import datetime
 from functools import partial
+from itertools import filterfalse
 from math import floor
 from typing import Iterable, NamedTuple
 
@@ -39,7 +40,10 @@ class MeanStats(NamedTuple):
 
     def out_of_date(self, now: datetime) -> frozenset[System]:
         """Returns systems that are online but out of date."""
-        return frozenset(filter(partial(is_in_sync, now=now), self.online))
+        return frozenset(filterfalse(
+            partial(is_in_sync, now=now),
+            self.online
+        ))
 
     @classmethod
     def from_system_check_results(
