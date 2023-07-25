@@ -17,12 +17,12 @@ from sysmon.mean_stats import MeanStats
 from sysmon.orm import CheckResults, UserNotificationEmail
 
 
-__all__ = ['main', 'send_mailing']
+__all__ = ["main", "send_mailing"]
 
 
-TEMPLATE = Path('/usr/local/etc/sysmon.d/customers-email.htt')
-LOGGER = getLogger('sysmon-mailing')
-SUBJECT = 'Service - Report Digitales Brett: {customer.name}'
+TEMPLATE = Path("/usr/local/etc/sysmon.d/customers-email.htt")
+LOGGER = getLogger("sysmon-mailing")
+SUBJECT = "Service - Report Digitales Brett: {customer.name}"
 
 
 def main() -> None:
@@ -34,18 +34,17 @@ def main() -> None:
         send_mailing()
     except EMailsNotSent as not_sent:
         for email in not_sent.emails:
-            LOGGER.error('Email not sent: %s', email)
+            LOGGER.error("Email not sent: %s", email)
 
 
 def send_mailing() -> None:
     """Send the mailing."""
 
-    setlocale(LC_TIME, 'de_DE.UTF-8')
+    setlocale(LC_TIME, "de_DE.UTF-8")
     get_mailer().send(
         list(
             create_emails_for_customers(
-                get_target_customers(),
-                last_day_of_last_month(date.today())
+                get_target_customers(), last_day_of_last_month(date.today())
             )
         )
     )
@@ -56,9 +55,7 @@ def get_target_customers() -> set[Customer]:
 
     customers = set()
 
-    for system in System.select(cascade=True).where(
-            ~(System.deployment >> None)
-    ):
+    for system in System.select(cascade=True).where(~(System.deployment >> None)):
         customers.add(system.deployment.customer)
 
     return customers
@@ -71,42 +68,34 @@ def get_mailer() -> Mailer:
 
 
 def create_emails_for_customers(
-        customers: Iterable[Customer],
-        last_month: date
+    customers: Iterable[Customer], last_month: date
 ) -> Iterator[EMail]:
     """Create monthly notification emails for the given customers."""
 
     sender = get_config().get(
-        'mailing',
-        'sender',
-        fallback='serivce@dasdigitalebrett.de'
+        "mailing", "sender", fallback="serivce@dasdigitalebrett.de"
     )
 
     for customer in customers:
         yield from create_customer_emails(
-            customer,
-            sender=sender,
-            last_month=last_month
+            customer, sender=sender, last_month=last_month
         )
 
 
 def create_customer_emails(
-        customer: Customer,
-        sender: str,
-        last_month: date
+    customer: Customer, sender: str, last_month: date
 ) -> Iterator[EMail]:
     """Create the system status summary emails for the given month."""
 
-    if not (check_results := check_results_by_system(
+    if not (
+        check_results := check_results_by_system(
             get_check_results_for_month(customer, last_month)
         )
     ):
         return
 
     html = get_html(
-        customer,
-        MeanStats.from_system_check_results(check_results),
-        last_month
+        customer, MeanStats.from_system_check_results(check_results), last_month
     )
 
     for recipient in get_recipients(customer):
@@ -114,26 +103,22 @@ def create_customer_emails(
             subject=SUBJECT.format(customer=customer),
             sender=sender,
             recipient=recipient,
-            html=html
+            html=html,
         )
 
 
-def get_html(
-        customer: Customer,
-        stats: MeanStats,
-        last_month: date
-) -> str:
+def get_html(customer: Customer, stats: MeanStats, last_month: date) -> str:
     """Return the email body's text."""
 
-    with TEMPLATE.open('r', encoding='utf-8') as file:
+    with TEMPLATE.open("r", encoding="utf-8") as file:
         template = file.read()
 
     return template.format(
-        month=last_month.strftime('%B'),
-        year=last_month.strftime('%Y'),
+        month=last_month.strftime("%B"),
+        year=last_month.strftime("%Y"),
         customer=customer,
         percent_online=stats.percent_online,
-        out_of_sync_but_online=len(stats.out_of_date(datetime.now()))
+        out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
     )
 
 
@@ -141,13 +126,13 @@ def get_recipients(customer: Customer) -> Iterator[str]:
     """Yield email addresses for the given customer."""
 
     for user_notification_email in UserNotificationEmail.select().where(
-            UserNotificationEmail.customer == customer
+        UserNotificationEmail.customer == customer
     ):
         yield user_notification_email.email
 
 
 def check_results_by_system(
-        check_results: Iterable[CheckResults]
+    check_results: Iterable[CheckResults],
 ) -> dict[System, list[CheckResults]]:
     """Convert an iterable of check results into a dict of systems and its
     respective checks results.
@@ -162,8 +147,7 @@ def check_results_by_system(
 
 
 def get_check_results_for_month(
-        customer: Customer,
-        month: date
+    customer: Customer, month: date
 ) -> Iterable[CheckResults]:
     """Get the check results for the given customer and month."""
 

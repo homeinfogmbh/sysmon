@@ -6,7 +6,7 @@ from typing import Optional
 from hwdb import System
 
 
-__all__ = ['check_icmp_request']
+__all__ = ["check_icmp_request"]
 
 
 def check_icmp_request(system: System, timeout: Optional[int] = None) -> bool:

@@ -6,12 +6,11 @@ from typing import Optional
 from sysmon.orm import CheckResults
 
 
-__all__ = ['get_offline_since']
+__all__ = ["get_offline_since"]
 
 
 def get_offline_since(
-        current: CheckResults,
-        last: Optional[CheckResults]
+    current: CheckResults, last: Optional[CheckResults]
 ) -> Optional[datetime]:
     """Returns the datetime since when the check is considered offline."""
 

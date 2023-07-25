@@ -9,11 +9,11 @@ from hwdb import System
 from sysmon.orm import CheckResults
 
 
-__all__ = ['check_results_by_systems', 'last_check_of_each_system']
+__all__ = ["check_results_by_systems", "last_check_of_each_system"]
 
 
 def check_results_by_systems(
-        check_results: Iterable[CheckResults]
+    check_results: Iterable[CheckResults],
 ) -> dict[System, list[CheckResults]]:
     """Returns a dict of systems and their respective
     check results sorted by timestamp.
@@ -31,7 +31,7 @@ def check_results_by_systems(
 
 
 def last_check_of_each_system(
-        checks_per_system: dict[System, list[CheckResults]]
+    checks_per_system: dict[System, list[CheckResults]]
 ) -> Iterator[CheckResults]:
     """Returns the last checks for each system."""
 

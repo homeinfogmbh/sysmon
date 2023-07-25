@@ -25,15 +25,15 @@ from sysmon.enumerations import SuccessFailedUnsupported
 
 
 __all__ = [
-    'DATABASE',
-    'SysmonModel',
-    'CheckResults',
-    'OfflineHistory',
-    'UserNotificationEmail'
+    "DATABASE",
+    "SysmonModel",
+    "CheckResults",
+    "OfflineHistory",
+    "UserNotificationEmail",
 ]
 
 
-DATABASE = MySQLDatabaseProxy('sysmon')
+DATABASE = MySQLDatabaseProxy("sysmon")
 
 
 class SysmonModel(JSONModel):
@@ -49,8 +49,11 @@ class CheckResults(SysmonModel):
 
     timestamp = DateTimeField(default=datetime.now)
     system = ForeignKeyField(
-        System, column_name='system', on_delete='CASCADE', on_update='CASCADE',
-        lazy_load=False
+        System,
+        column_name="system",
+        on_delete="CASCADE",
+        on_update="CASCADE",
+        lazy_load=False,
     )
     icmp_request = BooleanField()
     ssh_login = EnumField(SuccessFailedUnsupported)
@@ -64,8 +67,8 @@ class CheckResults(SysmonModel):
     ram_free = IntegerField(null=True)
     ram_available = IntegerField(null=True)
     efi_mount_ok = EnumField(SuccessFailedUnsupported)
-    download = IntegerField(null=True)      # kbps
-    upload = IntegerField(null=True)        # kbps
+    download = IntegerField(null=True)  # kbps
+    upload = IntegerField(null=True)  # kbps
     root_not_ro = EnumField(SuccessFailedUnsupported)
     sensors = EnumField(SuccessFailedUnsupported)
     in_sync = BooleanField(null=True)
@@ -81,31 +84,38 @@ class CheckResults(SysmonModel):
             return super().select(*args)
 
         lpt_address = Address.alias()
-        return super().select(
-            cls, System, Deployment, Customer, Company, Address, lpt_address,
-            *args
-        ).join(System).join(
-            Deployment, on=System.deployment == Deployment.id,
-            join_type=JOIN.LEFT_OUTER
-        ).join(
-            Customer, join_type=JOIN.LEFT_OUTER
-        ).join(
-            Company, join_type=JOIN.LEFT_OUTER
-        ).join_from(
-            Deployment, Address, on=Deployment.address == Address.id,
-            join_type=JOIN.LEFT_OUTER
-        ).join_from(
-            Deployment, lpt_address,
-            on=Deployment.lpt_address == lpt_address.id,
-            join_type=JOIN.LEFT_OUTER
+        return (
+            super()
+            .select(
+                cls, System, Deployment, Customer, Company, Address, lpt_address, *args
+            )
+            .join(System)
+            .join(
+                Deployment,
+                on=System.deployment == Deployment.id,
+                join_type=JOIN.LEFT_OUTER,
+            )
+            .join(Customer, join_type=JOIN.LEFT_OUTER)
+            .join(Company, join_type=JOIN.LEFT_OUTER)
+            .join_from(
+                Deployment,
+                Address,
+                on=Deployment.address == Address.id,
+                join_type=JOIN.LEFT_OUTER,
+            )
+            .join_from(
+                Deployment,
+                lpt_address,
+                on=Deployment.lpt_address == lpt_address.id,
+                join_type=JOIN.LEFT_OUTER,
+            )
         )
 
     @property
     def online(self) -> bool:
         """Determines whether the system is online."""
         return (
-            self.icmp_request
-            and self.ssh_login is not SuccessFailedUnsupported.FAILED
+            self.icmp_request and self.ssh_login is not SuccessFailedUnsupported.FAILED
         )
 
     def low_bandwidth(self, required: int = MIN_DOWNLOAD) -> bool:
@@ -118,7 +128,7 @@ class CheckResults(SysmonModel):
     def to_json(self, *args, **kwargs) -> dict[str, Any]:
         """Return a JSON-ish dict."""
         json = super().to_json(*args, **kwargs)
-        json['online'] = self.online
+        json["online"] = self.online
         return json
 
 
@@ -145,7 +155,7 @@ class OfflineHistory(SysmonModel):
 
 UserNotificationEmail = get_email_orm_model(
     SysmonModel,
-    table_name='user_notification_email',
+    table_name="user_notification_email",
     subject_field=False,
-    html_field=False
+    html_field=False,
 )

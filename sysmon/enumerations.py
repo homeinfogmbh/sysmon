@@ -3,40 +3,36 @@
 from enum import Enum
 
 
-__all__ = [
-    'ApplicationState',
-    'BaytrailFreezeState',
-    'SuccessFailedUnsupported'
-]
+__all__ = ["ApplicationState", "BaytrailFreezeState", "SuccessFailedUnsupported"]
 
 
 class ApplicationState(str, Enum):
     """Digital signage application state."""
 
-    AIR = 'air'
-    HTML = 'html'
-    INSTALLATION_INSTRUCTIONS = 'installation instructions'
-    NOT_CONFIGURED = 'not configured'
-    UNKNOWN = 'unknown'
-    OFF = 'off'
+    AIR = "air"
+    HTML = "html"
+    INSTALLATION_INSTRUCTIONS = "installation instructions"
+    NOT_CONFIGURED = "not configured"
+    UNKNOWN = "unknown"
+    OFF = "off"
     # Legacy modes for database compatibility:
-    CONFLICT = 'conflict'
-    NOT_ENABLED = 'not enabled'
-    NOT_RUNNING = 'not running'
+    CONFLICT = "conflict"
+    NOT_ENABLED = "not enabled"
+    NOT_RUNNING = "not running"
 
 
 class BaytrailFreezeState(str, Enum):
     """State for the baytrail freeze bug."""
 
-    NOT_AFFECTED = 'not affected'
-    MITIGATED = 'mitigated'
-    VULNERABLE = 'vulnerable'
-    UNKNOWN = 'unknown'
+    NOT_AFFECTED = "not affected"
+    MITIGATED = "mitigated"
+    VULNERABLE = "vulnerable"
+    UNKNOWN = "unknown"
 
 
 class SuccessFailedUnsupported(str, Enum):
     """Trinary check result."""
 
-    SUCCESS = 'success'
-    FAILED = 'failed'
-    UNSUPPORTED = 'unsupported'
+    SUCCESS = "success"
+    FAILED = "failed"
+    UNSUPPORTED = "unsupported"

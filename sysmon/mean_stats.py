@@ -15,7 +15,7 @@ from sysmon.functions import is_in_sync
 from sysmon.orm import CheckResults
 
 
-__all__ = ['MeanStats']
+__all__ = ["MeanStats"]
 
 
 class MeanStats(NamedTuple):
@@ -40,15 +40,11 @@ class MeanStats(NamedTuple):
 
     def out_of_date(self, now: datetime) -> frozenset[System]:
         """Returns systems that are online but out of date."""
-        return frozenset(filterfalse(
-            partial(is_in_sync, now=now),
-            self.online
-        ))
+        return frozenset(filterfalse(partial(is_in_sync, now=now), self.online))
 
     @classmethod
     def from_system_check_results(
-            cls,
-            system_check_results: dict[System, Iterable[CheckResults]]
+        cls, system_check_results: dict[System, Iterable[CheckResults]]
     ) -> MeanStats:
         """Create mean system stats from system-mapped check results."""
         online = set()
@@ -62,16 +58,14 @@ class MeanStats(NamedTuple):
                 online.add(system)
 
             if all(
-                    check_result.download is None
-                    or check_result.download < MIN_DOWNLOAD
-                    for check_result in check_results
+                check_result.download is None or check_result.download < MIN_DOWNLOAD
+                for check_result in check_results
             ):
                 download_critical.add(system)
 
             if all(
-                    check_result.upload is None
-                    or check_result.upload < MIN_UPLOAD
-                    for check_result in check_results
+                check_result.upload is None or check_result.upload < MIN_UPLOAD
+                for check_result in check_results
             ):
                 upload_critical.add(system)
 
@@ -83,11 +77,11 @@ class MeanStats(NamedTuple):
             # Thus, the system was always either overheated or could not be
             # measured.
             if not any(
-                    check_result.sensors is SuccessFailedUnsupported.SUCCESS
-                    for check_result in check_results
+                check_result.sensors is SuccessFailedUnsupported.SUCCESS
+                for check_result in check_results
             ) and any(
-                    check_result.sensors is SuccessFailedUnsupported.FAILED
-                    for check_result in check_results
+                check_result.sensors is SuccessFailedUnsupported.FAILED
+                for check_result in check_results
             ):
                 overheated.add(system)
 
@@ -97,5 +91,5 @@ class MeanStats(NamedTuple):
             frozenset(download_critical),
             frozenset(upload_critical),
             frozenset(not_fitted),
-            frozenset(overheated)
+            frozenset(overheated),
         )

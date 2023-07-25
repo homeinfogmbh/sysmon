@@ -11,7 +11,7 @@ from sysmon.config import LOG_FORMAT
 from sysmon.offline_history import update_offline_systems
 
 
-__all__ = ['spawn']
+__all__ = ["spawn"]
 
 
 def spawn() -> None:

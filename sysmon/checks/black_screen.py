@@ -7,12 +7,11 @@ from sysmon.enumerations import ApplicationState
 from sysmon.orm import CheckResults
 
 
-__all__ = ['get_blackscreen_since']
+__all__ = ["get_blackscreen_since"]
 
 
 def get_blackscreen_since(
-        current: CheckResults,
-        last: Optional[CheckResults]
+    current: CheckResults, last: Optional[CheckResults]
 ) -> Optional[datetime]:
     """Returns the datetime since when the application is not running."""
 

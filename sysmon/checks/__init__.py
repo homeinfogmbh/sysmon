@@ -29,16 +29,16 @@ from sysmon.checks.synchronization import is_in_sync
 from sysmon.checks.touchscreen import count_recent_touch_events
 
 
-__all__ = ['check_system', 'check_systems']
+__all__ = ["check_system", "check_systems"]
 
 
-TCP_TIMEOUT = 5     # seconds
+TCP_TIMEOUT = 5  # seconds
 
 
 def check_system(system: System) -> CheckResults:
     """Check the given system."""
 
-    LOGGER.info('Checking system: %i', system.id)
+    LOGGER.info("Checking system: %i", system.id)
     system_check = create_check(system)
     system_check.save()
     return system_check
@@ -64,7 +64,7 @@ def create_check(system: System) -> CheckResults:
         application_state=get_application_state(sysinfo),
         smart_check=get_smart_results(sysinfo),
         baytrail_freeze=get_baytrail_freeze_state(sysinfo),
-        fsck_repair=sysinfo.get('cmdline', {}).get('fsck.repair'),
+        fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
         application_version=get_application_version(sysinfo),
         ram_total=get_ram_total(sysinfo),
         ram_free=get_ram_free(sysinfo),
@@ -75,7 +75,7 @@ def create_check(system: System) -> CheckResults:
         root_not_ro=check_root_not_ro(sysinfo),
         sensors=check_system_sensors(sysinfo),
         in_sync=is_in_sync(system, now),
-        recent_touch_events=count_recent_touch_events(system.deployment, now)
+        recent_touch_events=count_recent_touch_events(system.deployment, now),
     )
 
     try:
@@ -84,7 +84,5 @@ def create_check(system: System) -> CheckResults:
         last_check = None
 
     check_results.offline_since = get_offline_since(check_results, last_check)
-    check_results.blackscreen_since = get_blackscreen_since(
-        check_results, last_check
-    )
+    check_results.blackscreen_since = get_blackscreen_since(check_results, last_check)
     return check_results

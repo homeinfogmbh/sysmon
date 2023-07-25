@@ -5,7 +5,7 @@ from typing import Any
 from sysmon.enumerations import SuccessFailedUnsupported
 
 
-__all__ = ['efi_mount_ok']
+__all__ = ["efi_mount_ok"]
 
 
 def efi_mount_ok(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
@@ -13,7 +13,7 @@ def efi_mount_ok(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
     on /boot or there is no EFI partition to be mounted.
     """
 
-    if (mounted := sysinfo.get('efi', {}).get('mounted')) is None:
+    if (mounted := sysinfo.get("efi", {}).get("mounted")) is None:
         return SuccessFailedUnsupported.UNSUPPORTED
 
     if mounted:

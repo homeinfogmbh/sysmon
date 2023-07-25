@@ -13,20 +13,17 @@ from sysmon.functions import get_latest_check_results_per_group
 from sysmon.orm import OfflineHistory
 
 
-__all__ = ['update_offline_systems', 'get_offline_systems']
+__all__ = ["update_offline_systems", "get_offline_systems"]
 
 
 def count_offline_systems_in_group(
-        group: int,
-        timestamp: date,
-        *,
-        blacklist: set[int] = frozenset()
+    group: int, timestamp: date, *, blacklist: set[int] = frozenset()
 ) -> int:
     """Counts the offline systems of the given group on the given day."""
 
     return sum(
-        not check_results.online for check_results in
-        get_latest_check_results_per_group(group, timestamp)
+        not check_results.online
+        for check_results in get_latest_check_results_per_group(group, timestamp)
         if is_productive(check_results.system, blacklist)
     )
 
@@ -47,9 +44,7 @@ def is_productive(system: System, blacklist: set[int]) -> bool:
 
 
 def update_offline_systems(
-        timestamp: date,
-        *,
-        blacklist: set[int] = frozenset()
+    timestamp: date, *, blacklist: set[int] = frozenset()
 ) -> None:
     """Updates the offline systems for the given date."""
 
@@ -64,11 +59,10 @@ def update_offline_systems(
 def get_offline_systems_by_group(group: int, since: date) -> ModelSelect:
     """Select offline history entries for the respective group."""
 
-    return OfflineHistory.select().where(
-        (OfflineHistory.group == group)
-        & (OfflineHistory.timestamp >= since)
-    ).order_by(
-        OfflineHistory.timestamp
+    return (
+        OfflineHistory.select()
+        .where((OfflineHistory.group == group) & (OfflineHistory.timestamp >= since))
+        .order_by(OfflineHistory.timestamp)
     )
 
 
@@ -77,7 +71,8 @@ def get_offline_systems(account: Account, since: date) -> dict[str, Any]:
 
     return {
         str(group): [
-            history_item.to_json() for history_item in
-            get_offline_systems_by_group(group.id, since)
-        ] for group in get_administerable_groups(account)
+            history_item.to_json()
+            for history_item in get_offline_systems_by_group(group.id, since)
+        ]
+        for group in get_administerable_groups(account)
     }

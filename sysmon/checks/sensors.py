@@ -5,18 +5,18 @@ from typing import Any
 from sysmon.enumerations import SuccessFailedUnsupported
 
 
-__all__ = ['check_system_sensors']
+__all__ = ["check_system_sensors"]
 
 
 def check_system_sensors(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
     """Check whether all system sensor values are ok."""
 
-    if (sensors := sysinfo.get('sensors')) is None:
+    if (sensors := sysinfo.get("sensors")) is None:
         return SuccessFailedUnsupported.UNSUPPORTED
 
     for sensor, fields in sensors.items():
         for field, temps in fields.items():
-            if field == 'Adapter':
+            if field == "Adapter":
                 continue
 
             if not isinstance(temps, dict):
@@ -25,16 +25,16 @@ def check_system_sensors(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
             current = max_ = crit = None
 
             for name, value in temps.items():
-                if name.endswith('_input'):
+                if name.endswith("_input"):
                     current = value
 
-                if name.endswith('_max'):
+                if name.endswith("_max"):
                     max_ = value
 
-                if name.endswith('_crit'):
+                if name.endswith("_crit"):
                     crit = value
 
-                if name.endswith('_crit_alarm') and value:
+                if name.endswith("_crit_alarm") and value:
                     return SuccessFailedUnsupported.FAILED
 
             if current is None:
