@@ -17,7 +17,7 @@ def count_recent_touch_events(
     deployment: Optional[Union[Deployment, int]],
     start: datetime,
     *,
-    span: timedelta = RECENT_TOUCH_EVENTS
+    span: timedelta = RECENT_TOUCH_EVENTS,
 ) -> Optional[int]:
     """Count recent touch events."""
 
