@@ -35,6 +35,13 @@ __all__ = ["check_system", "check_systems"]
 TCP_TIMEOUT = 5  # seconds
 
 
+def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
+    """Checks the given systems."""
+
+    with Pool() as pool:
+        pool.map(check_system, systems, chunksize=chunk_size)
+
+
 def check_system(system: System) -> CheckResults:
     """Check the given system."""
 
@@ -42,13 +49,6 @@ def check_system(system: System) -> CheckResults:
     system_check = create_check(system)
     system_check.save()
     return system_check
-
-
-def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
-    """Checks the given systems."""
-
-    with Pool() as pool:
-        pool.map(check_system, systems, chunksize=chunk_size)
 
 
 def create_check(system: System) -> CheckResults:
