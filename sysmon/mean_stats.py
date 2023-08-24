@@ -28,20 +28,6 @@ class MeanStats(NamedTuple):
     not_fitted: frozenset[System]
     overheated: frozenset[System]
 
-    @property
-    def percent_online(self) -> int:
-        """Return percentage of online systems."""
-        return floor(len(self.online) / len(self.systems) * 100)
-
-    @property
-    def upload_download_critical(self) -> frozenset[System]:
-        """Return the systems where upload and/or download are critical."""
-        return self.download_critical | self.upload_critical
-
-    def out_of_date(self, now: datetime) -> frozenset[System]:
-        """Returns systems that are online but out of date."""
-        return frozenset(filterfalse(partial(is_in_sync, now=now), self.online))
-
     @classmethod
     def from_system_check_results(
         cls, system_check_results: dict[System, Iterable[CheckResults]]
@@ -93,3 +79,17 @@ class MeanStats(NamedTuple):
             frozenset(not_fitted),
             frozenset(overheated),
         )
+
+    @property
+    def percent_online(self) -> int:
+        """Return percentage of online systems."""
+        return floor(len(self.online) / len(self.systems) * 100)
+
+    @property
+    def upload_download_critical(self) -> frozenset[System]:
+        """Return the systems where upload and/or download are critical."""
+        return self.download_critical | self.upload_critical
+
+    def out_of_date(self, now: datetime) -> frozenset[System]:
+        """Returns systems that are online but out of date."""
+        return frozenset(filterfalse(partial(is_in_sync, now=now), self.online))
