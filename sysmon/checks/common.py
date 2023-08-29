@@ -4,12 +4,11 @@ from pathlib import Path
 from re import fullmatch
 from typing import Any
 
-from requests import ConnectionError, ReadTimeout, get
+from requests import ConnectionError, ReadTimeout
 
 from hwdb import System
 
 from sysmon.enumerations import SuccessFailedUnsupported
-from sysmon.functions import get_url
 from sysmon.orm import CheckResults
 
 
@@ -41,12 +40,12 @@ def get_last_check(system: System) -> CheckResults:
 
 
 def get_sysinfo(
-    system: System, *, port: int = 8000, timeout: int = 15
+    system: System, *, timeout: int = 15
 ) -> tuple[SuccessFailedUnsupported, dict[str, Any]]:
     """Returns the system info dict per HTTP request."""
 
     try:
-        response = get(get_url(system.ip_address, port=port), timeout=timeout)
+        response = system.sysinfo(timeout=timeout)
     except (ConnectionError, ReadTimeout):
         return SuccessFailedUnsupported.UNSUPPORTED, {}
 
