@@ -11,7 +11,7 @@ __all__ = ["get_baytrail_freeze_state"]
 def get_baytrail_freeze_state(sysinfo: dict[str, Any]) -> BaytrailFreezeState:
     """Returns the baytrail freeze bug state."""
 
-    if (baytrail := sysinfo.get("baytrail")) is None:
+    if (baytrail := sysinfo.get("baytrail", sysinfo.get("is_bay_trail"))) is None:
         return BaytrailFreezeState.UNKNOWN
 
     if not baytrail:
