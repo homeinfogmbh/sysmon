@@ -15,7 +15,7 @@ def get_blackscreen_since(
 ) -> Optional[datetime]:
     """Returns the datetime since when the application is not running."""
 
-    if current.application_state is not ApplicationState.NOT_RUNNING:
+    if current.application_state is not ApplicationState.OFF:
         return None
 
     if last is None or last.blackscreen_since is None:
