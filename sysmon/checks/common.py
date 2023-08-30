@@ -4,7 +4,7 @@ from pathlib import Path
 from re import fullmatch
 from typing import Any
 
-from requests import ConnectionError, ReadTimeout
+from requests import ConnectionError, ReadTimeout, Timeout
 
 from hwdb import System
 
@@ -46,7 +46,7 @@ def get_sysinfo(
 
     try:
         response = system.sysinfo(timeout=timeout)
-    except (ConnectionError, ReadTimeout):
+    except (ConnectionError, ReadTimeout, Timeout):
         return SuccessFailedUnsupported.UNSUPPORTED, {}
 
     if response.status_code != 200:
