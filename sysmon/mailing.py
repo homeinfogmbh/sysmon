@@ -55,7 +55,7 @@ def get_target_customers() -> set[Customer]:
 
     customers = set()
 
-    for system in System.select(cascade=True).where(~(System.deployment >> None)):
+    for system in System.select(cascade=True).where(~(System.deployment >> None) & (System.fitted == 1)):
         customers.add(system.deployment.customer)
 
     return customers
