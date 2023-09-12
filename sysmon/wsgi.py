@@ -9,6 +9,8 @@ from notificationlib import get_wsgi_funcs
 from requests.exceptions import Timeout
 from wsgilib import Binary, JSON, JSONMessage, get_int
 
+from flask import request
+
 from sysmon.blacklist import authorized_blacklist, load_blacklist
 from sysmon.checks import check_system
 from sysmon.checks.common import get_sysinfo
@@ -22,7 +24,7 @@ from sysmon.functions import get_latest_check_results_per_system
 from sysmon.mailing import send_mailing
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
-from sysmon.orm import UserNotificationEmail
+from sysmon.orm import UserNotificationEmail, Newsletter
 from sysmon.json import check_results_to_json
 from sysmon.preview import generate_preview_token
 
@@ -32,6 +34,25 @@ __all__ = ["APPLICATION"]
 
 APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
+
+
+@APPLICATION.route("/patch_newsletter/<int:newsletter>", methods=["POST"], strict_slashes=False)
+def patch_newsletter(newsletter: int):
+    nl = Newsletter.select().where(Newsletter.id == newsletter)
+    nl.patch_json(request.json)
+    nl.save()
+
+
+@APPLICATION.route("/newsletter/<int:newsletter>", methods=["GET"], strict_slashes=False)
+def get_newsletter(newsletter: int):
+    return list(Newsletter.select().where(Newsletter.id == newsletter).dicts())
+
+
+@APPLICATION.route("/newsletters", methods=["GET"], strict_slashes=False)
+def get_newsletters():
+    """List Newsletters."""
+
+    return list(Newsletter.select().where().dicts())
 
 
 @APPLICATION.route("/checks", methods=["GET"], strict_slashes=False)
