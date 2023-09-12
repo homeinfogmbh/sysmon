@@ -35,24 +35,27 @@ __all__ = ["APPLICATION"]
 APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 
+
+@APPLICATION.route("/patch_newsletter/<int:newsletter>", methods=["POST"], strict_slashes=False)
 @authenticated
 @authorized("sysmon")
 @root
-@APPLICATION.route("/patch_newsletter/<int:newsletter>", methods=["POST"], strict_slashes=False)
 def patch_newsletter(newsletter: int):
     nl = Newsletter.select().where(Newsletter.id == newsletter)
     nl.patch_json(request.json)
     nl.save()
 
+
+@APPLICATION.route("/newsletter/<int:newsletter>", methods=["GET"], strict_slashes=False)
 @authenticated
 @authorized("sysmon")
-@APPLICATION.route("/newsletter/<int:newsletter>", methods=["GET"], strict_slashes=False)
 def get_newsletter(newsletter: int):
     return list(Newsletter.select().where(Newsletter.id == newsletter).dicts())
 
+
+@APPLICATION.route("/newsletters", methods=["GET"], strict_slashes=False)
 @authenticated
 @authorized("sysmon")
-@APPLICATION.route("/newsletters", methods=["GET"], strict_slashes=False)
 def get_newsletters():
     """List Newsletters."""
 
