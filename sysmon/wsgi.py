@@ -50,7 +50,7 @@ def patch_newsletter(newsletter: int):
 @authenticated
 @authorized("sysmon")
 def get_newsletter(newsletter: int):
-    return list(Newsletter.select().where(Newsletter.id == newsletter).dicts())
+    return JSON(list(Newsletter.select().where(Newsletter.id == newsletter).dicts()))
 
 
 @APPLICATION.route("/newsletters", methods=["GET"], strict_slashes=False)
@@ -59,7 +59,7 @@ def get_newsletter(newsletter: int):
 def get_newsletters():
     """List Newsletters."""
 
-    return list(Newsletter.select().where().dicts())
+    return JSON(list(Newsletter.select().where(1 == 1).dicts()))
 
 
 @APPLICATION.route("/checks", methods=["GET"], strict_slashes=False)
