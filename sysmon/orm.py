@@ -51,7 +51,7 @@ class Newsletter(SysmonModel):
 
     month = IntegerField()
     visible = BooleanField(default=0)
-    text= HTMLTextField(null=True)
+    text = HTMLTextField(null=True)
     subject = CharField()
 
 

@@ -37,11 +37,16 @@ SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 
 
 @APPLICATION.route("/patch_newsletter/<int:newsletter>", methods=["POST"], strict_slashes=False)
-
 def patch_newsletter(newsletter: int):
     nl = Newsletter.select().where(Newsletter.id == newsletter).get()
     nl.patch_json(request.json)
-    nl.save()
+    return JSON({'status' : nl.save()})
+
+@APPLICATION.route("/add_newsletter", methods=["POST"], strict_slashes=False)
+def add_newsletter():
+    nl = Newsletter()
+    nl.from_json(request.json)
+    return JSON({'status' : nl.save()})
 
 
 @APPLICATION.route("/newsletter/<int:newsletter>", methods=["GET"], strict_slashes=False)
