@@ -37,9 +37,7 @@ SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 
 
 @APPLICATION.route("/patch_newsletter/<int:newsletter>", methods=["POST"], strict_slashes=False)
-@authenticated
-@authorized("sysmon")
-@root
+
 def patch_newsletter(newsletter: int):
     nl = Newsletter.select().where(Newsletter.id == newsletter).get()
     nl.patch_json(request.json)
