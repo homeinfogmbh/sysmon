@@ -41,7 +41,7 @@ SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 @authorized("sysmon")
 @root
 def patch_newsletter(newsletter: int):
-    nl = Newsletter.select().where(Newsletter.id == newsletter)
+    nl = Newsletter.select().where(Newsletter.id == newsletter).get()
     nl.patch_json(request.json)
     nl.save()
 
