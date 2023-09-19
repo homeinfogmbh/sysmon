@@ -37,11 +37,10 @@ APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 
 
-@APPLICATION.route(
-    "/newsletter_by_date/<nl_date:date>", methods=["GET"], strict_slashes=False
-)
-def newsletter_by_date(nl_date=date.today()):
-    return JSON(get_newsletter_by_date(nl_date).to_json())
+@APPLICATION.route("/newsletter_by_date", methods=["GET"], strict_slashes=False)
+def newsletter_by_date():
+    now = date.today()
+    return JSON(get_newsletter_by_date(now).to_json())
 
 
 @APPLICATION.route(

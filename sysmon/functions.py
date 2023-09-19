@@ -33,7 +33,7 @@ __all__ = [
 MAX_SYNC_AGE = timedelta(hours=24)
 
 
-def get_newsletter_by_date(now=date.today()) -> Newsletter:
+def get_newsletter_by_date(now) -> Newsletter:
     """Returns Newsletter for current year/month"""
 
     try:
