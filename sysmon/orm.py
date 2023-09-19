@@ -17,7 +17,7 @@ from peewee import SmallIntegerField
 from hwdb import Deployment, System
 from mdb import Address, Company, Customer
 from notificationlib import get_email_orm_model
-from peeweeplus import EnumField, JSONModel, MySQLDatabaseProxy,HTMLTextField
+from peeweeplus import EnumField, JSONModel, MySQLDatabaseProxy, HTMLTextField
 
 
 from sysmon.config import MIN_DOWNLOAD
@@ -32,7 +32,7 @@ __all__ = [
     "CheckResults",
     "OfflineHistory",
     "UserNotificationEmail",
-    "Newsletter"
+    "Newsletter",
 ]
 
 
@@ -48,8 +48,7 @@ class SysmonModel(JSONModel):
 
 
 class Newsletter(SysmonModel):
-
-    month = IntegerField()
+    period = DateField()
     visible = BooleanField(default=0)
     text = HTMLTextField(null=True)
     subject = CharField()

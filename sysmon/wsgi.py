@@ -36,11 +36,14 @@ APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 
 
-@APPLICATION.route("/patch_newsletter/<int:newsletter>", methods=["POST"], strict_slashes=False)
+@APPLICATION.route(
+    "/patch_newsletter/<int:newsletter>", methods=["POST"], strict_slashes=False
+)
 def patch_newsletter(newsletter: int):
     nl = Newsletter.select().where(Newsletter.id == newsletter).get()
     nl.patch_json(request.json)
     return JSON({"status": nl.save()})
+
 
 @APPLICATION.route("/add_newsletter", methods=["POST"], strict_slashes=False)
 def add_newsletter():
@@ -48,20 +51,22 @@ def add_newsletter():
     return JSON({"status": nl.save()})
 
 
-@APPLICATION.route("/newsletter/<int:newsletter>", methods=["GET"], strict_slashes=False)
+@APPLICATION.route(
+    "/newsletter/<int:newsletter>", methods=["GET"], strict_slashes=False
+)
 @authenticated
 @authorized("sysmon")
 def get_newsletter(newsletter: int):
-    return JSON(list(Newsletter.select().where(Newsletter.id == newsletter).dicts()))
+    return JSON(Newsletter.select().where(Newsletter.id == newsletter).get().to_json())
 
 
 @APPLICATION.route("/newsletters", methods=["GET"], strict_slashes=False)
 @authenticated
 @authorized("sysmon")
 def get_newsletters():
-    """List Newsletters."""
+    """List all Newsletters."""
 
-    return JSON(list(Newsletter.select().where(1 == 1).dicts()))
+    return JSON([newsletter.to_json() for newsletter in Newsletter.select()])
 
 
 @APPLICATION.route("/checks", methods=["GET"], strict_slashes=False)
