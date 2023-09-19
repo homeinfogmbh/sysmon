@@ -21,6 +21,7 @@ from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
+from sysmon.functions import get_newsletter_by_date
 from sysmon.mailing import send_mailing
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
@@ -34,6 +35,13 @@ __all__ = ["APPLICATION"]
 
 APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
+
+
+@APPLICATION.route(
+    "/newsletter_by_date/<nl_date:date>", methods=["GET"], strict_slashes=False
+)
+def newsletter_by_date(nl_date=date.today()):
+    return JSON(get_newsletter_by_date(nl_date).to_json())
 
 
 @APPLICATION.route(
