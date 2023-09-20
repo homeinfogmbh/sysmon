@@ -55,7 +55,8 @@ def patch_newsletter(newsletter: int):
 @APPLICATION.route("/add_newsletter", methods=["POST"], strict_slashes=False)
 def add_newsletter():
     nl = Newsletter.from_json(request.json)
-    return JSON({"status": nl.save()})
+    nl.save()
+    return JSON(nl.to_json())
 
 
 @APPLICATION.route(
