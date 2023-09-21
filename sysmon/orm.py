@@ -50,6 +50,7 @@ class SysmonModel(JSONModel):
 class Newsletter(SysmonModel):
     period = DateField()
     visible = BooleanField(default=0)
+    isdefault = BooleanField(default=0)
     text = HTMLTextField(null=True)
     subject = CharField()
 

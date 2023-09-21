@@ -55,6 +55,7 @@ def patch_newsletter(newsletter: int):
 @APPLICATION.route("/add_newsletter", methods=["POST"], strict_slashes=False)
 def add_newsletter():
     nl = Newsletter.from_json(request.json)
+    nl.is_default = 0
     nl.save()
     return JSON(nl.to_json())
 
@@ -68,13 +69,27 @@ def get_newsletter(newsletter: int):
     return JSON(Newsletter.select().where(Newsletter.id == newsletter).get().to_json())
 
 
+@APPLICATION.route("/default_newsletter", methods=["GET"], strict_slashes=False)
+@authenticated
+@authorized("sysmon")
+def get_default_newsletters():
+    """List all Newsletters."""
+
+    return JSON(Newsletter.select().where(Newsletter.isdefault == 1).get().to_json())
+
+
 @APPLICATION.route("/newsletters", methods=["GET"], strict_slashes=False)
 @authenticated
 @authorized("sysmon")
 def get_newsletters():
     """List all Newsletters."""
 
-    return JSON([newsletter.to_json() for newsletter in Newsletter.select()])
+    return JSON(
+        [
+            newsletter.to_json()
+            for newsletter in Newsletter.select().where(Newsletter.isdefault == 0)
+        ]
+    )
 
 
 @APPLICATION.route("/checks", methods=["GET"], strict_slashes=False)
