@@ -7,7 +7,7 @@ from locale import LC_TIME, setlocale
 from logging import basicConfig, getLogger
 from pathlib import Path
 from typing import Iterable, Iterator
-from peeweee import DoesNotExist
+from peewee import DoesNotExist
 
 from emaillib import EMailsNotSent, EMail, Mailer
 from hwdb import Deployment, System
