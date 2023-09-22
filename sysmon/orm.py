@@ -17,7 +17,13 @@ from peewee import SmallIntegerField
 from hwdb import Deployment, System
 from mdb import Address, Company, Customer
 from notificationlib import get_email_orm_model
-from peeweeplus import EnumField, JSONModel, MySQLDatabaseProxy, HTMLTextField,EMailField
+from peeweeplus import (
+    EnumField,
+    JSONModel,
+    MySQLDatabaseProxy,
+    HTMLTextField,
+    EMailField,
+)
 
 
 from sysmon.config import MIN_DOWNLOAD
@@ -169,3 +175,11 @@ class ExtraUserNotificationEmail(SysmonModel):
     """Stores emails for notifications about new messages."""
 
     email = EMailField(255)
+
+
+UserNotificationEmail = get_email_orm_model(
+    SysmonModel,
+    table_name="user_notification_email",
+    subject_field=False,
+    html_field=False,
+)
