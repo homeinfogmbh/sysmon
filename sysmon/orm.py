@@ -17,7 +17,7 @@ from peewee import SmallIntegerField
 from hwdb import Deployment, System
 from mdb import Address, Company, Customer
 from notificationlib import get_email_orm_model
-from peeweeplus import EnumField, JSONModel, MySQLDatabaseProxy, HTMLTextField
+from peeweeplus import EnumField, JSONModel, MySQLDatabaseProxy, HTMLTextField,EMailField
 
 
 from sysmon.config import MIN_DOWNLOAD
