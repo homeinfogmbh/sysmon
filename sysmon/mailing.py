@@ -30,9 +30,9 @@ Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
 Sofern sich dazu im Vorfeld Fragen ergeben, stehen wir Ihnen natürlich wie gewohnt sehr gern zur Verfügung.<br>
 Bitte nutzen Sie den Link zur detaillierten Monatsstatistik. Hier werden Ihnen auch weiterführende Abläufe beschrieben:<br>
 <a href="https://typo3.homeinfo.de/ddb-report?customer={customer.id}">Link zur Webansicht</a>
-</p>"
+</p>"""
 LOGGER = getLogger("sysmon-mailing")
-SUBJECT = "Service - Report Digitales Brett: {customer.name}"""
+SUBJECT = "Service - Report Digitales Brett: {customer.name}"
 
 FOOTER_TEXT = """<p>Mit freundlichen Grüßen Ihre</p>
 <p><a href="http://mieterinfo.tv/">mieterinfo.tv</a><br>
