@@ -21,8 +21,7 @@ from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
-from sysmon.functions import get_newsletter_by_date
-from sysmon.mailing import send_mailing
+from sysmon.mailing import send_mailing, get_newsletter_by_date
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
 from sysmon.orm import UserNotificationEmail, Newsletter

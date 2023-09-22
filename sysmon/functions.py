@@ -26,31 +26,10 @@ __all__ = [
     "get_latest_check_results_per_group",
     "get_authenticated_systems",
     "is_in_sync",
-    "get_newsletter_by_date",
 ]
 
 
 MAX_SYNC_AGE = timedelta(hours=24)
-
-
-def get_newsletter_by_date(now) -> Newsletter:
-    """Returns Newsletter for current year/month"""
-
-    try:
-        nl = (
-            Newsletter.select()
-            .where(
-                (Newsletter.period.month == now.month)
-                & (Newsletter.period.year == now.year)
-                & (Newsletter.visible == 1)
-            )
-            .get()
-        )
-    except DoesNotExist:
-        return Newsletter(
-            period=now, visible=1, text="defaulttext", subject="defaultsubject"
-        )
-    return nl
 
 
 def count(items: Iterable[Any]) -> int:

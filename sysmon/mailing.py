@@ -17,7 +17,7 @@ from sysmon.mean_stats import MeanStats
 from sysmon.orm import CheckResults, UserNotificationEmail
 
 
-__all__ = ["main", "send_mailing"]
+__all__ = ["main", "send_mailing", "get_newsletter_by_date"]
 
 
 TEMPLATE = Path("/usr/local/etc/sysmon.d/customers-email.htt")
@@ -50,12 +50,40 @@ def send_mailing() -> None:
     )
 
 
+def create_customer_test_email(customer: Customer, recipient) -> Iterator[EMail]:
+    """Sends a Testmail of selected newsletter to logged in User."""
+
+    sender = get_config().get(
+        "mailing", "sender", fallback="service@dasdigitalebrett.de"
+    )
+    last_month = last_day_of_last_month(date.today())
+    if not (
+        check_results := check_results_by_system(
+            get_check_results_for_month(customer, last_month)
+        )
+    ):
+        return
+
+    html = get_html(
+        customer, MeanStats.from_system_check_results(check_results), last_month
+    )
+
+    return EMail(
+        subject=SUBJECT.format(customer=customer),
+        sender=sender,
+        recipient=recipient,
+        html=html,
+    )
+
+
 def get_target_customers() -> set[Customer]:
     """Yield customers that shall receive the mailing."""
 
     customers = set()
 
-    for system in System.select(cascade=True).where(~(System.deployment >> None) & (System.fitted == 1)):
+    for system in System.select(cascade=True).where(
+        ~(System.deployment >> None) & (System.fitted == 1)
+    ):
         customers.add(system.deployment.customer)
 
     return customers
@@ -65,6 +93,42 @@ def get_mailer() -> Mailer:
     """Return the mailer."""
 
     return Mailer.from_config(get_config())
+
+
+def get_newsletter_by_date(now) -> Newsletter:
+    """Returns Newsletter for current year/month"""
+
+    try:
+        nl = (
+            Newsletter.select()
+            .where(
+                (Newsletter.period.month == now.month)
+                & (Newsletter.period.year == now.year)
+                & (Newsletter.visible == 1)
+            )
+            .get()
+        )
+    except DoesNotExist:
+        return Newsletter.select().where(Newsletter.isdefault == 1).get()
+    return nl
+
+
+def get_newsletter_by_date(now) -> Newsletter:
+    """Returns Newsletter for current year/month"""
+
+    try:
+        nl = (
+            Newsletter.select()
+            .where(
+                (Newsletter.period.month == now.month)
+                & (Newsletter.period.year == now.year)
+                & (Newsletter.visible == 1)
+            )
+            .get()
+        )
+    except DoesNotExist:
+        return Newsletter.select().where(Newsletter.isdefault == 1).get()
+    return nl
 
 
 def create_emails_for_customers(
