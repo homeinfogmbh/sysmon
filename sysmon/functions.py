@@ -3,7 +3,7 @@
 from datetime import date, datetime, timedelta
 from typing import Any, Iterable, Iterator, Optional, Union
 
-from peewee import DateTimeField, Expression, ModelSelect, fn, DoesNotExist
+from peewee import DateTimeField, Expression, ModelSelect, fn
 
 from his import Account
 from hwdb import Deployment, System
@@ -12,7 +12,7 @@ from termacls import get_system_admin_condition
 
 from sysmon.filtering import check_results_by_systems
 from sysmon.filtering import last_check_of_each_system
-from sysmon.orm import CheckResults, Newsletter
+from sysmon.orm import CheckResults
 
 
 __all__ = [

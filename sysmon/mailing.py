@@ -7,6 +7,7 @@ from locale import LC_TIME, setlocale
 from logging import basicConfig, getLogger
 from pathlib import Path
 from typing import Iterable, Iterator
+from peeweee import DoesNotExist
 
 from emaillib import EMailsNotSent, EMail, Mailer
 from hwdb import Deployment, System
@@ -15,15 +16,43 @@ from mdb import Customer
 from his import ACCOUNT
 from sysmon.config import get_config
 from sysmon.mean_stats import MeanStats
-from sysmon.orm import CheckResults, UserNotificationEmail
+from sysmon.orm import CheckResults, UserNotificationEmail, Newsletter
 
 
 __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
 
 
 TEMPLATE = Path("/usr/local/etc/sysmon.d/customers-email.htt")
+DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihre Digitalen Bretter:<br>
+Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
+</p>
+<p>
+Sofern sich dazu im Vorfeld Fragen ergeben, stehen wir Ihnen natürlich wie gewohnt sehr gern zur Verfügung.<br>
+Bitte nutzen Sie den Link zur detaillierten Monatsstatistik. Hier werden Ihnen auch weiterführende Abläufe beschrieben:<br>
+<a href="https://typo3.homeinfo.de/ddb-report?customer={customer.id}">Link zur Webansicht</a>
+</p>"
 LOGGER = getLogger("sysmon-mailing")
-SUBJECT = "Service - Report Digitales Brett: {customer.name}"
+SUBJECT = "Service - Report Digitales Brett: {customer.name}"""
+
+FOOTER_TEXT = """<p>Mit freundlichen Grüßen Ihre</p>
+<p><a href="http://mieterinfo.tv/">mieterinfo.tv</a><br>
+Kommunikationssysteme GmbH & Co. KG
+</p>
+<p>
+Burgstraße 6a
+30826 Garbsen
+</p>
+<p>
+Fon.: 0511 21 24 11 00
+</p>
+<p>
+service@dasdigitalebrett.de<br>
+https://dasdigitalebrett.de/
+</p>
+<p>
+Möchten Sie diesen Newsletter nicht mehr bekommen klicken Sie bitte auf diesen <a href="mailto:r.haupt@homeinfo.de?subject=UNSUBSCRIBE&body=Bitte tragen sie diese Emailadresse aus der Newsletter aus">Link</a>.
+</p>
+"""
 
 
 def main() -> None:
@@ -51,11 +80,15 @@ def send_mailing() -> None:
     )
 
 
-def send_test_mails():
-    get_mailer().send([create_customer_test_email(ACCOUNT.customer, ACCOUNT.email)])
+def send_test_mails(newsletter: int):
+    get_mailer().send(
+        [create_customer_test_email(newsletter, ACCOUNT.customer, ACCOUNT.email)]
+    )
 
 
-def create_customer_test_email(customer: Customer, recipient: str) -> Iterator[EMail]:
+def create_customer_test_email(
+    newsletter: int, customer: Customer, recipient: str
+) -> Iterator[EMail]:
     """Sends a Testmail of selected newsletter to logged in User."""
 
     sender = get_config().get(
@@ -70,7 +103,10 @@ def create_customer_test_email(customer: Customer, recipient: str) -> Iterator[E
         return
 
     html = get_html(
-        customer, MeanStats.from_system_check_results(check_results), last_month
+        newsletter,
+        customer,
+        MeanStats.from_system_check_results(check_results),
+        last_month,
     )
 
     return EMail(
@@ -98,24 +134,6 @@ def get_mailer() -> Mailer:
     """Return the mailer."""
 
     return Mailer.from_config(get_config())
-
-
-def get_newsletter_by_date(now) -> Newsletter:
-    """Returns Newsletter for current year/month"""
-
-    try:
-        nl = (
-            Newsletter.select()
-            .where(
-                (Newsletter.period.month == now.month)
-                & (Newsletter.period.year == now.year)
-                & (Newsletter.visible == 1)
-            )
-            .get()
-        )
-    except DoesNotExist:
-        return Newsletter.select().where(Newsletter.isdefault == 1).get()
-    return nl
 
 
 def get_newsletter_by_date(now) -> Newsletter:
@@ -164,7 +182,7 @@ def create_customer_emails(
         return
 
     html = get_html(
-        customer, MeanStats.from_system_check_results(check_results), last_month
+        1, customer, MeanStats.from_system_check_results(check_results), last_month
     )
 
     for recipient in get_recipients(customer):
@@ -176,12 +194,21 @@ def create_customer_emails(
         )
 
 
-def get_html(customer: Customer, stats: MeanStats, last_month: date) -> str:
+def get_html(
+    newsletter: int, customer: Customer, stats: MeanStats, last_month: date
+) -> str:
     """Return the email body's text."""
 
     with TEMPLATE.open("r", encoding="utf-8") as file:
         template = file.read()
 
+    template = (
+        get_newsletter_by_date(
+            Newsletter.select().where(Newsletter.id == newsletter).get().period
+        ).text
+        + DDB_TEXT
+        + FOOTER_TEXT
+    )
     return template.format(
         month=last_month.strftime("%B"),
         year=last_month.strftime("%Y"),

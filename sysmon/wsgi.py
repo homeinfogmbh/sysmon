@@ -36,9 +36,12 @@ APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 
 
-@APPLICATION.route("/send_test_mails", methods=["GET"], strict_slashes=False)
-def send_mail():
-    send_test_mails()
+@APPLICATION.route(
+    "/send_test_mails/<int:newsletter>", methods=["GET"], strict_slashes=False
+)
+def test_mail(newsletter: int):
+    send_test_mails(newsletter)
+    return JSONMessage("Testmail sent.", status=200)
 
 
 @APPLICATION.route("/newsletter_by_date", methods=["GET"], strict_slashes=False)
