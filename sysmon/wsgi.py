@@ -37,7 +37,7 @@ SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 
 
 @APPLICATION.route(
-    "/send_test_mails/<int:newsletter>", methods=["GET"], strict_slashes=False
+    "/send_test_mails/<int:newsletter>", methods=["POST"], strict_slashes=False
 )
 def test_mail(newsletter: int):
     send_test_mails(newsletter)
