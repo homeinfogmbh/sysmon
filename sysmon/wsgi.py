@@ -269,10 +269,3 @@ for function, method in zip(
     APPLICATION.route(
         "/user-notification-emails", methods=[method], strict_slashes=False
     )(function)
-
-for function, method in zip(
-    get_wsgi_funcs("sysmon", ExtraUserNotificationEmail), ["GET", "POST"]
-):
-    APPLICATION.route(
-        "/extra-user-notification-emails", methods=[method], strict_slashes=False
-    )(function)
