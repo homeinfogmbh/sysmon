@@ -12,12 +12,13 @@ from emaillib import EMailsNotSent, EMail, Mailer
 from hwdb import Deployment, System
 from mdb import Customer
 
+from his import ACCOUNT
 from sysmon.config import get_config
 from sysmon.mean_stats import MeanStats
 from sysmon.orm import CheckResults, UserNotificationEmail
 
 
-__all__ = ["main", "send_mailing", "get_newsletter_by_date"]
+__all__ = ["main", "send_mailing", "get_newsletter_by_date","send_test_mails"]
 
 
 TEMPLATE = Path("/usr/local/etc/sysmon.d/customers-email.htt")
@@ -48,9 +49,11 @@ def send_mailing() -> None:
             )
         )
     )
+def send_test_mails(){
+    get_mailer().send([create_customer_test_email(ACCOUNT.customer,ACCOUNT.email)])
+}
 
-
-def create_customer_test_email(customer: Customer, recipient) -> Iterator[EMail]:
+def create_customer_test_email(customer: Customer, recipient: str) -> Iterator[EMail]:
     """Sends a Testmail of selected newsletter to logged in User."""
 
     sender = get_config().get(
