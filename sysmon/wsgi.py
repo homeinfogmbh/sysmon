@@ -37,7 +37,7 @@ SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 
 
 @APPLICATION.route("/send_test_mails", methods=["GET"], strict_slashes=False)
-def newsletter_by_date():
+def send_mail():
     send_test_mails()
 
 
