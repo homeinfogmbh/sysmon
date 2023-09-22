@@ -23,6 +23,13 @@ __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
 
 
 TEMPLATE = Path("/usr/local/etc/sysmon.d/customers-email.htt")
+MAIL_START = """<!DOCTYPE html>
+<html lang="de">
+<head><meta charset=UTF-8></head>
+<body>"""
+
+MAIL_END = "</body></html>"
+
 DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihre Digitalen Bretter:<br>
 Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
 </p>
@@ -84,13 +91,29 @@ def send_test_mails(newsletter: int):
     get_mailer().send(
         [create_customer_test_email(newsletter, ACCOUNT.customer, ACCOUNT.email)]
     )
+    get_mailer().send([create_other_test_email(newsletter, ACCOUNT.email)])
 
 
-def create_customer_test_email(
-    newsletter: int, customer: Customer, recipient: str
-) -> Iterator[EMail]:
-    """Sends a Testmail of selected newsletter to logged in User."""
+def create_other_test_email(newsletter: int, recipient: str):
+    """Creates a Mail for non DDB clients"""
+    sender = get_config().get(
+        "mailing", "sender", fallback="service@dasdigitalebrett.de"
+    )
 
+    html = get_html_other(newsletter)
+
+    return EMail(
+        subject=get_newsletter_by_date(
+            Newsletter.select().where(Newsletter.id == newsletter).get().period
+        ).subject,
+        sender=sender,
+        recipient=recipient,
+        html=html,
+    )
+
+
+def create_customer_test_email(newsletter: int, customer: Customer, recipient: str):
+    """Creates a Mail for DDB clients"""
     sender = get_config().get(
         "mailing", "sender", fallback="service@dasdigitalebrett.de"
     )
@@ -197,17 +220,16 @@ def create_customer_emails(
 def get_html(
     newsletter: int, customer: Customer, stats: MeanStats, last_month: date
 ) -> str:
-    """Return the email body's text."""
-
-    with TEMPLATE.open("r", encoding="utf-8") as file:
-        template = file.read()
+    """Return the email body's for DDB customers."""
 
     template = (
-        get_newsletter_by_date(
+        MAIL_START
+        + get_newsletter_by_date(
             Newsletter.select().where(Newsletter.id == newsletter).get().period
         ).text
         + DDB_TEXT
         + FOOTER_TEXT
+        + MAIL_END
     )
     return template.format(
         month=last_month.strftime("%B"),
@@ -216,6 +238,20 @@ def get_html(
         percent_online=stats.percent_online,
         out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
     )
+
+
+def get_html_other(newsletter: int) -> str:
+    """Return the email body's for non DDB customers."""
+
+    template = (
+        MAIL_START
+        + get_newsletter_by_date(
+            Newsletter.select().where(Newsletter.id == newsletter).get().period
+        ).text
+        + FOOTER_TEXT
+        + MAIL_END
+    )
+    return template
 
 
 def get_recipients(customer: Customer) -> Iterator[str]:
