@@ -46,7 +46,7 @@ FOOTER_TEXT = """<p>Mit freundlichen Grüßen Ihre</p>
 Kommunikationssysteme GmbH & Co. KG
 </p>
 <p>
-Burgstraße 6a
+Burgstraße 6a<br>
 30826 Garbsen
 </p>
 <p>
