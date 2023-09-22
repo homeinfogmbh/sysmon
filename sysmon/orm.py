@@ -165,15 +165,7 @@ class OfflineHistory(SysmonModel):
         return cls.select().where(cls.timestamp >= timestamp)
 
 
-UserNotificationEmail = get_email_orm_model(
-    SysmonModel,
-    table_name="user_notification_email",
-    subject_field=False,
-    html_field=False,
-)
-ExtraUserNotificationEmail = get_email_orm_model(
-    SysmonModel,
-    table_name="extra_user_notification_email",
-    subject_field=False,
-    html_field=False,
-)
+class ExtraUserNotificationEmail(SysmonModel):
+    """Stores emails for notifications about new messages."""
+
+    email = EMailField(255)

@@ -269,3 +269,33 @@ for function, method in zip(
     APPLICATION.route(
         "/user-notification-emails", methods=[method], strict_slashes=False
     )(function)
+
+
+@APPLICATION.route(
+    "/extra-user-notification-emails", methods=["GET"], strict_slashes=False
+)
+@authenticated
+@authorized("sysmon")
+def get_extra_emails() -> JSON:
+    """Deletes the respective message."""
+
+    return JSON([email.to_json() for email in ExtraUserNotificationEmail.select()])
+
+
+@APPLICATION.route(
+    "/extra-user-notification-emails", methods=["POST"], strict_slashes=False
+)
+@authenticated
+@authorized("sysmon")
+@admin
+def set_extra_emails() -> JSONMessage:
+    """Replaces all email address of the respective customer."""
+
+    for email in ExtraUserNotificationEmail.select().where():
+        email.delete_instance()
+
+    for email in request.json:
+        email = ExtraUserNotificationEmail.from_json(email)
+        email.save()
+
+    return JSONMessage("The emails list has been updated.", status=200)
