@@ -3,7 +3,7 @@
 from datetime import date, timedelta
 from typing import Union
 
-from his import ACCOUNT, CUSTOMER, Application, authenticated, authorized, root
+from his import ACCOUNT, CUSTOMER, Application, authenticated, authorized, root, admin
 from hwdb import SystemOffline, Deployment, System
 from notificationlib import get_wsgi_funcs
 from requests.exceptions import Timeout
