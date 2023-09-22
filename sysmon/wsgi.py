@@ -24,7 +24,7 @@ from sysmon.functions import get_latest_check_results_per_system
 from sysmon.mailing import send_mailing, get_newsletter_by_date, send_test_mails
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
-from sysmon.orm import UserNotificationEmail, Newsletter
+from sysmon.orm import UserNotificationEmail, Newsletter, ExtraUserNotificationEmail
 from sysmon.json import check_results_to_json
 from sysmon.preview import generate_preview_token
 
@@ -268,4 +268,11 @@ for function, method in zip(
 ):
     APPLICATION.route(
         "/user-notification-emails", methods=[method], strict_slashes=False
+    )(function)
+
+for function, method in zip(
+    get_wsgi_funcs("sysmon", ExtraUserNotificationEmail), ["GET", "POST"]
+):
+    APPLICATION.route(
+        "/extra-user-notification-emails", methods=[method], strict_slashes=False
     )(function)

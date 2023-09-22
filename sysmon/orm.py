@@ -33,6 +33,7 @@ __all__ = [
     "OfflineHistory",
     "UserNotificationEmail",
     "Newsletter",
+    "ExtraUserNotificationEmail",
 ]
 
 
@@ -167,6 +168,12 @@ class OfflineHistory(SysmonModel):
 UserNotificationEmail = get_email_orm_model(
     SysmonModel,
     table_name="user_notification_email",
+    subject_field=False,
+    html_field=False,
+)
+ExtraUserNotificationEmail = get_email_orm_model(
+    SysmonModel,
+    table_name="extra_user_notification_email",
     subject_field=False,
     html_field=False,
 )
