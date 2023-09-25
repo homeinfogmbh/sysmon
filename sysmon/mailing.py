@@ -133,7 +133,9 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
     )
 
     return EMail(
-        subject=SUBJECT.format(customer=customer),
+        subject=get_newsletter_by_date(
+            Newsletter.select().where(Newsletter.id == newsletter).get().period
+        ).subject,
         sender=sender,
         recipient=recipient,
         html=html,
