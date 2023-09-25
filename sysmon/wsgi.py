@@ -277,7 +277,7 @@ for function, method in zip(
 @authenticated
 @authorized("sysmon")
 def get_extra_emails() -> JSON:
-    """Deletes the respective message."""
+    """Get all extra emails"""
 
     return JSON([email.to_json() for email in ExtraUserNotificationEmail.select()])
 
@@ -289,11 +289,9 @@ def get_extra_emails() -> JSON:
 @authorized("sysmon")
 @admin
 def set_extra_emails() -> JSONMessage:
-    """Replaces all email address of the respective customer."""
+    """set extra email addresses."""
 
-    for email in ExtraUserNotificationEmail.select().where():
-        email.delete_instance()
-
+    ExtraUserNotificationEmail.delete().execute()
     for email in request.json:
         email = ExtraUserNotificationEmail.from_json(email)
         email.save()
