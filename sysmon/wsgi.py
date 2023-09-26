@@ -36,6 +36,9 @@ APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 
 
+@authenticated
+@authorized("sysmon")
+@root
 @APPLICATION.route(
     "/send_test_mails/<int:newsletter>", methods=["POST"], strict_slashes=False
 )
@@ -44,12 +47,18 @@ def test_mail(newsletter: int):
     return JSONMessage("Testmail sent.", status=200)
 
 
+@authenticated
+@authorized("sysmon")
+@root
 @APPLICATION.route("/newsletter_by_date", methods=["GET"], strict_slashes=False)
 def newsletter_by_date():
     now = date.today()
     return JSON(get_newsletter_by_date(now).to_json())
 
 
+@authenticated
+@authorized("sysmon")
+@root
 @APPLICATION.route(
     "/patch_newsletter/<int:newsletter>", methods=["POST"], strict_slashes=False
 )
@@ -59,6 +68,9 @@ def patch_newsletter(newsletter: int):
     return JSON({"status": nl.save()})
 
 
+@authenticated
+@authorized("sysmon")
+@root
 @APPLICATION.route("/add_newsletter", methods=["POST"], strict_slashes=False)
 def add_newsletter():
     nl = Newsletter.from_json(request.json)
@@ -263,18 +275,42 @@ def _send_mailing() -> Union[JSON, JSONMessage]:
     return JSON(send_mailing())
 
 
-for function, method in zip(
-    get_wsgi_funcs("sysmon", UserNotificationEmail), ["GET", "POST"]
-):
-    APPLICATION.route(
-        "/user-notification-emails", methods=[method], strict_slashes=False
-    )(function)
+@APPLICATION.route("/user-notification-emails", methods=["GET"], strict_slashes=False)
+@authorized("sysmon")
+def get_emails() -> JSON:
+    """Deletes the respective message."""
+
+    return JSON(
+        [
+            email.to_json()
+            for email in UserNotificationEmail.select().where(
+                UserNotificationEmail.customer == CUSTOMER.id
+            )
+        ]
+    )
+
+
+@APPLICATION.route("/user-notification-emails", methods=["POST"], strict_slashes=False)
+@authorized("sysmon")
+@root
+def set_emails() -> JSONMessage:
+    """Replaces all email address of the respective customer."""
+
+    for email in UserNotificationEmail.select().where(
+        UserNotificationEmail.customer == CUSTOMER.id
+    ):
+        email.delete_instance()
+
+    for email in request.json:
+        email = UserNotificationEmail.from_json(email, CUSTOMER.id)
+        email.save()
+
+    return JSONMessage("The emails list has been updated.", status=200)
 
 
 @APPLICATION.route(
     "/extra-user-notification-emails", methods=["GET"], strict_slashes=False
 )
-@authenticated
 @authorized("sysmon")
 def get_extra_emails() -> JSON:
     """Get all extra emails"""
@@ -285,9 +321,8 @@ def get_extra_emails() -> JSON:
 @APPLICATION.route(
     "/extra-user-notification-emails", methods=["POST"], strict_slashes=False
 )
-@authenticated
 @authorized("sysmon")
-@admin
+@root
 def set_extra_emails() -> JSONMessage:
     """set extra email addresses."""
 
