@@ -16,7 +16,12 @@ from mdb import Customer
 from his import ACCOUNT
 from sysmon.config import get_config
 from sysmon.mean_stats import MeanStats
-from sysmon.orm import CheckResults, UserNotificationEmail, Newsletter
+from sysmon.orm import (
+    CheckResults,
+    UserNotificationEmail,
+    ExtraUserNotificationEmail,
+    Newsletter,
+)
 
 
 __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
@@ -39,7 +44,6 @@ Bitte nutzen Sie den Link zur detaillierten Monatsstatistik. Hier werden Ihnen a
 <a href="https://typo3.homeinfo.de/ddb-report?customer={customer.id}">Link zur Webansicht</a>
 </p>"""
 LOGGER = getLogger("sysmon-mailing")
-SUBJECT = "Service - Report Digitales Brett: {customer.name}"
 
 FOOTER_TEXT = """<p>Mit freundlichen Grüßen Ihre</p>
 <p><a href="http://mieterinfo.tv/">mieterinfo.tv</a><br>
@@ -78,6 +82,13 @@ def send_mailing() -> None:
     """Send the mailing."""
 
     setlocale(LC_TIME, "de_DE.UTF-8")
+    """ Send email for extra Users"""
+    newsletter = get_newsletter_by_date(date.today())
+
+    for email in ExtraUserNotificationEmail.select():
+        get_mailer().send([create_other_test_email(newsletter.id, email)])
+
+    """ Send emails for DDB Clients"""
     get_mailer().send(
         list(
             create_emails_for_customers(
@@ -100,7 +111,11 @@ def create_other_test_email(newsletter: int, recipient: str):
         "mailing", "sender", fallback="service@dasdigitalebrett.de"
     )
 
-    html = get_html_other(newsletter)
+    html = get_html_other(
+        get_newsletter_by_date(
+            Newsletter.select().where(Newsletter.id == newsletter).get().period
+        ).text
+    )
 
     return EMail(
         subject=get_newsletter_by_date(
@@ -126,7 +141,9 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
         return
 
     html = get_html(
-        newsletter,
+        get_newsletter_by_date(
+            Newsletter.select().where(Newsletter.id == newsletter).get().period
+        ).text,
         customer,
         MeanStats.from_system_check_results(check_results),
         last_month,
@@ -198,21 +215,24 @@ def create_customer_emails(
     customer: Customer, sender: str, last_month: date
 ) -> Iterator[EMail]:
     """Create the system status summary emails for the given month."""
-
+    now = date.today()
     if not (
         check_results := check_results_by_system(
             get_check_results_for_month(customer, last_month)
         )
     ):
-        return
-
-    html = get_html(
-        1, customer, MeanStats.from_system_check_results(check_results), last_month
-    )
+        html = get_html_other(get_newsletter_by_date(now).text)
+    else:
+        html = get_html(
+            get_newsletter_by_date(now).text,
+            customer,
+            MeanStats.from_system_check_results(check_results),
+            last_month,
+        )
 
     for recipient in get_recipients(customer):
         yield EMail(
-            subject=SUBJECT.format(customer=customer),
+            subject=get_newsletter_by_date(now).subject,
             sender=sender,
             recipient=recipient,
             html=html,
@@ -220,19 +240,11 @@ def create_customer_emails(
 
 
 def get_html(
-    newsletter: int, customer: Customer, stats: MeanStats, last_month: date
+    body_text: str, customer: Customer, stats: MeanStats, last_month: date
 ) -> str:
     """Return the email body's for DDB customers."""
 
-    template = (
-        MAIL_START
-        + get_newsletter_by_date(
-            Newsletter.select().where(Newsletter.id == newsletter).get().period
-        ).text
-        + DDB_TEXT
-        + FOOTER_TEXT
-        + MAIL_END
-    )
+    template = MAIL_START + body_text + DDB_TEXT + FOOTER_TEXT + MAIL_END
     return template.format(
         month=last_month.strftime("%B"),
         year=last_month.strftime("%Y"),
@@ -242,17 +254,10 @@ def get_html(
     )
 
 
-def get_html_other(newsletter: int) -> str:
+def get_html_other(body_text: str) -> str:
     """Return the email body's for non DDB customers."""
 
-    template = (
-        MAIL_START
-        + get_newsletter_by_date(
-            Newsletter.select().where(Newsletter.id == newsletter).get().period
-        ).text
-        + FOOTER_TEXT
-        + MAIL_END
-    )
+    template = MAIL_START + body_text + FOOTER_TEXT + MAIL_END
     return template
 
 
