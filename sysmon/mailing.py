@@ -164,9 +164,7 @@ def get_target_customers() -> set[Customer]:
 
     customers = set()
 
-    for system in System.select(cascade=True).where(
-        ~(System.deployment >> None) & (System.fitted == 1)
-    ):
+    for system in System.select(cascade=True).where(~(System.deployment >> None)):
         customers.add(system.deployment.customer)
 
     return customers
@@ -292,6 +290,7 @@ def get_check_results_for_month(
 
     return CheckResults.select(cascade=True).where(
         (Deployment.customer == customer)
+        & (System.fitted == 1)
         & (CheckResults.timestamp >= month.replace(day=1))
         & (CheckResults.timestamp < first_day_of_next_month(month))
     )
