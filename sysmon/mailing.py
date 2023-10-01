@@ -86,7 +86,7 @@ def send_mailing() -> None:
     newsletter = get_newsletter_by_date(date.today())
 
     for email in ExtraUserNotificationEmail.select():
-        get_mailer().send([create_other_test_email(newsletter.id, email)])
+        get_mailer().send([create_other_test_email(newsletter.id, email.email)])
 
     """ Send emails for DDB Clients"""
     get_mailer().send(
