@@ -35,7 +35,7 @@ MAIL_START = """<!DOCTYPE html>
 
 MAIL_END = "</body></html>"
 
-DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihre Digitalen Bretter:<br>
+DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihrer Digitalen Bretter:<br>
 Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
 </p>
 <p>
