@@ -85,8 +85,7 @@ def send_mailing() -> None:
     """ Send email for extra Users"""
     newsletter = get_newsletter_by_date(date.today())
 
-    for email in ExtraUserNotificationEmail.select():
-        get_mailer().send([create_other_test_email(newsletter.id, email.email)])
+    get_mailer().send([create_other_test_emails(newsletter.id)])
 
     """ Send emails for DDB Clients"""
     get_mailer().send(
@@ -103,6 +102,11 @@ def send_test_mails(newsletter: int):
         [create_customer_test_email(newsletter, ACCOUNT.customer, ACCOUNT.email)]
     )
     get_mailer().send([create_other_test_email(newsletter, ACCOUNT.email)])
+
+
+def create_other_test_emails(newsletter: int):
+    for email in ExtraUserNotificationEmail.select():
+        yield create_other_test_email(newsletter, email.email)
 
 
 def create_other_test_email(newsletter: int, recipient: str):
