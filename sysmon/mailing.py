@@ -85,7 +85,7 @@ def send_mailing() -> None:
     """ Send email for extra Users"""
     newsletter = get_newsletter_by_date(date.today())
 
-    get_mailer().send([create_other_test_emails(newsletter.id)])
+    get_mailer().send(create_other_test_emails(newsletter.id))
 
     """ Send emails for DDB Clients"""
     get_mailer().send(
