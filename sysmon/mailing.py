@@ -28,12 +28,351 @@ __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
 
 
 TEMPLATE = Path("/usr/local/etc/sysmon.d/customers-email.htt")
-MAIL_START = """<!DOCTYPE html>
-<html lang="de">
-<head><meta charset=UTF-8></head>
-<body>"""
+MAIL_START = """<html>
+<style>h1,.h1{
+  font-size: 60px !important;
+  line-height: 66px !important;
+}h2,.h2{
+  font-size: 44px !important;
+  line-height: 50px !important;
+}.btn a:hover{
+  background-color:#000000!important; 
+  border-color:#000000!important;
+}.textcta a:hover{
+  color:#000000!important;
+  }p {margin: 0 !important;}.divbox:hover, * [lang~="x-divbox"]:hover {
+  background-color: #000000 !important;
+}.boxfont:hover, * [lang~="x-boxfont"]:hover {
+  color: #ffffff !important;
+  
+}
+.bgcol{
+background-color: #E9F0FF;
+}
+a {text-decoration: none;}a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; font-size: inherit !important; font-family: inherit !important; font-weight: inherit !important; line-height: inherit !important }table{ mso-table-lspace: 0; mso-table-rspace: 0; mso-table-lspace: 0; border: none; border-collapse: collapse; border-spacing: 0;}p {margin: 0 !important;}h1, .h1, .h1l { font-size: 60px !important; line-height: 66px !important; }h2, .h2 { font-size: 44px !important; line-height: 50px !important; }ul, ol {margin:0; margin-left:8px !important;}u + .body ul, u + .body ol { margin-left: 8px !important; }.show670, .show414 {display:none;}sup { line-height:0; font-size:70%; }</style>
 
-MAIL_END = "</body></html>"
+</head>
+
+
+<body dir="ltr" style="-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#d6d6d5;margin:0;min-width:100%;padding:0;width:100%"><div class="moz-text-html" lang="x-unicode">
+
+
+<table style="background-color:#d6d6d5;border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" class="" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#d6d6d5">
+<tbody>
+<tr>
+<td style="display: block;" align="center">
+<!--[if (gte mso 9)|(IE)]>
+<table width="700" align="center" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td>
+<![endif]-->
+<table style="border:0;border-collapse:collapse;border-spacing:0;max-width:700px;mso-table-lspace:0;mso-table-rspace:0" class="" width="100%" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+<tr>
+<td style="background-color:#ffffff">
+
+
+
+
+<table style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;"  width="100%" cellspacing="0" cellpadding="0" border="0">
+  <tbody>
+  <tr>
+    <td class="outsidegutter bgcol" style=" direction: ltr; padding: 10px 14px 10px 14px; padding-left: 0; text-align: left;" align="left">
+
+      <table style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="" cellspacing="0" cellpadding="0" border="0">
+      <tbody>
+        <tr>
+        <td style="direction:ltr;text-align:left;padding-left:0; padding-right:0;" width="14">
+        </td>
+
+        <td style="direction:ltr;text-align:left; font-size:0; ">
+
+
+  <table  style="border: none; border-collapse: collapse; border-spacing: 0; display: inline-block; max-width: 616px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: middle; width: 100%;" cellspacing="0" cellpadding="0" border="0">
+    <tbody>
+      <tr>
+      <td style="direction:ltr;text-align:left;padding-left: 0; padding-right: 0;">
+      <table style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+        <tbody>
+          <tr>
+            <td style="direction:ltr;text-align:left;font-size:0;">
+
+
+              <table class="t4of12" style="border: none; border-collapse: collapse; border-spacing: 0; display: inline-block; max-width: 408px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: middle; width: 100%;" cellspacing="0" cellpadding="0" border="0">
+                <tbody>
+                  <tr>
+                  <td style="direction:ltr;text-align:left;padding-left: 12px; padding-right: 12px;">
+                      <table style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+                        <tbody>
+
+
+
+                    
+                      <tr>
+                        <td style="direction:ltr;text-align: left;">
+						<h1>Homeinfo</h1>
+    </td>
+                      </tr>
+
+
+                  
+
+                  </tbody>
+
+</table>
+</td>
+</tr>
+</tbody></table>
+
+
+
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+
+
+
+</tbody></table> 
+<table style="border: none; border-collapse: collapse; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;"  width="100%" cellspacing="0" cellpadding="0" border="0">
+  <tbody><tr>
+     <td class="" style="direction:ltr;text-align:left;" align="left">
+<table style="border: none; border-collapse: collapse; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="" cellspacing="0" cellpadding="0" border="0">
+           <tbody><tr>
+             
+
+      <td class="bgcol">
+
+
+
+
+
+ 
+
+
+<table style="border: none; border-collapse: collapse; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0">
+  <tbody><tr>
+    <td style="direction:ltr;text-align:left;" width="14">&nbsp;</td>
+     <td class="xoutsidegutter" style="direction:ltr;text-align:left;" align="left">
+        <table style="border: none; border-collapse: collapse; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="" cellspacing="0" cellpadding="0" border="0">
+           <tbody><tr>
+              <td align="center">
+
+<!--[if mso]></td>
+<td valign="top">
+  <![endif]-->
+
+
+<!--[if (gte mso 9)|(IE)]>
+<table width="616" align="left" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+     <td>
+        <![endif]-->
+        <table class="t11of12 layout" style="border-collapse: collapse; max-width: 616px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
+           <tbody><tr>
+              <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important; padding-top: 0px;">
+                 <table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody><tr>
+                       <td style="direction:ltr;text-align:left;" valign="top">
+                         
+
+<!--[if (gte mso 9)|(IE)]>
+<table width="100%" align="left" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+     <td valign="top">
+        <![endif]-->
+        <table class="t10of12 layout" style="border-collapse: collapse;  width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
+           <tbody><tr>
+            <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;" width="12">&nbsp;</td>
+              <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important; padding-top: 0px; padding-bottom: 25px;">
+                 <table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+                    
+
+<tbody><tr>
+  <td style="direction:ltr;text-align:left;">
+
+<!--[if (gte mso 9)|(IE)]>
+<table width="504" align="left" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+     <td>
+        <![endif]-->
+        <table class="t9of12 layout" style="border-collapse: collapse; max-width: 504px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
+           <tbody><tr>
+              <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;">
+                 <table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+
+                     
+
+
+
+                     <tr>
+                      <td class="h2_h2 h2" style="direction:ltr;text-align:left;color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 34px; font-weight: 500; line-height: 40px; padding-bottom: 7px; padding-top: 0px;">{header}
+</td>
+                     </tr>
+
+
+
+
+
+
+
+
+                 </tbody></table>
+              </td>
+           </tr>
+        </tbody></table>
+        <!--[if (gte mso 9)|(IE)]>
+     </td>
+  </tr>
+</table>
+<![endif]-->  
+
+
+  </td>
+</tr>
+
+
+
+                    <tr>
+                     <td style="direction:ltr;text-align:left;padding-bottom: 20px">
+<!--[if (gte mso 9)|(IE)]>
+<table width="504" align="left" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+     <td>
+        <![endif]-->
+        <table class="t6of12 layout" style="border-collapse: collapse; max-width: 504px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
+           <tbody><tr>
+              <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;">
+                 <table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+                    <tbody>
+
+
+                      <tr>
+                       <td class="p1" style="direction:ltr;text-align:left;color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: normal; line-height: 26px; padding-bottom: 7px; padding-top: 7px;"><div>{text}</div>
+</td>
+                    </tr>
+
+
+
+
+
+                 </tbody></table>
+              </td>
+           </tr>
+        </tbody></table>
+        <!--[if (gte mso 9)|(IE)]>
+     </td>
+  </tr>
+</table>
+<![endif]-->                        
+                     </td>
+                    </tr>
+                    <tr>
+                     <td style="direction:ltr;text-align:left;">
+<!--[if (gte mso 9)|(IE)]>
+<table width="250" align="left" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td>
+<![endif]-->
+   <div class="btn" style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px;" lang="x-btn"> <a href=""  style="background-color: #000000; border-color: #000000; border-radius: 0px; border-style: solid; border-width: 13px 18px; color: #ffffff; display: inline-block; letter-spacing: 1px; max-width: 300px; min-width: 100px; text-align: center; text-decoration: none; transition: all 0.2s ease-in;"><span style="float:left;text-align:left;">{merhlesen}</span> 
+   <!--[if !mso]><!-- -->
+   <!--<![endif]--> 
+   </a> </div>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->                        
+                     </td>
+                    </tr>
+                 </tbody></table>
+              </td>
+              <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;" width="12">&nbsp;</td>
+           </tr>
+        </tbody></table>
+        <!--[if (gte mso 9)|(IE)]>
+     </td>
+  </tr>
+</table>
+<![endif]-->
+
+
+
+
+
+
+                       </td>
+                    </tr>
+                 </tbody></table>
+              </td>
+           </tr>
+        </tbody></table>
+        <!--[if (gte mso 9)|(IE)]>
+     </td>
+  </tr>
+</table>
+<![endif]-->
+
+
+              </td>
+           </tr>
+        </tbody></table>
+     </td>
+     <td style="direction:ltr;text-align:left;" width="14">&nbsp;</td>
+  </tr>
+</tbody></table>            
+
+
+  <div class="hide414">
+    <img class="hide414" src="{image}" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 700px; outline: none; text-decoration: none; width: 100%;" alt="" width="700" height="" border="0">
+  </div>
+
+
+
+
+
+
+
+             </td>
+           </tr>
+        </tbody></table>
+     </td>
+  </tr>
+</tbody></table>
+"""
+
+MAIL_END = """</td>
+</tr>
+</tbody>
+</table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</tbody>
+</table>
+
+
+</div></body>
+
+</html>
+"""
 
 DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihrer Digitalen Bretter:<br>
 Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
@@ -45,25 +384,7 @@ Bitte nutzen Sie den Link zur detaillierten Monatsstatistik. Hier werden Ihnen a
 </p>"""
 LOGGER = getLogger("sysmon-mailing")
 
-FOOTER_TEXT = """<p>Mit freundlichen Grüßen Ihre</p>
-<p><a href="http://mieterinfo.tv/">mieterinfo.tv</a><br>
-Kommunikationssysteme GmbH & Co. KG
-</p>
-<p>
-Burgstraße 6a<br>
-30826 Garbsen
-</p>
-<p>
-Fon.: 0511 21 24 11 00
-</p>
-<p>
-service@dasdigitalebrett.de<br>
-https://dasdigitalebrett.de/
-</p>
-<p>
-Möchten Sie diesen Newsletter nicht mehr bekommen klicken Sie bitte auf diesen <a href="mailto:r.haupt@homeinfo.de?subject=UNSUBSCRIBE&body=Bitte tragen sie diese Emailadresse aus der Newsletter aus">Link</a>.
-</p>
-"""
+FOOTER_TEXT = """ """
 
 
 def main() -> None:
@@ -249,11 +570,11 @@ def get_html(
     body_text: str, customer: Customer, stats: MeanStats, last_month: date
 ) -> str:
     """Return the email body's for DDB customers."""
-
-    template = MAIL_START + body_text + DDB_TEXT + FOOTER_TEXT + MAIL_END
+    template = MAIL_START + MAIL_END
     return template.format(
         month=last_month.strftime("%B"),
         year=last_month.strftime("%Y"),
+        text=body_text,
         customer=customer,
         percent_online=stats.percent_online,
         out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
@@ -263,8 +584,8 @@ def get_html(
 def get_html_other(body_text: str) -> str:
     """Return the email body's for non DDB customers."""
 
-    template = MAIL_START + body_text + FOOTER_TEXT + MAIL_END
-    return template
+    template = MAIL_START + MAIL_END
+    return template.format(text=body_text)
 
 
 def get_recipients(customer: Customer) -> Iterator[str]:
