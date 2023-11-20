@@ -624,7 +624,7 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
 <tr>
 <td class="white" style="color: rgb(0, 0, 0); font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 18px; padding: 3px 0px; direction: ltr; text-align: left;">
 
-<a href="" style="text-decoration: none; color: #ffffff;">Abbestellen</a>
+<a href="mailto:r.haupt@homeinfo.de?subject=UNSUBSCRIBE&body=Bitte tragen sie diese Emailadresse aus der Newsletter aus" style="text-decoration: none; color: #ffffff;">Abbestellen</a>
 
 </td>
 </tr>
