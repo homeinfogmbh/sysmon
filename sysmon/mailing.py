@@ -29,30 +29,29 @@ __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
 
 TEMPLATE = Path("/usr/local/etc/sysmon.d/customers-email.htt")
 MAIL_START = """<html>
-<style>h1,.h1{
+<style>h1,.h1{{
   font-size: 60px !important;
   line-height: 66px !important;
-}h2,.h2{
+}}h2,.h2{{
   font-size: 44px !important;
   line-height: 50px !important;
-}.btn a:hover{
+}}.btn a:hover{{
   background-color:#000000!important; 
   border-color:#000000!important;
-}.textcta a:hover{
+}}.textcta a:hover{{
   color:#000000!important;
-  }p {margin: 0 !important;}.divbox:hover, * [lang~="x-divbox"]:hover {
+  }}p {{margin: 0 !important;}}.divbox:hover, * [lang~="x-divbox"]:hover {{
   background-color: #000000 !important;
-}.boxfont:hover, * [lang~="x-boxfont"]:hover {
+}}.boxfont:hover, * [lang~="x-boxfont"]:hover {{
   color: #ffffff !important;
   
-}
-.bgcol{
+}}
+.bgcol{{
 background-color: #E9F0FF;
-}
-a {text-decoration: none;}a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; font-size: inherit !important; font-family: inherit !important; font-weight: inherit !important; line-height: inherit !important }table{ mso-table-lspace: 0; mso-table-rspace: 0; mso-table-lspace: 0; border: none; border-collapse: collapse; border-spacing: 0;}p {margin: 0 !important;}h1, .h1, .h1l { font-size: 60px !important; line-height: 66px !important; }h2, .h2 { font-size: 44px !important; line-height: 50px !important; }ul, ol {margin:0; margin-left:8px !important;}u + .body ul, u + .body ol { margin-left: 8px !important; }.show670, .show414 {display:none;}sup { line-height:0; font-size:70%; }</style>
+}}
+a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !important; text-decoration: none !important; font-size: inherit !important; font-family: inherit !important; font-weight: inherit !important; line-height: inherit !important }}table{{ mso-table-lspace: 0; mso-table-rspace: 0; mso-table-lspace: 0; border: none; border-collapse: collapse; border-spacing: 0;}}p {{margin: 0 !important;}}h1, .h1, .h1l {{ font-size: 60px !important; line-height: 66px !important; }}h2, .h2 {{ font-size: 44px !important; line-height: 50px !important; }}ul, ol {{margin:0; margin-left:8px !important;}}u + .body ul, u + .body ol {{ margin-left: 8px !important; }}.show670, .show414 {{display:none;}}sup {{ line-height:0; font-size:70%; }}</style>
 
 </head>
-
 
 <body dir="ltr" style="-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#d6d6d5;margin:0;min-width:100%;padding:0;width:100%"><div class="moz-text-html" lang="x-unicode">
 
