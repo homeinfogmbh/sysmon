@@ -53,6 +53,7 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
 
 </head>
 
+
 <body dir="ltr" style="-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#d6d6d5;margin:0;min-width:100%;padding:0;width:100%"><div class="moz-text-html" lang="x-unicode">
 
 
@@ -351,9 +352,418 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
      </td>
   </tr>
 </tbody></table>
-"""
+<table style="border:0;border-collapse:collapse;border-spacing:0;margin:auto;max-width:700px;mso-table-lspace:0;mso-table-rspace:0" class="tron" width="100%" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+<tr>
+<td align="center">
+<table style="background-color:#fff;border:0;border-collapse:collapse;border-spacing:0;margin:auto;mso-table-lspace:0;mso-table-rspace:0" class="basetable" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff">
+<tbody>
+<tr>
+<td align="center">
+<!--[if (gte mso 9)|(IE)]>
+<table width="700" align="center" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td align="center">
+<![endif]-->
+<table class="basetable" style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" width="100%" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+<tr>
+<td style="background-color:#ffffff" align="center">
+<table class="basetable" style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" width="100%" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+<tr>
+<td>
+<!--[if (gte mso 9)|(IE)]>
+<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td>
+<![endif]-->
+<table class="basetable" style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" width="100%" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+<tr>
+<td>
+<!--[if (gte mso 9)|(IE)]>
+<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td>
+<![endif]-->
+<table style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" class="" width="100%" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+<tr>
+<td>
 
-MAIL_END = """</td>
+<table style="border-collapse: collapse; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+
+<tr>
+<td style="font-size:0; line-height: 1px; " height="25">&nbsp;
+</td>
+</tr>
+
+<tr>
+<td class="outsidegutter" style="direction:ltr;text-align:left; ; padding:15px 14px 15px 14px;" align="left">
+<table style="border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0">
+<tbody><tr>
+<td style="direction:ltr;text-align:left;">
+<!--[if (gte mso 9)|(IE)]>
+<table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td>
+<![endif]-->
+<table class="t10of12" style="Margin: 0 auto; border-collapse: collapse; max-width: 560px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody><tr>
+<td style="direction:ltr;text-align:left;">
+<table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+<tbody>
+
+
+<tr>
+<td style="direction:ltr;text-align:left;">
+<table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+<tbody>
+
+  <tr >
+
+     <td class="p2b" style="width: 32px; color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px;line-height: 26px;
+ font-weight: 700;  padding-bottom: 0px; padding-left:12px; padding-top: 7px;" valign="top">
+     <p>•</p>
+
+      </td>
+
+
+     <td style="direction:ltr;text-align:left; padding-bottom: 7px; padding-top: 7px; padding-right: 12px;" valign="top">
+
+
+        <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+          
+        <tbody><tr>
+          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">Neues CMS</td>
+        </tr>
+        
+        <tr>
+          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>Text Text Text Text Text .</p>
+</td>
+        </tr>
+        
+        </tbody></table>  
+
+
+     </td>
+  </tr>
+
+
+  <tr >
+
+     <td class="p2b" style="width: 32px; color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px;line-height: 26px;
+ font-weight: 700;  padding-bottom: 0px; padding-left:12px; padding-top: 7px;" valign="top">
+     <p>•</p>
+
+      </td>
+
+
+     <td style="direction:ltr;text-align:left; padding-bottom: 7px; padding-top: 7px; padding-right: 12px;" valign="top">
+
+
+        <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+          
+        <tbody><tr>
+          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">Einfache Verwaltung
+</td>
+        </tr>
+        
+        <tr>
+          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>Text Text Text Text Text </p>
+</td>
+        </tr>
+        
+        </tbody></table>  
+
+
+     </td>
+  </tr>
+  <tr >
+
+     <td class="p2b" style="width: 32px; color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px;line-height: 26px;
+ font-weight: 700;  padding-bottom: 0px; padding-left:12px; padding-top: 7px;" valign="top">
+     <p>•</p>
+
+      </td>
+
+
+     <td style="direction:ltr;text-align:left; padding-bottom: 7px; padding-top: 7px; padding-right: 12px;" valign="top">
+
+
+        <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+          
+        <tbody><tr>
+          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">Übersicht
+</td>
+        </tr>
+        
+        <tr>
+          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>Text Text Text Text Text .</p>
+</td>
+        </tr>
+        
+        </tbody></table>  
+
+
+     </td>
+  </tr>
+
+
+</tbody></table>
+</td>
+</tr>
+
+
+
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+
+<tr>
+<td style="font-size:0; line-height: 1px; " height="25">&nbsp;
+</td>
+</tr>
+
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</tbody>
+</table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</tbody>
+</table>
+<!-- END LIST-->
+</td>
+</tr>
+<!-- END BODY-->
+</tbody>
+</table>
+<table style="background-color: #000000; width: 100%;"  width="100%" cellspacing="0" cellpadding="0" border="0">
+<tbody><tr>
+<td class="outsidegutter" style="direction:ltr;text-align:left;" align="left">
+<table style="width: 100%;" class="" cellspacing="0" cellpadding="0" border="0">
+
+
+
+<tbody><tr>
+<td style="direction:ltr;text-align:left;padding: 30px 14px 30px 14px;">
+<!--[if (gte mso 9)|(IE)]>
+<table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td>
+<![endif]-->
+<table class="t10of12" style="Margin: 0 auto; max-width: 560px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody><tr>
+<td>
+<table style="direction: rtl; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+<tbody><tr>
+<td class="ignoreTd" style="font-size:0; text-align: left;">
+<table class="t6of12" style="direction: ltr; display: inline-block; max-width: 560px; vertical-align: top; width: 100%;" cellspacing="0" cellpadding="0" border="0">
+<tbody><tr>
+<td>
+<table style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+<tbody><tr>
+<td>
+<!--[if (gte mso 9)|(IE)]>
+<table width="468" align="left" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td width="168">
+<![endif]-->
+<table class="t3of12" style="max-width: 168px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
+<tbody><tr>
+<td style="direction:ltr;text-align:left;padding: 0 12px;">
+<table style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+
+<tbody>
+
+
+
+
+<tr>
+<td class="white" style="color: rgb(0, 0, 0); font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 18px; padding: 3px 0px; direction: ltr; text-align: left;">
+
+<a href="" style="text-decoration: none; color: #ffffff;">Abbestellen</a>
+
+</td>
+</tr>
+
+
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+<td width="300" valign="top" style="vertical-align: top;">
+<![endif]-->
+
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+<!-- END top half -->
+<!-- bottom half -->
+<tr>
+<td style="direction:ltr;text-align:left; padding: 0px 14px 30px 14px;">
+<!--[if (gte mso 9)|(IE)]>
+<table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td width="560">
+<![endif]-->
+<table class="t10of12" style="Margin: 0 auto; max-width: 560px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody><tr>
+<td>
+<table style="direction: rtl; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+<tbody><tr>
+<td style="font-size:0; text-align: left">
+<!--[if (gte mso 9)|(IE)]>
+<table width="560" align="left" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td width="224">
+<![endif]-->
+<table class="t4of12" style="direction: ltr; display: inline-block; max-width: 224px; vertical-align: top; width: 100%;" cellspacing="0" cellpadding="0" border="0">
+<tbody><tr>
+<td style="direction:ltr;text-align:left;padding: 0 12px;">
+<table style="table-layout: fixed;" cellspacing="0" cellpadding="0" border="0" align="left">
+<tbody><tr>
+<td style="padding-bottom: 12px; direction:ltr;text-align:left;">
+
+ 
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+<td width="336">
+<![endif]-->
+<table class="t6of12" style="direction: ltr; display: inline-block; max-width: 336px; vertical-align: top; width: 100%;" cellspacing="0" cellpadding="0" border="0">
+<tbody><tr>
+<td style="direction:ltr;text-align:left;padding: 0 12px;">
+<table style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+<tbody><tr>
+<td style="direction:ltr;text-align:left;color: #e5e5e5; font-family: Helvetica, Arial, sans-serif; font-size: 10px; line-height: 18px;">
+
+
+
+
+
+
+mieterinfo.tv<br>
+Kommunikationssysteme GmbH & Co. KG<br><br>
+
+Burgstraße 6a<br>
+30826 Garbsen<br>
+
+Fon.: 0511 21 24 11 00<br>
+
+service@dasdigitalebrett.de<br>
+<a href="https://dasdigitalebrett.de/ "  style="text-decoration: none; color: #e5e5e5">https://dasdigitalebrett.de/ </a>
+
+
+
+
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->
+</td>
+</tr>
+
+
+</tbody></table>
+</td>
+</tr>
+</tbody></table>
+
+</td>
 </tr>
 </tbody>
 </table>
@@ -372,6 +782,8 @@ MAIL_END = """</td>
 
 </html>
 """
+
+MAIL_END = """"""
 
 DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihrer Digitalen Bretter:<br>
 Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
@@ -574,6 +986,9 @@ def get_html(
         month=last_month.strftime("%B"),
         year=last_month.strftime("%Y"),
         text=body_text,
+        merhlesen="mehr lesen",
+        header="header",
+        image="https://d3smpkehiq8afm.cloudfront.net/email/2022/01/mt_rider_onboarding/em04_v01_illustration01_mask_d_2x.png",
         customer=customer,
         percent_online=stats.percent_online,
         out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
@@ -584,7 +999,12 @@ def get_html_other(body_text: str) -> str:
     """Return the email body's for non DDB customers."""
 
     template = MAIL_START + MAIL_END
-    return template.format(text=body_text)
+    return template.format(
+        text=body_text,
+        merhlesen="mehr lesen",
+        header="header",
+        image="https://d3smpkehiq8afm.cloudfront.net/email/2022/01/mt_rider_onboarding/em04_v01_illustration01_mask_d_2x.png",
+    )
 
 
 def get_recipients(customer: Customer) -> Iterator[str]:
