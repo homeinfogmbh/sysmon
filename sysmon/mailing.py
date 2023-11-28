@@ -22,7 +22,26 @@ from sysmon.orm import (
     ExtraUserNotificationEmail,
     Newsletter,
 )
+from email.mime.multipart import MIMEMultipart
+from email.mime.nonmultipart import MIMENonMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 
+from email.charset import Charset, QP
+from email.utils import formatdate
+from functools import cache, partial
+
+from dataclasses import dataclass, field
+from typing import Iterable, Optional, Union
+import requests
+
+from sysmon.config import get_config
+from locale import LC_TIME, setlocale
+from emaillib import EMailsNotSent, Mailer, EMail
+
+from bs4 import BeautifulSoup as BS
+from PIL import Image
+from io import BytesIO
 
 __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
 
@@ -337,7 +356,7 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
 
 
   <div class="hide414">
-    <img class="hide414" src="{image}" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 700px; outline: none; text-decoration: none; width: 100%;" alt="" width="700" height="" border="0">
+    <img class="hide414" src="cid:image1" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 700px; outline: none; text-decoration: none; width: 100%;" alt="" width="700" height="" border="0">
   </div>
 
 
@@ -797,6 +816,70 @@ LOGGER = getLogger("sysmon-mailing")
 
 FOOTER_TEXT = """ """
 
+class MailImage:
+    """Image as mail attachment"""
+
+    src : str
+    cid : str
+
+    def __init__(self, src, cid):
+        self.cid = cid
+        self.src = src
+
+    def __str__(self):
+        return self.cid + self.src
+
+@dataclass(unsafe_hash=True)
+class AttachmentEMail(EMail):
+    attachments: Optional[list] = None
+
+    def to_mime_multipart(self) -> MIMEMultipart:
+        """Returns a MIMEMultipart object for sending."""
+        mime_multipart = MIMEMultipart("related")
+        mime_multipart["Subject"] = self.subject
+        mime_multipart["From"] = self.sender
+        mime_multipart["To"] = self.recipient
+
+        if self.reply_to is not None:
+            mime_multipart["Reply-To"] = self.reply_to
+
+        mime_multipart["Date"] = self.timestamp
+        text_type = MIMEQPText if self.quoted_printable else MIMEText
+
+        if self.html is not None:
+            mime_multipart.attach(text_type(self.html, "html", self.charset))
+        if self.plain is not None:
+            mime_multipart.attach(text_type(self.plain, "plain", self.charset))
+
+        for mailimage in self.attachments:
+            if mailimage.src.startswith("http"):
+                im = Image.open(requests.get(mailimage.src, stream=True).raw)
+                byte_buffer = BytesIO()
+                im.save(byte_buffer, "JPEG")
+                image = MIMEImage(byte_buffer.getvalue())
+                image.add_header("Content-ID", mailimage.cid)
+                mime_multipart.attach(image)
+            else:
+                try:
+                    fp = open(mailimage.src, "rb")
+                    image = MIMEImage(fp.read())
+                    fp.close()
+                    image.add_header("Content-ID", mailimage.cid)
+                    mime_multipart.attach(image)
+                except Exception as error:
+                    print("error image" + str(error))
+
+        return mime_multipart
+
+
+@cache
+def get_qp_charset(charset: str) -> Charset:
+    """Returns a quoted printable charset."""
+
+    qp_charset = Charset(charset)
+    qp_charset.body_encoding = QP
+    return qp_charset
+
 
 def main() -> None:
     """Main function for script invocation."""
@@ -852,14 +935,16 @@ def create_other_test_email(newsletter: int, recipient: str):
             Newsletter.select().where(Newsletter.id == newsletter).get().period
         ).text
     )
-
-    return EMail(
+    images_cid = list()
+    images_cid.append(MailImage('https://sysmon.homeinfo.de/newsletter-image/'+get_newsletter_by_date( Newsletter.select().where(Newsletter.id == newsletter).get().period.image, "image1" ))
+    return AttachmentEMail(
         subject=get_newsletter_by_date(
             Newsletter.select().where(Newsletter.id == newsletter).get().period
         ).subject,
         sender=sender,
         recipient=recipient,
         html=html,
+        attachments=images_cid
     )
 
 
@@ -988,7 +1073,7 @@ def get_html(
         text=body_text,
         merhlesen="mehr lesen",
         header="header",
-        image="https://d3smpkehiq8afm.cloudfront.net/email/2022/01/mt_rider_onboarding/em04_v01_illustration01_mask_d_2x.png",
+
         customer=customer,
         percent_online=stats.percent_online,
         out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
@@ -1003,8 +1088,7 @@ def get_html_other(body_text: str) -> str:
         text=body_text,
         merhlesen="mehr lesen",
         header="header",
-        image="https://d3smpkehiq8afm.cloudfront.net/email/2022/01/mt_rider_onboarding/em04_v01_illustration01_mask_d_2x.png",
-    )
+)
 
 
 def get_recipients(customer: Customer) -> Iterator[str]:
