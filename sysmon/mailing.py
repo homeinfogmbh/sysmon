@@ -970,7 +970,7 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
         html = get_html_other(
             get_newsletter_by_date(
                 Newsletter.select().where(Newsletter.id == newsletter).get().period
-            ).text
+            )
         )
     else:
         html = get_html(
@@ -1052,7 +1052,7 @@ def create_customer_emails(
             get_check_results_for_month(customer, last_month)
         )
     ):
-        html = get_html_other(get_newsletter_by_date(now).text)
+        html = get_html_other(get_newsletter_by_date(now))
     else:
         html = get_html(
             get_newsletter_by_date(now).text,
