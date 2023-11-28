@@ -24,6 +24,7 @@ from peeweeplus import (
     HTMLTextField,
     EMailField,
 )
+from filedb import File
 
 
 from sysmon.config import MIN_DOWNLOAD
@@ -60,6 +61,28 @@ class Newsletter(SysmonModel):
     isdefault = BooleanField(default=0)
     text = HTMLTextField(null=True)
     subject = CharField()
+    header = CharField()
+    more_link = CharField()
+    more_text = CharField()
+    list_header1 = CharField()
+    list_header2 = CharField()
+    list_header3 = CharField()
+    list_text1 = HTMLTextField(null=True)
+    list_text2 = HTMLTextField(null=True)
+    list_text3 = HTMLTextField(null=True)
+    image = ForeignKeyField(File, column_name="image")
+
+    def to_json(self, mode: ChartMode = ChartMode.FULL, **kwargs) -> dict:
+        json = super().to_json(mode=mode, **kwargs)
+        json["image"] = image.to_json(fk_fields=False, autofields=False)
+        return json
+
+    def from_json(cls, json: dict, **kwargs) -> Transaction:
+        nlimage = json.pop("image", ())
+        transaction = super().from_json(json, **kwargs)
+        record = Image.from_json(nlimage)
+        transaction.add(record)
+        return transaction
 
 
 class CheckResults(SysmonModel):
