@@ -974,13 +974,8 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
             get_check_results_for_month(customer, last_month)
         )
     ):
-        #        html = get_html_other(nl_to_send)
-        html = get_html(
-            nl_to_send,
-            customer,
-            MeanStats.from_system_check_results(check_results),
-            last_month,
-        )
+        html = get_html_other(nl_to_send)
+
     else:
         html = get_html(
             nl_to_send,
