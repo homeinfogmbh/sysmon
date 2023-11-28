@@ -3,18 +3,17 @@
 from __future__ import annotations
 from collections import defaultdict
 from datetime import date, datetime, timedelta
-from locale import LC_TIME, setlocale
+
 from logging import basicConfig, getLogger
-from pathlib import Path
-from typing import Iterable, Iterator
+
+from typing import Iterator
 from peewee import DoesNotExist
 
-from emaillib import EMailsNotSent, EMail, Mailer
+
 from hwdb import Deployment, System
 from mdb import Customer
 
 from his import ACCOUNT
-from sysmon.config import get_config
 from sysmon.mean_stats import MeanStats
 from sysmon.orm import (
     CheckResults,
@@ -23,30 +22,34 @@ from sysmon.orm import (
     Newsletter,
 )
 from email.mime.multipart import MIMEMultipart
-from email.mime.nonmultipart import MIMENonMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 
 from email.charset import Charset, QP
-from email.utils import formatdate
-from functools import cache, partial
+from functools import cache
 
-from dataclasses import dataclass, field
-from typing import Iterable, Optional, Union
+from dataclasses import dataclass
+from typing import Iterable, Optional
 import requests
 
 from sysmon.config import get_config
 from locale import LC_TIME, setlocale
 from emaillib import EMailsNotSent, Mailer, EMail
 
-from bs4 import BeautifulSoup as BS
 from PIL import Image
 from io import BytesIO
 
 __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
+DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihre Digitalen Bretter:<br>
+Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
+</p>
+<p>
+Sofern sich dazu im Vorfeld Fragen ergeben, stehen wir Ihnen natürlich wie gewohnt sehr gern zur Verfügung.<br>
+Bitte nutzen Sie den Link zur detaillierten Monatsstatistik. Hier werden Ihnen auch weiterführende Abläufe beschrieben:<br>
+<a href="https://typo3.homeinfo.de/ddb-report?customer={customer.id}">Link zur Webansicht</a>
+</p>"""
 
 
-TEMPLATE = Path("/usr/local/etc/sysmon.d/customers-email.htt")
 MAIL_START = """<html>
 <style>h1,.h1{{
   font-size: 60px !important;
@@ -280,7 +283,10 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
 
 
                       <tr>
-                       <td class="p1" style="direction:ltr;text-align:left;color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: normal; line-height: 26px; padding-bottom: 7px; padding-top: 7px;"><div>{text}</div>
+                       <td class="p1" style="direction:ltr;text-align:left;color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: normal; line-height: 26px; padding-bottom: 7px; padding-top: 7px;"><div>{text}
+"""
+
+MAIL_END = """</div>
 </td>
                     </tr>
 
@@ -799,10 +805,7 @@ service@dasdigitalebrett.de<br>
 
 </div></body>
 
-</html>
-"""
-
-MAIL_END = """"""
+</html>"""
 
 DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihrer Digitalen Bretter:<br>
 Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
@@ -957,38 +960,51 @@ def create_other_test_email(newsletter: int, recipient: str):
 
 
 def create_customer_test_email(newsletter: int, customer: Customer, recipient: str):
+    nl_to_send = get_newsletter_by_date(
+        Newsletter.select().where(Newsletter.id == newsletter).get().period
+    )
     """Creates a Mail for DDB clients"""
     sender = get_config().get(
         "mailing", "sender", fallback="service@dasdigitalebrett.de"
     )
+
     last_month = last_day_of_last_month(date.today())
     if not (
         check_results := check_results_by_system(
             get_check_results_for_month(customer, last_month)
         )
     ):
-        html = get_html_other(
-            get_newsletter_by_date(
-                Newsletter.select().where(Newsletter.id == newsletter).get().period
-            )
-        )
-    else:
+        #        html = get_html_other(nl_to_send)
         html = get_html(
-            get_newsletter_by_date(
-                Newsletter.select().where(Newsletter.id == newsletter).get().period
-            ).text,
+            nl_to_send,
             customer,
             MeanStats.from_system_check_results(check_results),
             last_month,
         )
-
+    else:
+        html = get_html(
+            nl_to_send,
+            customer,
+            MeanStats.from_system_check_results(check_results),
+            last_month,
+        )
+    images_cid = list()
+    try:
+        image_to_attach = nl_to_send.image.id
+        images_cid.append(
+            MailImage(
+                "https://sysmon.homeinfo.de/newsletter-image/" + str(image_to_attach),
+                "image1",
+            )
+        )
+    except:
+        pass
     return EMail(
-        subject=get_newsletter_by_date(
-            Newsletter.select().where(Newsletter.id == newsletter).get().period
-        ).subject,
+        subject=nl_to_send.subject,
         sender=sender,
         recipient=recipient,
         html=html,
+        attachments=images_cid,
     )
 
 
@@ -1055,7 +1071,7 @@ def create_customer_emails(
         html = get_html_other(get_newsletter_by_date(now))
     else:
         html = get_html(
-            get_newsletter_by_date(now).text,
+            get_newsletter_by_date(now),
             customer,
             MeanStats.from_system_check_results(check_results),
             last_month,
@@ -1071,20 +1087,26 @@ def create_customer_emails(
 
 
 def get_html(
-    body_text: str, customer: Customer, stats: MeanStats, last_month: date
+    nl_to_send: Newsletter, customer: Customer, stats: MeanStats, last_month: date
 ) -> str:
     """Return the email body's for DDB customers."""
-    template = MAIL_START + MAIL_END
+    template = MAIL_START + DDB_TEXT + MAIL_END
     return template.format(
         month=last_month.strftime("%B"),
         year=last_month.strftime("%Y"),
-        text=body_text,
-        merhlesen="mehr lesen",
-        mehrlink="mehrlink",
-        header="header",
         customer=customer,
         percent_online=stats.percent_online,
         out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
+        text=nl_to_send.text,
+        merhlesen=nl_to_send.more_text,
+        mehrlink=nl_to_send.more_link,
+        header=nl_to_send.header,
+        list_text3=nl_to_send.list_text3,
+        list_header3=nl_to_send.list_header3,
+        list_text2=nl_to_send.list_text2,
+        list_header2=nl_to_send.list_header2,
+        list_text1=nl_to_send.list_text1,
+        list_header1=nl_to_send.list_header1,
     )
 
 
