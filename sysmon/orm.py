@@ -72,13 +72,6 @@ class Newsletter(SysmonModel):
     list_text3 = HTMLTextField(null=True)
     image = ForeignKeyField(File, column_name="image", null=True)
 
-    def to_json(self, **kwargs) -> dict:
-        json = super().to_json(**kwargs)
-        # if "image" in json:
-        json["bo"] = "ooo"
-
-        return json
-
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         nlimage = json.pop("image", ())
         transaction = super().from_json(json, **kwargs)

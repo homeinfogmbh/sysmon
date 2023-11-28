@@ -2,7 +2,7 @@
 
 from datetime import date, timedelta
 from typing import Union
-
+from filedb import File
 from his import ACCOUNT, CUSTOMER, Application, authenticated, authorized, root, admin
 from hwdb import SystemOffline, Deployment, System
 from notificationlib import get_wsgi_funcs
@@ -86,6 +86,15 @@ def add_newsletter():
 @authorized("sysmon")
 def get_newsletter(newsletter: int):
     return JSON(Newsletter.select().where(Newsletter.id == newsletter).get().to_json())
+
+
+@APPLICATION.route(
+    "/newsletter_image/<int:imageid>", methods=["GET"], strict_slashes=False
+)
+@authenticated
+@authorized("sysmon")
+def get_newsletter(imageid: int):
+    return Binary(File.select().where(File.id == imageid).get().bytes)
 
 
 @APPLICATION.route("/default_newsletter", methods=["GET"], strict_slashes=False)
