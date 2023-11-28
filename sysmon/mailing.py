@@ -941,9 +941,11 @@ def create_other_test_email(newsletter: int, recipient: str):
     images_cid.append(
         MailImage(
             "https://sysmon.homeinfo.de/newsletter-image/"
-            + get_newsletter_by_date(
-                Newsletter.select().where(Newsletter.id == newsletter).get().period
-            ).image.id,
+            + str(
+                get_newsletter_by_date(
+                    Newsletter.select().where(Newsletter.id == newsletter).get().period
+                ).image.id
+            ),
             "image1",
         )
     )
