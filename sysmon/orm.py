@@ -77,6 +77,7 @@ class Newsletter(SysmonModel):
         try:
             json["image"] = self.image.bytes
         except:
+            pass
 
         return json
 
