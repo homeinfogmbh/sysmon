@@ -74,6 +74,8 @@ class Newsletter(SysmonModel):
 
     def to_json(self, **kwargs) -> dict:
         json = super().to_json(**kwargs)
+        if json["image"]:
+            json["image"] = "ich bin image"
 
         return json
 
