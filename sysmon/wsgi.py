@@ -89,12 +89,12 @@ def get_newsletter(newsletter: int):
 
 
 @APPLICATION.route(
-    "/newsletter_image/<int:imageid>", methods=["GET"], strict_slashes=False
+    "/newsletter-image/<int:image>", methods=["GET"], strict_slashes=False
 )
 @authenticated
 @authorized("sysmon")
-def get_file(imageid: int):
-    return Binary(File.select().where(File.id == imageid).get().bytes)
+def get_file(image: int):
+    return Binary(File.select().where(File.id == image).get().bytes)
 
 
 @APPLICATION.route("/default_newsletter", methods=["GET"], strict_slashes=False)
