@@ -936,7 +936,7 @@ def create_other_test_email(newsletter: int, recipient: str):
         ).text
     )
     images_cid = list()
-    images_cid.append(MailImage('https://sysmon.homeinfo.de/newsletter-image/'+get_newsletter_by_date( Newsletter.select().where(Newsletter.id == newsletter).get().period.image, "image1" ))
+    images_cid.append(MailImage('https://sysmon.homeinfo.de/newsletter-image/'+get_newsletter_by_date( Newsletter.select().where(Newsletter.id == newsletter).get().period.image, "image1" )))
     return AttachmentEMail(
         subject=get_newsletter_by_date(
             Newsletter.select().where(Newsletter.id == newsletter).get().period
