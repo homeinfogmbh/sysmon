@@ -91,8 +91,6 @@ def get_newsletter(newsletter: int):
 @APPLICATION.route(
     "/newsletter-image/<int:image>", methods=["GET"], strict_slashes=False
 )
-@authenticated
-@authorized("sysmon")
 def get_file(image: int):
     return Binary(File.select().where(File.id == image).get().bytes)
 
