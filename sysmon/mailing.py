@@ -306,7 +306,7 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
 <tr>
 <td>
 <![endif]-->
-   <div class="btn" style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px;" lang="x-btn"> <a href=""  style="background-color: #000000; border-color: #000000; border-radius: 0px; border-style: solid; border-width: 13px 18px; color: #ffffff; display: inline-block; letter-spacing: 1px; max-width: 300px; min-width: 100px; text-align: center; text-decoration: none; transition: all 0.2s ease-in;"><span style="float:left;text-align:left;"><a href={mehrlink}>{merhlesen}</a></span> 
+   <div class="btn" style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px;" lang="x-btn"> <a href=""  style="background-color: #000000; border-color: #000000; border-radius: 0px; border-style: solid; border-width: 13px 18px; color: #ffffff; display: inline-block; letter-spacing: 1px; max-width: 300px; min-width: 100px; text-align: center; text-decoration: none; transition: all 0.2s ease-in;"><span style="float:left;text-align:left;"><a href="{mehrlink}" >{merhlesen}</a></span> 
    <!--[if !mso]><!-- -->
    <!--<![endif]--> 
    </a> </div>
@@ -1080,6 +1080,7 @@ def get_html(
         year=last_month.strftime("%Y"),
         text=body_text,
         merhlesen="mehr lesen",
+        mehrlink="mehrlink",
         header="header",
         customer=customer,
         percent_online=stats.percent_online,
@@ -1094,7 +1095,7 @@ def get_html_other(nl_to_send: Newsletter) -> str:
     return template.format(
         text=nl_to_send.text,
         merhlesen=nl_to_send.more_text,
-        merhlink=nl_to_send.more_link,
+        mehrlink=nl_to_send.more_link,
         header=nl_to_send.header,
         list_text3=nl_to_send.list_text3,
         list_header3=nl_to_send.list_header3,
