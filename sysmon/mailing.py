@@ -994,7 +994,7 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
         )
     except:
         pass
-    return EMail(
+    return AttachmentEMail(
         subject=nl_to_send.subject,
         sender=sender,
         recipient=recipient,
