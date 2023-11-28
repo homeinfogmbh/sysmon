@@ -73,9 +73,9 @@ class Newsletter(SysmonModel):
     image = ForeignKeyField(File, column_name="image", null=True)
 
     def to_json(self, **kwargs) -> dict:
-        # json = super().to_json(**kwargs)
+        json = super().to_json(**kwargs)
         # if "image" in json:
-        json = image.to_json()
+        json["bo"] = "ooo"
 
         return json
 
