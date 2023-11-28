@@ -93,7 +93,7 @@ def get_newsletter(newsletter: int):
 )
 @authenticated
 @authorized("sysmon")
-def get_newsletter(imageid: int):
+def get_file(imageid: int):
     return Binary(File.select().where(File.id == imageid).get().bytes)
 
 
