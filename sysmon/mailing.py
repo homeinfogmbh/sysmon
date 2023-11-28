@@ -816,11 +816,12 @@ LOGGER = getLogger("sysmon-mailing")
 
 FOOTER_TEXT = """ """
 
+
 class MailImage:
     """Image as mail attachment"""
 
-    src : str
-    cid : str
+    src: str
+    cid: str
 
     def __init__(self, src, cid):
         self.cid = cid
@@ -828,6 +829,7 @@ class MailImage:
 
     def __str__(self):
         return self.cid + self.src
+
 
 @dataclass(unsafe_hash=True)
 class AttachmentEMail(EMail):
@@ -936,7 +938,15 @@ def create_other_test_email(newsletter: int, recipient: str):
         ).text
     )
     images_cid = list()
-    images_cid.append(MailImage('https://sysmon.homeinfo.de/newsletter-image/'+get_newsletter_by_date( Newsletter.select().where(Newsletter.id == newsletter).get().period.image, "image1" )))
+    images_cid.append(
+        MailImage(
+            "https://sysmon.homeinfo.de/newsletter-image/"
+            + get_newsletter_by_date(
+                Newsletter.select().where(Newsletter.id == newsletter).get().image,
+                "image1",
+            )
+        )
+    )
     return AttachmentEMail(
         subject=get_newsletter_by_date(
             Newsletter.select().where(Newsletter.id == newsletter).get().period
@@ -944,7 +954,7 @@ def create_other_test_email(newsletter: int, recipient: str):
         sender=sender,
         recipient=recipient,
         html=html,
-        attachments=images_cid
+        attachments=images_cid,
     )
 
 
@@ -1073,7 +1083,6 @@ def get_html(
         text=body_text,
         merhlesen="mehr lesen",
         header="header",
-
         customer=customer,
         percent_online=stats.percent_online,
         out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
@@ -1088,7 +1097,7 @@ def get_html_other(body_text: str) -> str:
         text=body_text,
         merhlesen="mehr lesen",
         header="header",
-)
+    )
 
 
 def get_recipients(customer: Customer) -> Iterator[str]:
