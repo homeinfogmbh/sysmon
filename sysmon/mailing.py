@@ -306,7 +306,7 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
 <tr>
 <td>
 <![endif]-->
-   <div class="btn" style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px;" lang="x-btn"> <a href=""  style="background-color: #000000; border-color: #000000; border-radius: 0px; border-style: solid; border-width: 13px 18px; color: #ffffff; display: inline-block; letter-spacing: 1px; max-width: 300px; min-width: 100px; text-align: center; text-decoration: none; transition: all 0.2s ease-in;"><span style="float:left;text-align:left;">{merhlesen}</span> 
+   <div class="btn" style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px;" lang="x-btn"> <a href=""  style="background-color: #000000; border-color: #000000; border-radius: 0px; border-style: solid; border-width: 13px 18px; color: #ffffff; display: inline-block; letter-spacing: 1px; max-width: 300px; min-width: 100px; text-align: center; text-decoration: none; transition: all 0.2s ease-in;"><span style="float:left;text-align:left;"><a href={mehrlink}>{merhlesen}</a></span> 
    <!--[if !mso]><!-- -->
    <!--<![endif]--> 
    </a> </div>
@@ -456,11 +456,11 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
         <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
           
         <tbody><tr>
-          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">Neues CMS</td>
+          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">{list_header1}</td>
         </tr>
         
         <tr>
-          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>Text Text Text Text Text .</p>
+          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>{list_text1}</p>
 </td>
         </tr>
         
@@ -486,12 +486,12 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
         <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
           
         <tbody><tr>
-          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">Einfache Verwaltung
+          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">{list_header2}
 </td>
         </tr>
         
         <tr>
-          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>Text Text Text Text Text </p>
+          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>{list_text2}</p>
 </td>
         </tr>
         
@@ -515,12 +515,12 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
         <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
           
         <tbody><tr>
-          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">Übersicht
+          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">{list_header3}
 </td>
         </tr>
         
         <tr>
-          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>Text Text Text Text Text .</p>
+          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>{list_text3}</p>
 </td>
         </tr>
         
@@ -931,28 +931,24 @@ def create_other_test_email(newsletter: int, recipient: str):
     sender = get_config().get(
         "mailing", "sender", fallback="service@dasdigitalebrett.de"
     )
-
-    html = get_html_other(
-        get_newsletter_by_date(
-            Newsletter.select().where(Newsletter.id == newsletter).get().period
-        ).text
+    nl_to_send = get_newsletter_by_date(
+        Newsletter.select().where(Newsletter.id == newsletter).get().period
     )
+    html = get_html_other(nl_to_send)
     images_cid = list()
-    images_cid.append(
-        MailImage(
-            "https://sysmon.homeinfo.de/newsletter-image/"
-            + str(
-                get_newsletter_by_date(
-                    Newsletter.select().where(Newsletter.id == newsletter).get().period
-                ).image.id
-            ),
-            "image1",
+    try:
+        image_to_attach = nl_to_send.image.id
+        images_cid.append(
+            MailImage(
+                "https://sysmon.homeinfo.de/newsletter-image/" + str(image_to_attach),
+                "image1",
+            )
         )
-    )
+    except:
+        pass
+
     return AttachmentEMail(
-        subject=get_newsletter_by_date(
-            Newsletter.select().where(Newsletter.id == newsletter).get().period
-        ).subject,
+        subject=nl_to_send.subject,
         sender=sender,
         recipient=recipient,
         html=html,
@@ -1091,14 +1087,21 @@ def get_html(
     )
 
 
-def get_html_other(body_text: str) -> str:
+def get_html_other(nl_to_send: Newsletter) -> str:
     """Return the email body's for non DDB customers."""
 
     template = MAIL_START + MAIL_END
     return template.format(
-        text=body_text,
-        merhlesen="mehr lesen",
-        header="header",
+        text=nl_to_send.text,
+        merhlesen=nl_to_send.more_text,
+        merhlink=nl_to_send.more_link,
+        header=nl_to_send.header,
+        list_text3=nl_to_send.list_text3,
+        list_header3=nl_to_send.list_header3,
+        list_text2=nl_to_send.list_text2,
+        list_header2=nl_to_send.list_header2,
+        list_text1=nl_to_send.list_text1,
+        list_header1=nl_to_send.list_header1,
     )
 
 
