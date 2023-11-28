@@ -942,9 +942,9 @@ def create_other_test_email(newsletter: int, recipient: str):
         MailImage(
             "https://sysmon.homeinfo.de/newsletter-image/"
             + get_newsletter_by_date(
-                Newsletter.select().where(Newsletter.id == newsletter).get().image,
-                "image1",
-            )
+                Newsletter.select().where(Newsletter.id == newsletter).get().image
+            ),
+            "image1",
         )
     )
     return AttachmentEMail(
