@@ -72,7 +72,7 @@ class Newsletter(SysmonModel):
     list_text3 = HTMLTextField(null=True)
     image = ForeignKeyField(File, column_name="image")
 
-    def to_json(self, mode: ChartMode = ChartMode.FULL, **kwargs) -> dict:
+    def to_json(self, **kwargs) -> dict:
         json = super().to_json(mode=mode, **kwargs)
         json["image"] = image.to_json(fk_fields=False, autofields=False)
         return json
