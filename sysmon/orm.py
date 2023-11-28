@@ -73,14 +73,14 @@ class Newsletter(SysmonModel):
     image = ForeignKeyField(File, column_name="image")
 
     def to_json(self, **kwargs) -> dict:
-        json = super().to_json(mode=mode, **kwargs)
-        json["image"] = image.to_json(fk_fields=False, autofields=False)
+        json = super().to_json(**kwargs)
+        json["image"] = image.bytes
         return json
 
     def from_json(cls, json: dict, **kwargs) -> Transaction:
         nlimage = json.pop("image", ())
         transaction = super().from_json(json, **kwargs)
-        record = Image.from_json(nlimage)
+        record = File.from_json(nlimage)
         transaction.add(record)
         return transaction
 
