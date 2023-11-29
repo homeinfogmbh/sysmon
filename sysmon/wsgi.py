@@ -7,7 +7,7 @@ from his import ACCOUNT, CUSTOMER, Application, authenticated, authorized, root,
 from hwdb import SystemOffline, Deployment, System
 from notificationlib import get_wsgi_funcs
 from requests.exceptions import Timeout
-from wsgilib import Binary, JSON, JSONMessage, get_int
+from wsgilib import Binary, JSON, JSONMessage, get_int, get_bool
 
 from flask import request
 
@@ -93,6 +93,21 @@ def get_newsletter(newsletter: int):
 )
 def get_file(image: int):
     return Binary(File.select().where(File.id == image).get().bytes)
+
+
+@APPLICATION.route(
+    "/newsletter-image/<newsletter:int>", methods=["POST"], strict_slashes=False
+)
+@authenticated
+@authorized("sysmon")
+def post(newsletter: int) -> JSONMessage:
+    """Adds a new file."""
+
+    data = request.get_data()
+
+    file = File.from_bytes(data)
+    file.save()
+    return JSONMessage("The file has been created.", id=file.id, status=201)
 
 
 @APPLICATION.route("/default_newsletter", methods=["GET"], strict_slashes=False)
