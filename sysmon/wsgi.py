@@ -89,13 +89,6 @@ def get_newsletter(newsletter: int):
 
 
 @APPLICATION.route(
-    "/newsletter-image/<int:image>", methods=["GET"], strict_slashes=False
-)
-def get_file(image: int):
-    return Binary(File.select().where(File.id == image).get().bytes)
-
-
-@APPLICATION.route(
     "/newsletter-image/<int:newsletter>", methods=["POST"], strict_slashes=False
 )
 @authenticated
@@ -108,6 +101,13 @@ def post(newsletter: int) -> JSONMessage:
     file = File.from_bytes(data)
     file.save()
     return JSONMessage("The file has been created.", id=file.id, status=201)
+
+
+@APPLICATION.route(
+    "/newsletter-image/<int:image>", methods=["GET"], strict_slashes=False
+)
+def get_file(image: int):
+    return Binary(File.select().where(File.id == image).get().bytes)
 
 
 @APPLICATION.route("/default_newsletter", methods=["GET"], strict_slashes=False)
