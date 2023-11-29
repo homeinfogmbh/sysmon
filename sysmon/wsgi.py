@@ -96,11 +96,11 @@ def get_file(image: int):
 
 
 @APPLICATION.route(
-    "/newsletter-image/", methods=["POST"], strict_slashes=False
+    "/newsletter-image/<int:newsletter>", methods=["POST"], strict_slashes=False
 )
 @authenticated
 @authorized("sysmon")
-def post() -> JSONMessage:
+def post(newsletter: int) -> JSONMessage:
     """Adds a new file."""
 
     data = request.get_data()
