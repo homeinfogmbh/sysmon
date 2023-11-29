@@ -98,7 +98,7 @@ def post(newsletter: int) -> JSONMessage:
 
     data = request.get_data()
 
-    file = File.from_bytes(data)
+    file = File.from_bytes(data.file)
     file.save()
     return JSONMessage("The file has been created.", id=file.id, status=201)
 
