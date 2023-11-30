@@ -77,7 +77,7 @@ class Newsletter(SysmonModel):
 class Newsletterlistitems(SysmonModel):
     text = HTMLTextField(null=True)
     header = CharField()
-    newsletter = ForeignKeyField(Newsletter, column_name="newsletter", null=True)
+    newsletter = IntegerField()
 
 
 class CheckResults(SysmonModel):
