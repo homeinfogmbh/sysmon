@@ -40,6 +40,27 @@ from PIL import Image
 from io import BytesIO
 
 __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
+LINK_BLOCK = """
+<tr>
+                     <td style="direction:ltr;text-align:left;">
+<!--[if (gte mso 9)|(IE)]>
+<table width="250" align="left" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td>
+<![endif]-->
+   <div class="btn" style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px;" lang="x-btn"> <a href="{mehrlink}"  style="background-color: #000000; border-color: #000000; border-radius: 0px; border-style: solid; border-width: 13px 18px; color: #ffffff; display: inline-block; letter-spacing: 1px; max-width: 300px; min-width: 100px; text-align: center; text-decoration: none; transition: all 0.2s ease-in;"><span style="float:left;text-align:left;">{merhlesen}</span> 
+   <!--[if !mso]><!-- -->
+   <!--<![endif]--> 
+   </a> </div>
+<!--[if (gte mso 9)|(IE)]>
+</td>
+</tr>
+</table>
+<![endif]-->                        
+                     </td>
+                    </tr>
+"""
+
 DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihre Digitalen Bretter:<br>
 Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
 </p>
@@ -305,24 +326,7 @@ MAIL_END = """</div>
 <![endif]-->                        
                      </td>
                     </tr>
-                    <tr>
-                     <td style="direction:ltr;text-align:left;">
-<!--[if (gte mso 9)|(IE)]>
-<table width="250" align="left" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
-<![endif]-->
-   <div class="btn" style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px;" lang="x-btn"> <a href="{mehrlink}"  style="background-color: #000000; border-color: #000000; border-radius: 0px; border-style: solid; border-width: 13px 18px; color: #ffffff; display: inline-block; letter-spacing: 1px; max-width: 300px; min-width: 100px; text-align: center; text-decoration: none; transition: all 0.2s ease-in;"><span style="float:left;text-align:left;">{merhlesen}</span> 
-   <!--[if !mso]><!-- -->
-   <!--<![endif]--> 
-   </a> </div>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->                        
-                     </td>
-                    </tr>
+                    {thelink}
                  </tbody></table>
               </td>
               <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;" width="12">&nbsp;</td>
@@ -1086,6 +1090,15 @@ def get_html(
 ) -> str:
     """Return the email body's for DDB customers."""
     template = MAIL_START + DDB_TEXT + MAIL_END
+    if nl_to_send.more_text:
+        linktemplate = LINK_BLOCK
+        linktemplate.format(
+            merhlesen=nl_to_send.more_text,
+            mehrlink=nl_to_send.more_link,
+        )
+    else:
+        linktemplate = ""
+
     return template.format(
         month=last_month.strftime("%B"),
         year=last_month.strftime("%Y"),
@@ -1093,8 +1106,7 @@ def get_html(
         percent_online=stats.percent_online,
         out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
         text=nl_to_send.text,
-        merhlesen=nl_to_send.more_text,
-        mehrlink=nl_to_send.more_link,
+        thelink=linktemplate,
         header=nl_to_send.header,
         list_text3=nl_to_send.list_text3,
         list_header3=nl_to_send.list_header3,
@@ -1109,10 +1121,17 @@ def get_html_other(nl_to_send: Newsletter) -> str:
     """Return the email body's for non DDB customers."""
 
     template = MAIL_START + MAIL_END
+    if nl_to_send.more_text:
+        linktemplate = LINK_BLOCK
+        linktemplate.format(
+            merhlesen=nl_to_send.more_text,
+            mehrlink=nl_to_send.more_link,
+        )
+    else:
+        linktemplate = ""
     return template.format(
         text=nl_to_send.text,
-        merhlesen=nl_to_send.more_text,
-        mehrlink=nl_to_send.more_link,
+        thelink=linktemplate,
         header=nl_to_send.header,
         list_text3=nl_to_send.list_text3,
         list_header3=nl_to_send.list_header3,
