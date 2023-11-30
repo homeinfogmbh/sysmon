@@ -95,11 +95,12 @@ def get_newsletter(newsletter: int):
 @authorized("sysmon")
 def post(newsletter: int) -> JSONMessage:
     """Adds a new file."""
-
-    data = request.get_data()
-
-    file = File.from_bytes(data.file)
+    data = request.files["file"]
+    file = File.from_bytes(data.read())
     file.save()
+    nl = Newsletter.select().where(Newsletter.id == newsletter).get()
+    nl.image = file.id
+    nl.save()
     return JSONMessage("The file has been created.", id=file.id, status=201)
 
 
