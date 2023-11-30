@@ -73,6 +73,17 @@ class Newsletter(SysmonModel):
     list_text3 = HTMLTextField(null=True)
     image = ForeignKeyField(File, column_name="image", null=True)
 
+    def to_json(self, *args, **kwargs) -> dict[str, Any]:
+        """Return a JSON-ish dict."""
+        json = super().to_json(*args, **kwargs)
+
+        for listitems in Newsletterlistitems.select().where(
+            Newsletterlistitems.newsletter == newsletter.id
+        ):
+            json["listitems"].add(listitems.to_json())
+
+        return json
+
 
 class Newsletterlistitems(SysmonModel):
     text = HTMLTextField(null=True)
