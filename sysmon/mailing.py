@@ -480,7 +480,7 @@ MAIL_END = """</div>
 
 <tr>
 <td style="direction:ltr;text-align:left;">
-<table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+<table style="border-collapse: collapse; table-layout: fixed; width: 560px;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
 <tbody>
 
 {list}
