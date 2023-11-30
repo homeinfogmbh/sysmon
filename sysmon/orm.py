@@ -76,11 +76,12 @@ class Newsletter(SysmonModel):
     def to_json(self, *args, **kwargs) -> dict[str, Any]:
         """Return a JSON-ish dict."""
         json = super().to_json(*args, **kwargs)
-
-        for listitems in Newsletterlistitems.select().where(
+        i = 0
+        for listitem in Newsletterlistitems.select().where(
             Newsletterlistitems.newsletter == self.id
         ):
-            json["listitems"] = listitems.to_json()
+            json["listitems"][i] = listitem.to_json()
+            i = i + 1
 
         return json
 
