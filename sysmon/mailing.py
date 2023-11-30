@@ -226,7 +226,7 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
   <td style="direction:ltr;text-align:left;">
 
 <!--[if (gte mso 9)|(IE)]>
-<table width="604" align="left" cellpadding="0" cellspacing="0" border="0">
+<table align="left" cellpadding="0" cellspacing="0" border="0">
   <tr>
      <td>
         <![endif]-->
