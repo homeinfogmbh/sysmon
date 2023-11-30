@@ -275,7 +275,7 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
   <tr>
      <td>
         <![endif]-->
-        <table class="t6of12 layout" style="border-collapse: collapse; max-width: 504px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
+        <table class="t6of12 layout" style="border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
            <tbody><tr>
               <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;">
                  <table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
