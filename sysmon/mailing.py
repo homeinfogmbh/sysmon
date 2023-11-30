@@ -185,7 +185,7 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
                     
                       <tr>
                         <td style="direction:ltr;text-align: left;">
-						<h1>Homeinfo</h1>
+						<h1>mieterinfo.tv</h1>
     </td>
                       </tr>
 
@@ -490,7 +490,11 @@ MAIL_END = """</div>
 </tr>
 
 
+<tr><td colspan=2 style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px">
 
+{ddbtext}
+</td>
+</tr>
 </tbody></table>
 </td>
 </tr>
@@ -1033,7 +1037,7 @@ def get_html(
     nl_to_send: Newsletter, customer: Customer, stats: MeanStats, last_month: date
 ) -> str:
     """Return the email body's for DDB customers."""
-    template = MAIL_START + DDB_TEXT + MAIL_END
+    template = MAIL_START + MAIL_END
     if nl_to_send.more_text:
         linktemplate = LINK_BLOCK
         linktemplate = linktemplate.format(
@@ -1049,13 +1053,15 @@ def get_html(
     ):
         litemplate = LIST_BLOCK
         listelements = listelements + litemplate.format(header=li.header, text=li.text)
-
-    return template.format(
+    ddb_text = DDB_TEXT.format(
         month=last_month.strftime("%B"),
         year=last_month.strftime("%Y"),
         customer=customer,
         percent_online=stats.percent_online,
         out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
+    )
+    return template.format(
+        ddbtext=ddb_text,
         text=nl_to_send.text,
         thelink=linktemplate,
         header=nl_to_send.header,
@@ -1086,6 +1092,7 @@ def get_html_other(nl_to_send: Newsletter) -> str:
         thelink=linktemplate,
         header=nl_to_send.header,
         list=listelements,
+        ddbtext="",
     )
 
 
