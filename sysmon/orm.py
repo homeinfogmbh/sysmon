@@ -78,7 +78,7 @@ class Newsletter(SysmonModel):
         json = super().to_json(*args, **kwargs)
 
         for listitems in Newsletterlistitems.select().where(
-            Newsletterlistitems.newsletter == newsletter.id
+            Newsletterlistitems.newsletter == self.id
         ):
             json["listitems"].add(listitems.to_json())
 
