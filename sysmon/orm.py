@@ -80,7 +80,7 @@ class Newsletter(SysmonModel):
         for listitems in Newsletterlistitems.select().where(
             Newsletterlistitems.newsletter == self.id
         ):
-            json["listitems"].add(listitems.to_json())
+            json["listitems"] = listitems.to_json()
 
         return json
 
