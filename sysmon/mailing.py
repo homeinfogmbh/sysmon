@@ -69,7 +69,7 @@ MAIL_START = """<html>
   
 }}
 .bgcol{{
-background-color: #E9F0FF;
+background-color: #ABE366;
 }}
 a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !important; text-decoration: none !important; font-size: inherit !important; font-family: inherit !important; font-weight: inherit !important; line-height: inherit !important }}table{{ mso-table-lspace: 0; mso-table-rspace: 0; mso-table-lspace: 0; border: none; border-collapse: collapse; border-spacing: 0;}}p {{margin: 0 !important;}}h1, .h1, .h1l {{ font-size: 60px !important; line-height: 66px !important; }}h2, .h2 {{ font-size: 44px !important; line-height: 50px !important; }}ul, ol {{margin:0; margin-left:8px !important;}}u + .body ul, u + .body ol {{ margin-left: 8px !important; }}.show670, .show414 {{display:none;}}sup {{ line-height:0; font-size:70%; }}</style>
 
