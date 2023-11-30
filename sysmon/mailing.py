@@ -20,6 +20,7 @@ from sysmon.orm import (
     UserNotificationEmail,
     ExtraUserNotificationEmail,
     Newsletter,
+    Newsletterlistitems,
 )
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -40,6 +41,37 @@ from PIL import Image
 from io import BytesIO
 
 __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
+LIST_BLOCK = """
+<tr >
+
+     <td class="p2b" style="width: 32px; color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px;line-height: 26px;
+ font-weight: 700;  padding-bottom: 0px; padding-left:12px; padding-top: 7px;" valign="top">
+     <p>•</p>
+
+      </td>
+
+
+     <td style="direction:ltr;text-align:left; padding-bottom: 7px; padding-top: 7px; padding-right: 12px;" valign="top">
+
+
+        <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+
+        <tbody><tr>
+          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">{header}</td>
+        </tr>
+
+        <tr>
+          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>{text}</p>
+</td>
+        </tr>
+
+        </tbody></table>  
+
+
+     </td>
+  </tr>
+  """
+
 LINK_BLOCK = """
 <tr>
                      <td style="direction:ltr;text-align:left;">
@@ -451,95 +483,7 @@ MAIL_END = """</div>
 <table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
 <tbody>
 
-  <tr >
-
-     <td class="p2b" style="width: 32px; color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px;line-height: 26px;
- font-weight: 700;  padding-bottom: 0px; padding-left:12px; padding-top: 7px;" valign="top">
-     <p>•</p>
-
-      </td>
-
-
-     <td style="direction:ltr;text-align:left; padding-bottom: 7px; padding-top: 7px; padding-right: 12px;" valign="top">
-
-
-        <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-          
-        <tbody><tr>
-          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">{list_header1}</td>
-        </tr>
-        
-        <tr>
-          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>{list_text1}</p>
-</td>
-        </tr>
-        
-        </tbody></table>  
-
-
-     </td>
-  </tr>
-
-
-  <tr >
-
-     <td class="p2b" style="width: 32px; color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px;line-height: 26px;
- font-weight: 700;  padding-bottom: 0px; padding-left:12px; padding-top: 7px;" valign="top">
-     <p>•</p>
-
-      </td>
-
-
-     <td style="direction:ltr;text-align:left; padding-bottom: 7px; padding-top: 7px; padding-right: 12px;" valign="top">
-
-
-        <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-          
-        <tbody><tr>
-          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">{list_header2}
-</td>
-        </tr>
-        
-        <tr>
-          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>{list_text2}</p>
-</td>
-        </tr>
-        
-        </tbody></table>  
-
-
-     </td>
-  </tr>
-  <tr >
-
-     <td class="p2b" style="width: 32px; color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px;line-height: 26px;
- font-weight: 700;  padding-bottom: 0px; padding-left:12px; padding-top: 7px;" valign="top">
-     <p>•</p>
-
-      </td>
-
-
-     <td style="direction:ltr;text-align:left; padding-bottom: 7px; padding-top: 7px; padding-right: 12px;" valign="top">
-
-
-        <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-          
-        <tbody><tr>
-          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">{list_header3}
-</td>
-        </tr>
-        
-        <tr>
-          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>{list_text3}</p>
-</td>
-        </tr>
-        
-        </tbody></table>  
-
-
-     </td>
-  </tr>
-
+{list}
 
 </tbody></table>
 </td>
@@ -1099,6 +1043,13 @@ def get_html(
     else:
         linktemplate = ""
 
+    listelements = ""
+    for li in Newsletterlistitems.select().where(
+        Newsletterlistitems.newsletter == nl_to_send.id
+    ):
+        litemplate = LIST_BLOCK
+        listelements = listelements + litemplate.format(header=li.header, text=li.text)
+
     return template.format(
         month=last_month.strftime("%B"),
         year=last_month.strftime("%Y"),
@@ -1108,12 +1059,7 @@ def get_html(
         text=nl_to_send.text,
         thelink=linktemplate,
         header=nl_to_send.header,
-        list_text3=nl_to_send.list_text3,
-        list_header3=nl_to_send.list_header3,
-        list_text2=nl_to_send.list_text2,
-        list_header2=nl_to_send.list_header2,
-        list_text1=nl_to_send.list_text1,
-        list_header1=nl_to_send.list_header1,
+        list=listelements,
     )
 
 
@@ -1129,16 +1075,17 @@ def get_html_other(nl_to_send: Newsletter) -> str:
         )
     else:
         linktemplate = ""
+    listelements = ""
+    for li in Newsletterlistitems.select().where(
+        Newsletterlistitems.newsletter == nl_to_send.id
+    ):
+        litemplate = LIST_BLOCK
+        listelements = listelements + litemplate.format(header=li.header, text=li.text)
     return template.format(
         text=nl_to_send.text,
         thelink=linktemplate,
         header=nl_to_send.header,
-        list_text3=nl_to_send.list_text3,
-        list_header3=nl_to_send.list_header3,
-        list_text2=nl_to_send.list_text2,
-        list_header2=nl_to_send.list_header2,
-        list_text1=nl_to_send.list_text1,
-        list_header1=nl_to_send.list_header1,
+        list=listelements,
     )
 
 
