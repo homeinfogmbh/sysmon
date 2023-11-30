@@ -1092,7 +1092,7 @@ def get_html(
     template = MAIL_START + DDB_TEXT + MAIL_END
     if nl_to_send.more_text:
         linktemplate = LINK_BLOCK
-        linktemplate.format(
+        linktemplate = linktemplate.format(
             merhlesen=nl_to_send.more_text,
             mehrlink=nl_to_send.more_link,
         )
@@ -1123,7 +1123,7 @@ def get_html_other(nl_to_send: Newsletter) -> str:
     template = MAIL_START + MAIL_END
     if nl_to_send.more_text:
         linktemplate = LINK_BLOCK
-        linktemplate.format(
+        linktemplate = linktemplate.format(
             merhlesen=nl_to_send.more_text,
             mehrlink=nl_to_send.more_link,
         )
