@@ -41,6 +41,7 @@ __all__ = [
     "UserNotificationEmail",
     "Newsletter",
     "ExtraUserNotificationEmail",
+    "Newsletterlistitems",
 ]
 
 
@@ -72,12 +73,11 @@ class Newsletter(SysmonModel):
     list_text3 = HTMLTextField(null=True)
     image = ForeignKeyField(File, column_name="image", null=True)
 
-    def from_json(cls, json: dict, **kwargs) -> Transaction:
-        nlimage = json.pop("image", ())
-        transaction = super().from_json(json, **kwargs)
-        record = File.from_json(nlimage)
-        transaction.add(record)
-        return transaction
+
+class Newsletterlistitems(SysmonModel):
+    text = HTMLTextField(null=True)
+    header = CharField()
+    newsletter = ForeignKeyField(Newsletter, column_name="newsletter", null=True)
 
 
 class CheckResults(SysmonModel):

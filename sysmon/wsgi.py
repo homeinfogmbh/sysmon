@@ -24,7 +24,12 @@ from sysmon.functions import get_latest_check_results_per_system
 from sysmon.mailing import send_mailing, get_newsletter_by_date, send_test_mails
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
-from sysmon.orm import UserNotificationEmail, Newsletter, ExtraUserNotificationEmail
+from sysmon.orm import (
+    UserNotificationEmail,
+    Newsletter,
+    ExtraUserNotificationEmail,
+    Newsletterlistitems,
+)
 from sysmon.json import check_results_to_json
 from sysmon.preview import generate_preview_token
 
@@ -66,6 +71,40 @@ def patch_newsletter(newsletter: int):
     nl = Newsletter.select().where(Newsletter.id == newsletter).get()
     nl.patch_json(request.json)
     return JSON({"status": nl.save()})
+
+
+@authenticated
+@authorized("sysmon")
+@root
+@APPLICATION.route(
+    "/newsletter_list_patch/<int:listitem>", methods=["POST"], strict_slashes=False
+)
+def patch_listitem(listitem: int):
+    li = Newsletterlistitems.select().where(Newsletterlistitems.id == listitem).get()
+    li.patch_json(request.json)
+    return JSON({"status": li.save()})
+
+
+@authenticated
+@authorized("sysmon")
+@root
+@APPLICATION.route("/newsletter_list_add/", methods=["POST"], strict_slashes=False)
+def add_listitem():
+    li = Newsletterlistitems.from_json(request.json)
+    return JSON({"status": li.save()})
+
+
+@authenticated
+@authorized("sysmon")
+@root
+@APPLICATION.route(
+    "/newsletter_list_del/<int:listid>", methods=["POST"], strict_slashes=False
+)
+def del_listitem(listid: int):
+    Newsletterlistitems.select().where(
+        Newsletterlistitems.id == listid
+    ).get().delete_instance()
+    return JSON({"status": "deleted list"})
 
 
 @authenticated
