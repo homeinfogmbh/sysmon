@@ -82,7 +82,8 @@ def patch_newsletter(newsletter: int):
 def patch_listitem(listitem: int):
     li = Newsletterlistitems.select().where(Newsletterlistitems.id == listitem).get()
     li.patch_json(request.json)
-    return JSON({"status": li.save()})
+    li.save()
+    return JSON(li.to_json())
 
 
 @authenticated
