@@ -70,7 +70,7 @@ def newsletter_by_date():
 def patch_newsletter(newsletter: int):
     nl = Newsletter.select().where(Newsletter.id == newsletter).get()
     nl.patch_json(request.json)
-    return JSON({"status": nl.save()})
+    return JSON(li.to_json())
 
 
 @authenticated
