@@ -155,6 +155,7 @@ def delete_file(image: int):
     nl.image = None
     nl.save()
     File.select().where(File.id == image).get().delete()
+    return JSONMessage("The file has deleted.", id=image, status=201)
 
 
 @APPLICATION.route(
