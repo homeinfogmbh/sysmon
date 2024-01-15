@@ -146,6 +146,18 @@ def post(newsletter: int) -> JSONMessage:
 
 
 @APPLICATION.route(
+    "/newsletter-image/<int:image>", methods=["DELETE"], strict_slashes=False
+)
+@authenticated
+@authorized("sysmon")
+def delete_file(image: int):
+    nl = Newsletter.select().where(Newsletter.image == image).get()
+    nl.image = None
+    nl.save()
+    File.select().where(File.id == image).get().delete()
+
+
+@APPLICATION.route(
     "/newsletter-image/<int:image>", methods=["GET"], strict_slashes=False
 )
 def get_file(image: int):
