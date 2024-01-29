@@ -899,7 +899,7 @@ def create_other_test_email(newsletter: int, recipient: str):
     images_cid = list()
     images_cid.append(
         MailImage(
-            "https://sysmon.homeinfo.de/newsletter-image/1072986"",
+            "https://sysmon.homeinfo.de/newsletter-image/1072986",
             "header",
         )
     )
