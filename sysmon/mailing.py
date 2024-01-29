@@ -41,6 +41,14 @@ from PIL import Image
 from io import BytesIO
 
 __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
+
+
+IMAGE_BLOCK = """
+  <div class="hide414">
+    <img class="hide414" src="cid:image1" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 700px; outline: none; text-decoration: none; width: 100%;" alt="" width="700" height="" border="0">
+  </div>
+"""
+
 LIST_BLOCK = """
 <tr >
 
@@ -185,7 +193,7 @@ a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !importa
                     
                       <tr>
                         <td style="direction:ltr;text-align: left;">
-						<h1>mieterinfo.tv</h1>
+						    <img class="hide414" src="cid:header">
     </td>
                       </tr>
 
@@ -397,9 +405,7 @@ MAIL_END = """</div>
 </tbody></table>            
 
 
-  <div class="hide414">
-    <img class="hide414" src="cid:image1" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 700px; outline: none; text-decoration: none; width: 100%;" alt="" width="700" height="" border="0">
-  </div>
+{image}
 
 
 
@@ -891,6 +897,12 @@ def create_other_test_email(newsletter: int, recipient: str):
     )
     html = get_html_other(nl_to_send)
     images_cid = list()
+    images_cid.append(
+        MailImage(
+            "https://sysmon.homeinfo.de/newsletter-image/1072986"",
+            "header",
+        )
+    )
     try:
         image_to_attach = nl_to_send.image.id
         images_cid.append(
@@ -936,6 +948,12 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
             last_month,
         )
     images_cid = list()
+    images_cid.append(
+        MailImage(
+            "https://sysmon.homeinfo.de/newsletter-image/1072986"",
+            "header",
+        )
+    )
     try:
         image_to_attach = nl_to_send.image.id
         images_cid.append(
@@ -1037,6 +1055,11 @@ def get_html(
     nl_to_send: Newsletter, customer: Customer, stats: MeanStats, last_month: date
 ) -> str:
     """Return the email body's for DDB customers."""
+    if nl_to_send.image:
+        image = IMAGE_BLOCK
+    else:
+        image = ""
+
     template = MAIL_START + MAIL_END
     if nl_to_send.more_text:
         linktemplate = LINK_BLOCK
@@ -1066,6 +1089,7 @@ def get_html(
         thelink=linktemplate,
         header=nl_to_send.header,
         list=listelements,
+        image=image,
     )
 
 
@@ -1073,6 +1097,11 @@ def get_html_other(nl_to_send: Newsletter) -> str:
     """Return the email body's for non DDB customers."""
 
     template = MAIL_START + MAIL_END
+    if nl_to_send.image:
+        image = IMAGE_BLOCK
+    else:
+        image = ""
+
     if nl_to_send.more_text:
         linktemplate = LINK_BLOCK
         linktemplate = linktemplate.format(
@@ -1087,11 +1116,13 @@ def get_html_other(nl_to_send: Newsletter) -> str:
     ):
         litemplate = LIST_BLOCK
         listelements = listelements + litemplate.format(header=li.header, text=li.text)
+
     return template.format(
         text=nl_to_send.text,
         thelink=linktemplate,
         header=nl_to_send.header,
         list=listelements,
+        image=image,
         ddbtext="",
     )
 
