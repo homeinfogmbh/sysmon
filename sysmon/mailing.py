@@ -783,10 +783,12 @@ class MailImage:
 
     src: str
     cid: str
+    imagetype: str
 
-    def __init__(self, src, cid):
+    def __init__(self, src, cid, type):
         self.cid = cid
         self.src = src
+        self.imagetype = imagetype
 
     def __str__(self):
         return self.cid + self.src
@@ -818,7 +820,7 @@ class AttachmentEMail(EMail):
             if mailimage.src.startswith("http"):
                 im = Image.open(requests.get(mailimage.src, stream=True).raw)
                 byte_buffer = BytesIO()
-                im.save(byte_buffer, "JPEG")
+                im.save(byte_buffer, mailimage.imagetype)
                 image = MIMEImage(byte_buffer.getvalue())
                 image.add_header("Content-ID", mailimage.cid)
                 mime_multipart.attach(image)
@@ -899,8 +901,7 @@ def create_other_test_email(newsletter: int, recipient: str):
     images_cid = list()
     images_cid.append(
         MailImage(
-            "https://sysmon.homeinfo.de/newsletter-image/1072986",
-            "header",
+            "https://sysmon.homeinfo.de/newsletter-image/1074324", "header", "PNG"
         )
     )
     try:
@@ -909,6 +910,7 @@ def create_other_test_email(newsletter: int, recipient: str):
             MailImage(
                 "https://sysmon.homeinfo.de/newsletter-image/" + str(image_to_attach),
                 "image1",
+                "JPEG",
             )
         )
     except:
@@ -960,6 +962,7 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
             MailImage(
                 "https://sysmon.homeinfo.de/newsletter-image/" + str(image_to_attach),
                 "image1",
+                "JPEG",
             )
         )
     except:
