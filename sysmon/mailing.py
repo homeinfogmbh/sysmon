@@ -785,7 +785,7 @@ class MailImage:
     cid: str
     imagetype: str
 
-    def __init__(self, src, cid, type):
+    def __init__(self, src, cid, imagetype):
         self.cid = cid
         self.src = src
         self.imagetype = imagetype
