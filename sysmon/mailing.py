@@ -952,8 +952,7 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
     images_cid = list()
     images_cid.append(
         MailImage(
-            "https://sysmon.homeinfo.de/newsletter-image/1072986",
-            "header",
+            "https://sysmon.homeinfo.de/newsletter-image/1074324", "header", "PNG"
         )
     )
     try:
