@@ -101,15 +101,6 @@ LINK_BLOCK = """
                     </tr>
 """
 
-DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihre Digitalen Bretter:<br>
-Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
-</p>
-<p>
-Sofern sich dazu im Vorfeld Fragen ergeben, stehen wir Ihnen natürlich wie gewohnt sehr gern zur Verfügung.<br>
-Bitte nutzen Sie den Link zur detaillierten Monatsstatistik. Hier werden Ihnen auch weiterführende Abläufe beschrieben:<br>
-<a href="https://typo3.homeinfo.de/ddb-report?customer={customer.id}">Link zur Webansicht</a>
-</p>"""
-
 
 MAIL_START = """<html>
 <style>h1,.h1{{
@@ -871,7 +862,9 @@ def send_mailing() -> None:
     get_mailer().send(
         list(
             create_emails_for_customers(
-                get_target_customers(), last_day_of_last_month(date.today())
+                newsletter.id,
+                get_target_customers(),
+                last_day_of_last_month(date.today()),
             )
         )
     )
@@ -1011,7 +1004,7 @@ def get_newsletter_by_date(now) -> Newsletter:
 
 
 def create_emails_for_customers(
-    customers: Iterable[Customer], last_month: date
+    newsletter, customers: Iterable[Customer], last_month: date
 ) -> Iterator[EMail]:
     """Create monthly notification emails for the given customers."""
 
@@ -1021,35 +1014,57 @@ def create_emails_for_customers(
 
     for customer in customers:
         yield from create_customer_emails(
-            customer, sender=sender, last_month=last_month
+            newsletter, customer, sender=sender, last_month=last_month
         )
 
 
 def create_customer_emails(
-    customer: Customer, sender: str, last_month: date
+    newsletter, customer: Customer, sender: str, last_month: date
 ) -> Iterator[EMail]:
     """Create the system status summary emails for the given month."""
-    now = date.today()
+    nl_to_send = get_newsletter_by_date(
+        Newsletter.select().where(Newsletter.id == newsletter).get().period
+    )
+
     if not (
         check_results := check_results_by_system(
             get_check_results_for_month(customer, last_month)
         )
     ):
-        html = get_html_other(get_newsletter_by_date(now))
+        html = get_html_other(nl_to_send)
+
     else:
         html = get_html(
-            get_newsletter_by_date(now),
+            nl_to_send,
             customer,
             MeanStats.from_system_check_results(check_results),
             last_month,
         )
+    images_cid = list()
+    images_cid.append(
+        MailImage(
+            "https://sysmon.homeinfo.de/newsletter-image/1074324", "header", "PNG"
+        )
+    )
+    try:
+        image_to_attach = nl_to_send.image.id
+        images_cid.append(
+            MailImage(
+                "https://sysmon.homeinfo.de/newsletter-image/" + str(image_to_attach),
+                "image1",
+                "JPEG",
+            )
+        )
+    except:
+        pass
 
     for recipient in get_recipients(customer):
-        yield EMail(
-            subject=get_newsletter_by_date(now).subject,
+        yield AttachmentEMail(
+            subject=nl_to_send.subject,
             sender=sender,
             recipient=recipient,
             html=html,
+            attachments=images_cid,
         )
 
 
