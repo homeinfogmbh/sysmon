@@ -42,6 +42,7 @@ __all__ = [
     "Newsletter",
     "ExtraUserNotificationEmail",
     "Newsletterlistitems",
+    "StatisticUserNotificationEmail",
 ]
 
 

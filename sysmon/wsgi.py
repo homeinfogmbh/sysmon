@@ -29,6 +29,7 @@ from sysmon.orm import (
     Newsletter,
     ExtraUserNotificationEmail,
     Newsletterlistitems,
+    StatisticUserNotificationEmail,
 )
 from sysmon.json import check_results_to_json
 from sysmon.preview import generate_preview_token
@@ -406,6 +407,32 @@ def set_extra_emails() -> JSONMessage:
     ExtraUserNotificationEmail.delete().execute()
     for email in request.json:
         email = ExtraUserNotificationEmail.from_json(email)
+        email.save()
+
+    return JSONMessage("The emails list has been updated.", status=200)
+
+
+@APPLICATION.route(
+    "/statistic-user-notification-emails", methods=["GET"], strict_slashes=False
+)
+@authorized("sysmon")
+def get_statistic_emails() -> JSON:
+    """Get all statistic emails"""
+
+    return JSON([email.to_json() for email in StatisticUserNotificationEmail.select()])
+
+
+@APPLICATION.route(
+    "/statistic-user-notification-emails", methods=["POST"], strict_slashes=False
+)
+@authorized("sysmon")
+@root
+def set_statistic_emails() -> JSONMessage:
+    """set statistic email addresses."""
+
+    StatisticUserNotificationEmail.delete().execute()
+    for email in request.json:
+        email = StatisticUserNotificationEmail.from_json(email)
         email.save()
 
     return JSONMessage("The emails list has been updated.", status=200)
