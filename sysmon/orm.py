@@ -207,6 +207,12 @@ class ExtraUserNotificationEmail(SysmonModel):
     email = EMailField(255)
 
 
+class StatisticUserNotificationEmail(SysmonModel):
+    """Stores emails for information about online/offline Systems Statistic monthly."""
+
+    email = EMailField(255)
+
+
 UserNotificationEmail = get_email_orm_model(
     SysmonModel,
     table_name="user_notification_email",
