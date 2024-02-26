@@ -436,3 +436,11 @@ def set_statistic_emails() -> JSONMessage:
         email.save()
 
     return JSONMessage("The emails list has been updated.", status=200)
+
+
+@authenticated
+@authorized("sysmon")
+@root
+@APPLICATION.route("/send_statistic_test_mail", methods=["POST"], strict_slashes=False)
+def statistic_test_mail() -> JSONMessage:
+    return JSONMessage("Statistic Testmail sent.", status=200)

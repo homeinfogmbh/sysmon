@@ -40,6 +40,11 @@ from emaillib import EMailsNotSent, Mailer, EMail
 from PIL import Image
 from io import BytesIO
 
+from mdb import Address, Company, Customer
+from hwdb import Deployment
+from math import floor
+from sysmon.functions import get_latest_check_results
+
 __all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
 
 
@@ -868,6 +873,101 @@ def send_mailing() -> None:
             )
         )
     )
+
+
+class StatsSystemsByCustomer:
+    customer: Customer
+    systemsOnline: int()
+    systemsOffline: int()
+    systemsAll: int()
+
+    def __init__(self, systemsOnline=0, systemsOffline=0, systemsAll=0):
+        self.customer = customer
+        self.systemsOnline = systemsOnline
+        self.systemsOffline = systemsOffline
+        self.systemsAll = systemsAll
+
+    @property
+    def percentOffline(self):
+        if self.systemsOffline == 0:
+            return 0
+        if self.systemsAll == 0:
+            return 0
+        return floor(self.systemsOffline / self.systemsAll * 100)
+
+
+def create_statistic_email(email):
+    sender = get_config().get(
+        "mailing", "sender", fallback="service@dasdigitalebrett.de"
+    )
+    mailbody = """<p>Hier finden Sie eine Liste der Kunden, bei denen in den letzten 48 Stunden mehr als 10% ihrer Systeme offline waren
+    </p> """
+    stats = []
+    for customer in Customer.select():
+        stat = StatsSystemsByCustomer(customer.id)
+        for checkresult in get_latest_check_results(
+            ((Deployment.customer == customer) & (Deployment.testing == 0))
+        ):
+            stat.systemsAll = stat.systemsAll + 1
+            if checkresult.icmp_request:
+                stat.systemsOnline = stat.systemsOnline + 1
+            else:
+                stat.systemsOffline = stat.systemsOffline + 1
+        stats.append(stat)
+    html = ""
+    htmlSystemsHightlited = ""
+    for stat in stats:
+        if stat.percentOffline > 9:
+            htmlSystemsHightlited = (
+                htmlSystemsHightlited
+                + "<tr><td>"
+                + str(stat.customer.abbreviation)
+                + "</td>"
+                + "<td>"
+                + str(stat.percentOffline)
+                + "% ("
+                + str(stat.systemsOffline)
+                + ")</td>"
+                + "<td>"
+                + str(stat.systemsAll)
+                + "</td></tr>"
+            )
+        else:
+            html = (
+                html
+                + "<tr><td>"
+                + str(stat.customer.abbreviation)
+                + "</td>"
+                + "<td>"
+                + str(stat.percentOffline)
+                + "% ("
+                + str(stat.systemsOffline)
+                + ")</td>"
+                + "<td>"
+                + str(stat.systemsAll)
+                + "</td></tr>"
+            )
+    html = (
+        "<h1>Alle Kunden</h1><table><tr><th>Kunde</th><th>Offline</th><th>Gesamt</th></tr>"
+        + html
+        + "</table>"
+    )
+    htmlSystemsHightlited = (
+        "<table><tr><th>Kunde</th><th>Offline</th><th>Gesamt</th></tr>"
+        + htmlSystemsHightlited
+        + "</table>"
+    )
+
+    return EMail(
+        subject="Homeinfo Service Notification",
+        sender=sender,
+        recipient=email,
+        html=mailbody + htmlSystemsHightlited + html,
+    )
+
+
+def send_statistic_test_mails():
+    get_mailer().send([create_statistic_email(ACCOUNT.email)])
 
 
 def send_test_mails(newsletter: int):
