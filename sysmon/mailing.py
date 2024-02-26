@@ -881,7 +881,7 @@ class StatsSystemsByCustomer:
     systemsOffline: int()
     systemsAll: int()
 
-    def __init__(self, systemsOnline=0, systemsOffline=0, systemsAll=0):
+    def __init__(self,customer, systemsOnline=0, systemsOffline=0, systemsAll=0):
         self.customer = customer
         self.systemsOnline = systemsOnline
         self.systemsOffline = systemsOffline
