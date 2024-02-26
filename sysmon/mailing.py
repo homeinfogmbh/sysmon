@@ -904,7 +904,7 @@ def create_statistic_email(email):
     </p> """
     stats = []
     for customer in Customer.select():
-        stat = StatsSystemsByCustomer(customer.id)
+        stat = StatsSystemsByCustomer(customer)
         for checkresult in get_latest_check_results(
             ((Deployment.customer == customer) & (Deployment.testing == 0))
         ):
