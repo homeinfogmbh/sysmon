@@ -904,6 +904,7 @@ def create_statistic_email(email):
     <style>
     td { 
     padding: 10px;
+    padding-bottom:0px;
 }
 
     </style>
