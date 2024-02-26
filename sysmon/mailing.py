@@ -21,7 +21,7 @@ from sysmon.orm import (
     ExtraUserNotificationEmail,
     Newsletter,
     Newsletterlistitems,
-    StatisticUserNotificationEmail
+    StatisticUserNotificationEmail,
 )
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText

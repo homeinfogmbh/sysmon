@@ -51,6 +51,8 @@ setup(
                 "files/sysmon-generate-blacklist.timer",
                 "files/sysmon-mailing.service",
                 "files/sysmon-mailing.timer",
+                "files/sysmon-statistic.service",
+                "files/sysmon-statistic.timer",
             ],
         )
     ],
