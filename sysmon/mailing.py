@@ -897,6 +897,8 @@ class StatsSystemsByCustomer:
 
 
 def create_statistic_email(email):
+    # creates email with Customers who have more than 10% offline systems
+
     sender = get_config().get(
         "mailing", "sender", fallback="service@dasdigitalebrett.de"
     )
@@ -979,7 +981,13 @@ def create_statistic_email(email):
 
 
 def send_statistic_test_mails():
+    # send statistic mail to user logged into sysmon
     get_mailer().send([create_statistic_email(ACCOUNT.email)])
+
+
+def statistic():
+    # sends statistic mailing to users in database
+    get_mailer().send([create_statistic_emails()])
 
 
 def send_test_mails(newsletter: int):
@@ -992,6 +1000,11 @@ def send_test_mails(newsletter: int):
 def create_other_test_emails(newsletter: int):
     for email in ExtraUserNotificationEmail.select():
         yield create_other_test_email(newsletter, email.email)
+
+
+def create_statistic_emails():
+    for email in StatisticUserNotificationEmail.select():
+        yield create_statistic_email(email.email)
 
 
 def create_other_test_email(newsletter: int, recipient: str):

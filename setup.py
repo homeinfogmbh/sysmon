@@ -36,6 +36,7 @@ setup(
             "sysmon-notify = sysmon.notify:notify",
             "sysmon-generate-blacklist = sysmon.blacklist:generate_blacklist",
             "sysmon-send-mailing = sysmon.mailing:main",
+            "sysmon-send-statistic = sysmon.mailing:statistic",
         ]
     },
     data_files=[
