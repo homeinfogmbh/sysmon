@@ -917,11 +917,11 @@ def create_statistic_email(email):
     html = ""
     htmlSystemsHightlited = ""
     for stat in stats:
+        try:
+            customername = stat.customer.abbreviation
+        except:
+            customername = stat.customer
         if stat.percentOffline > 9:
-            try:
-                customername = stat.customer.abbreviation
-            except:
-                customername = stat.customer
             htmlSystemsHightlited = (
                 htmlSystemsHightlited
                 + "<tr><td>"
@@ -940,7 +940,7 @@ def create_statistic_email(email):
             html = (
                 html
                 + "<tr><td>"
-                + str(stat.customer.abbreviation)
+                + str(customername)
                 + "</td>"
                 + "<td>"
                 + str(stat.percentOffline)
