@@ -21,6 +21,7 @@ from sysmon.orm import (
     ExtraUserNotificationEmail,
     Newsletter,
     Newsletterlistitems,
+    StatisticUserNotificationEmail
 )
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -987,7 +988,7 @@ def send_statistic_test_mails():
 
 def statistic():
     # sends statistic mailing to users in database
-    get_mailer().send([create_statistic_emails()])
+    get_mailer().send(create_statistic_emails())
 
 
 def send_test_mails(newsletter: int):
