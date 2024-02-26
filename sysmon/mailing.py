@@ -900,7 +900,14 @@ def create_statistic_email(email):
     sender = get_config().get(
         "mailing", "sender", fallback="service@dasdigitalebrett.de"
     )
-    mailbody = """<p>Hier finden Sie eine Liste der Kunden, bei denen in den letzten 48 Stunden mehr als 10% ihrer Systeme offline waren
+    mailbody = """
+    <style>
+    td { 
+    padding: 10px;
+}
+
+    </style>
+    <p>Hier finden Sie eine Liste der Kunden, bei denen in den letzten 48 Stunden mehr als 10% ihrer Systeme offline waren
     </p> """
     stats = []
     for customer in Customer.select():
