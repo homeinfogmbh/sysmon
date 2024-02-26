@@ -881,7 +881,7 @@ class StatsSystemsByCustomer:
     systemsOffline: int()
     systemsAll: int()
 
-    def __init__(self,customer, systemsOnline=0, systemsOffline=0, systemsAll=0):
+    def __init__(self, customer, systemsOnline=0, systemsOffline=0, systemsAll=0):
         self.customer = customer
         self.systemsOnline = systemsOnline
         self.systemsOffline = systemsOffline
@@ -918,10 +918,14 @@ def create_statistic_email(email):
     htmlSystemsHightlited = ""
     for stat in stats:
         if stat.percentOffline > 9:
+            try:
+                customername = stat.customer.abbreviation
+            except:
+                customername = stat.customer
             htmlSystemsHightlited = (
                 htmlSystemsHightlited
                 + "<tr><td>"
-                + str(stat.customer.abbreviation)
+                + str(customername)
                 + "</td>"
                 + "<td>"
                 + str(stat.percentOffline)
