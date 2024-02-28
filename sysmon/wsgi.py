@@ -5,6 +5,7 @@ from typing import Union
 from filedb import File
 from his import ACCOUNT, CUSTOMER, Application, authenticated, authorized, root, admin
 from hwdb import SystemOffline, Deployment, System
+from mdb import Address
 from notificationlib import get_wsgi_funcs
 from requests.exceptions import Timeout
 from wsgilib import Binary, JSON, JSONMessage, get_int, get_bool
@@ -46,9 +47,27 @@ SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 @authorized("sysmon")
 @root
 @APPLICATION.route(
+    "/deployment-address/<int:deployment>", methods=["POST"], strict_slashes=False
+)
+def set_deployment_address(deployment: int):
+    """Sets a new address for a deployment."""
+    dep = Deployment.select().where(Deployment.id == deployment).get()
+    address = Address.from_json(request.json)
+    address.save()
+    dep.address = address.id
+    dep.save()
+
+    return JSONMessage("New address set.", status=200)
+
+
+@authenticated
+@authorized("sysmon")
+@root
+@APPLICATION.route(
     "/send_test_mails/<int:newsletter>", methods=["POST"], strict_slashes=False
 )
 def test_mail(newsletter: int):
+    """Sends a Newsletter test to Account.email."""
     send_test_mails(newsletter)
     return JSONMessage("Testmail sent.", status=200)
 
@@ -58,6 +77,7 @@ def test_mail(newsletter: int):
 @root
 @APPLICATION.route("/newsletter_by_date", methods=["GET"], strict_slashes=False)
 def newsletter_by_date():
+    """Gets Newsletter for now."""
     now = date.today()
     return JSON(get_newsletter_by_date(now).to_json())
 
@@ -69,6 +89,7 @@ def newsletter_by_date():
     "/patch_newsletter/<int:newsletter>", methods=["POST"], strict_slashes=False
 )
 def patch_newsletter(newsletter: int):
+    """Patches a  Newsletter."""
     nl = Newsletter.select().where(Newsletter.id == newsletter).get()
     nl.patch_json(request.json)
     return JSON({"status": nl.save()})
@@ -81,6 +102,7 @@ def patch_newsletter(newsletter: int):
     "/newsletter_list_patch/<int:listitem>", methods=["POST"], strict_slashes=False
 )
 def patch_listitem(listitem: int):
+    """Patches a  Newsletter list item."""
     li = Newsletterlistitems.select().where(Newsletterlistitems.id == listitem).get()
     li.patch_json(request.json)
     li.save()
@@ -92,6 +114,7 @@ def patch_listitem(listitem: int):
 @root
 @APPLICATION.route("/newsletter_list_add/", methods=["POST"], strict_slashes=False)
 def add_listitem():
+    """Adds a  Newsletter list item."""
     li = Newsletterlistitems.from_json(request.json)
     li.save()
     return JSON(li.to_json())
@@ -104,6 +127,7 @@ def add_listitem():
     "/newsletter_list_del/<int:listid>", methods=["POST"], strict_slashes=False
 )
 def del_listitem(listid: int):
+    """Deletes a  Newsletter list item."""
     Newsletterlistitems.select().where(
         Newsletterlistitems.id == listid
     ).get().delete_instance()
@@ -115,6 +139,7 @@ def del_listitem(listid: int):
 @root
 @APPLICATION.route("/add_newsletter", methods=["POST"], strict_slashes=False)
 def add_newsletter():
+    """Adds a  Newsletter ."""
     nl = Newsletter.from_json(request.json)
     nl.is_default = 0
     nl.save()
@@ -127,6 +152,7 @@ def add_newsletter():
 @authenticated
 @authorized("sysmon")
 def get_newsletter(newsletter: int):
+    """Get Newsletter by id."""
     return JSON(Newsletter.select().where(Newsletter.id == newsletter).get().to_json())
 
 
@@ -163,6 +189,7 @@ def delete_file(image: int):
     "/newsletter-image/<int:image>", methods=["GET"], strict_slashes=False
 )
 def get_file(image: int):
+    """Get image for Newsletter."""
     return Binary(File.select().where(File.id == image).get().bytes)
 
 
@@ -170,7 +197,7 @@ def get_file(image: int):
 @authenticated
 @authorized("sysmon")
 def get_default_newsletters():
-    """List all Newsletters."""
+    """Get default Newsletter"""
 
     return JSON(Newsletter.select().where(Newsletter.isdefault == 1).get().to_json())
 
