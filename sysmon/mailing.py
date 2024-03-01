@@ -817,7 +817,7 @@ class AttachmentEMail(EMail):
             if mailimage.src.startswith("http"):
                 im = Image.open(requests.get(mailimage.src, stream=True).raw)
                 byte_buffer = BytesIO()
-                im.save(byte_buffer, mailimage.imagetype)
+                im.save(byte_buffer, im.format)
                 image = MIMEImage(byte_buffer.getvalue())
                 image.add_header("Content-ID", mailimage.cid)
                 mime_multipart.attach(image)
