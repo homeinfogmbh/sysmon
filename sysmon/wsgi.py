@@ -5,8 +5,7 @@ from typing import Union
 from filedb import File
 from his import ACCOUNT, CUSTOMER, Application, authenticated, authorized, root, admin
 from hwdb import SystemOffline, Deployment, System
-from mdb import Address
-from notificationlib import get_wsgi_funcs
+
 from requests.exceptions import Timeout
 from wsgilib import Binary, JSON, JSONMessage, get_int, get_bool
 
@@ -41,23 +40,6 @@ __all__ = ["APPLICATION"]
 
 APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
-
-
-@authenticated
-@authorized("sysmon")
-@root
-@APPLICATION.route(
-    "/deployment-address/<int:deployment>", methods=["POST"], strict_slashes=False
-)
-def set_deployment_address(deployment: int):
-    """Sets a new address for a deployment."""
-    dep = Deployment.select().where(Deployment.id == deployment).get()
-    address = Address.from_json(request.json)
-    address.save()
-    dep.address = address.id
-    dep.save()
-
-    return JSONMessage("New address set.", status=200)
 
 
 @authenticated
