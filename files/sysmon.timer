@@ -3,8 +3,7 @@ Description=Check all systems daily
 After=network.target mysql.service
 
 [Timer]
-OnCalendar=daily
-RandomizedDelaySec=1h
+OnCalendar=*-*-* 7:00:00
 
 [Install]
 WantedBy=timers.target
