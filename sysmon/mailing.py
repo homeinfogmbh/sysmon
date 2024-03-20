@@ -768,7 +768,7 @@ Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
 <p>
 Sofern sich dazu im Vorfeld Fragen ergeben, stehen wir Ihnen natürlich wie gewohnt sehr gern zur Verfügung.<br>
 Bitte nutzen Sie den Link zur detaillierten Monatsstatistik. Hier werden Ihnen auch weiterführende Abläufe beschrieben:<br>
-<a href="https://typo3.homeinfo.de/ddb-report?customer={customer.id}">Link zur Webansicht</a>
+<a href="https://portal.homeinfo.de/ddb-report?customer={customer.id}">Link zur Webansicht</a>
 </p>"""
 LOGGER = getLogger("sysmon-mailing")
 
