@@ -53,5 +53,5 @@ def get_sysinfo(
         return SuccessFailedUnsupported.FAILED, {}
     temp_return = response.json()
     if system.ddb_os:
-        temp_return = {**temp_return, **system.application()}
+        temp_return["application"] = system.application().json()
     return SuccessFailedUnsupported.SUCCESS, temp_return
