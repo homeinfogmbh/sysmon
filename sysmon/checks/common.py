@@ -51,5 +51,7 @@ def get_sysinfo(
 
     if response.status_code != 200:
         return SuccessFailedUnsupported.FAILED, {}
-
-    return SuccessFailedUnsupported.SUCCESS, response.json()
+    temp_return = response.json()
+    if system.ddb_os:
+        temp_return.loads(system.application())
+    return SuccessFailedUnsupported.SUCCESS, temp_return
