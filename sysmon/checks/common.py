@@ -54,10 +54,10 @@ def get_sysinfo(
     temp_return = response.json()
     if system.ddb_os:
         temp_return["application"] = dict()
-        temp_return["application"]["name"] = system.application().json()
+        temp_return["application"]["name"] = "DDBOS"
         temp_return["application"]["mode"] = system.application().json()
         temp_return["application"]["unit"] = system.application().json()
-        temp_return["application"]["package"] = system.application().json()
-        temp_return["application"]["version"] = system.application().json()
+        temp_return["application"]["package"] = "DDBOS"
+        temp_return["application"]["version"] = "1"
 
     return SuccessFailedUnsupported.SUCCESS, temp_return
