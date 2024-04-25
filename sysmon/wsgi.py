@@ -55,7 +55,7 @@ def add_customer():
     customer.company = Company.from_json(request.json["company"])
     customer.company.save()
     customer.save()
-    return JSONMessage("New Customer created.", status=200)
+    return JSONMessage("New Customer created." + str(customer.id), status=200)
 
 
 @authenticated
