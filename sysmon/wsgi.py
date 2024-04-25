@@ -5,6 +5,7 @@ from typing import Union
 from filedb import File
 from his import ACCOUNT, CUSTOMER, Application, authenticated, authorized, root, admin
 from hwdb import SystemOffline, Deployment, System
+from mdb import Customer, Company
 
 from requests.exceptions import Timeout
 from wsgilib import Binary, JSON, JSONMessage, get_int, get_bool
@@ -40,6 +41,19 @@ __all__ = ["APPLICATION"]
 
 APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
+
+
+@authenticated
+@authorized("sysmon")
+@root
+@APPLICATION.route("/customer_add", methods=["POST"], strict_slashes=False)
+def add_customer():
+    """Adds Customer and basic company information."""
+
+    customer = Customer.from_json(request.json["customer"])
+    customer.company = Company.from_json(request.json["company"])
+    customer.save()
+    return JSONMessage("New Customer created.", status=200)
 
 
 @authenticated
