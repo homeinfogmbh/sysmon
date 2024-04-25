@@ -51,10 +51,10 @@ def add_customer():
     """Adds Customer and basic company information."""
 
     customer = Customer.from_json(request.json["customer"])
-    customer.save()
+
     customer.company = Company.from_json(request.json["company"])
     customer.company.save()
-    customer.save()
+    customer.save(force_insert=True)
     return JSONMessage("New Customer created." + str(customer.id), status=200)
 
 
