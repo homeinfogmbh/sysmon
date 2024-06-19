@@ -917,7 +917,11 @@ def create_statistic_email(email):
     for customer in Customer.select():
         stat = StatsSystemsByCustomer(customer)
         for checkresult in get_latest_check_results(
-            ((Deployment.customer == customer) & (Deployment.testing == 0))
+            (
+                (Deployment.customer == customer)
+                & (Deployment.testing == 0)
+                & (System.testing == 0)
+            )
         ):
             stat.systemsAll = stat.systemsAll + 1
             if checkresult.icmp_request:
