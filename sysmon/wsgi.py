@@ -31,6 +31,7 @@ from sysmon.orm import (
     ExtraUserNotificationEmail,
     Newsletterlistitems,
     StatisticUserNotificationEmail,
+    Warningmail,
 )
 from sysmon.json import check_results_to_json
 from sysmon.preview import generate_preview_token
@@ -41,6 +42,19 @@ __all__ = ["APPLICATION"]
 
 APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
+
+
+@authenticated
+@authorized("sysmon")
+@root
+@APPLICATION.route(
+    "/patch_warningmail/<int:warningmail>", methods=["POST"], strict_slashes=False
+)
+def patch_warningmail(warningmail: int):
+    """Patches a  warningmail."""
+    warning = Warningmail.select().where(Warningmail.id == warningmail).get()
+    warning.patch_json(request.json)
+    return JSON({"status": warning.save()})
 
 
 @authenticated

@@ -43,6 +43,7 @@ __all__ = [
     "ExtraUserNotificationEmail",
     "Newsletterlistitems",
     "StatisticUserNotificationEmail",
+    "Warningmail",
 ]
 
 
@@ -55,6 +56,13 @@ class SysmonModel(JSONModel):
     class Meta:
         database = DATABASE
         schema = database.database
+
+
+class Warningmail(SysmonModel):
+    text = HTMLTextField(null=True)
+    subject = CharField()
+    minsystems = IntegerField()
+    minpercent = IntegerField()
 
 
 class Newsletter(SysmonModel):
