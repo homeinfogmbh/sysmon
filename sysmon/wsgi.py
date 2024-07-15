@@ -60,6 +60,15 @@ def patch_warningmail(warningmail: int):
 @authenticated
 @authorized("sysmon")
 @root
+@APPLICATION.route("/warningmail", methods=["GET"], strict_slashes=False)
+def get_warningmail():
+    """Gets Warningmail."""
+    return JSON(Warningmail.select().get())
+
+
+@authenticated
+@authorized("sysmon")
+@root
 @APPLICATION.route("/customer_add", methods=["POST"], strict_slashes=False)
 def add_customer():
     """Adds Customer and basic company information."""
