@@ -63,7 +63,7 @@ def patch_warningmail(warningmail: int):
 @APPLICATION.route("/warningmail", methods=["GET"], strict_slashes=False)
 def get_warningmail():
     """Gets Warningmail."""
-    return JSON(Warningmail.select().get())
+    return JSON(Warningmail.select().get().to_json())
 
 
 @authenticated
