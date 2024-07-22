@@ -65,7 +65,7 @@ def patch_warningmail(warningmail: int):
 @authenticated
 @authorized("sysmon")
 @root
-@APPLICATION.route("/send_warningmail", methods=["GET"], strict_slashes=False)
+@APPLICATION.route("/test_warningmail", methods=["GET"], strict_slashes=False)
 def send_warningmail_test():
     """Gets Warningmail."""
     send_warning_test_mails()
