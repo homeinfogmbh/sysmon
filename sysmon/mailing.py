@@ -942,13 +942,12 @@ def create_warning_email(email, customer):
                 systemsAll=stat.systemsAll,
                 systemsOffline=stat.systemsOffline,
             )
-
-        return EMail(
-            subject=mailsubject,
-            sender=sender,
-            recipient=email,
-            html=mailbody,
-        )
+            return EMail(
+                subject=mailsubject,
+                sender=sender,
+                recipient=email,
+                html=mailbody,
+            )
 
 
 def create_statistic_email(email):
