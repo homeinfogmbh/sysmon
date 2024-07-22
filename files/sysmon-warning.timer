@@ -1,0 +1,10 @@
+[Unit]
+Description=Periodic SysMon warning mailing
+After=network.target mysql.service
+
+[Timer]
+OnCalendar=*-*-01 05:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
