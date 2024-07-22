@@ -54,6 +54,8 @@ setup(
                 "files/sysmon-mailing.timer",
                 "files/sysmon-statistic.service",
                 "files/sysmon-statistic.timer",
+                "files/sysmon-warning.service",
+                "files/sysmon-warning.timer",
             ],
         )
     ],
