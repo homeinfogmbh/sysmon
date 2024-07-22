@@ -942,6 +942,12 @@ def create_warning_email(email, customer):
                 systemsAll=stat.systemsAll,
                 systemsOffline=stat.systemsOffline,
             )
+            mailsubject = mailsubject.format(
+                customer=customername,
+                percentOffline=stat.percentOffline,
+                systemsAll=stat.systemsAll,
+                systemsOffline=stat.systemsOffline,
+            )
             return EMail(
                 subject=mailsubject,
                 sender=sender,
