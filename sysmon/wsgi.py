@@ -22,7 +22,12 @@ from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
-from sysmon.mailing import send_mailing, get_newsletter_by_date, send_test_mails
+from sysmon.mailing import (
+    send_mailing,
+    get_newsletter_by_date,
+    send_test_mails,
+    send_warning_test_mails,
+)
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
 from sysmon.orm import (
@@ -55,6 +60,16 @@ def patch_warningmail(warningmail: int):
     warning = Warningmail.select().where(Warningmail.id == warningmail).get()
     warning.patch_json(request.json)
     return JSON({"status": warning.save()})
+
+
+@authenticated
+@authorized("sysmon")
+@root
+@APPLICATION.route("/send_warningmail", methods=["GET"], strict_slashes=False)
+def send_warningmail_test():
+    """Gets Warningmail."""
+    send_warning_test_mails()
+    return JSONMessage("Warning Testmail sent", status=200)
 
 
 @authenticated

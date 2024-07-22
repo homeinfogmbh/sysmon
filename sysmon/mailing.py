@@ -47,7 +47,13 @@ from hwdb import Deployment
 from math import floor
 from sysmon.functions import get_latest_check_results
 
-__all__ = ["main", "send_mailing", "get_newsletter_by_date", "send_test_mails"]
+__all__ = [
+    "main",
+    "send_mailing",
+    "get_newsletter_by_date",
+    "send_test_mails",
+    "send_warning_test_mails",
+]
 
 
 IMAGE_BLOCK = """
