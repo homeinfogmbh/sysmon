@@ -910,7 +910,7 @@ def create_warning_email(email, customer):
     sender = get_config().get(
         "mailing", "sender", fallback="service@dasdigitalebrett.de"
     )
-    mailbody = Warningmail.select().get().bodytext
+    mailbody = Warningmail.select().get().text
     mailsubject = Warningmail.select().get().subject
     minpercent = Warningmail.select().get().minpercent
     minsystems = Warningmail.select().get().minsystems
