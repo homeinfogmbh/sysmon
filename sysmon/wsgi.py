@@ -78,7 +78,7 @@ def send_warningmail_test():
 @APPLICATION.route("/warningmail", methods=["GET"], strict_slashes=False)
 def get_warningmail():
     """Gets Warningmail."""
-    return JSON(Warningmail.select().get().to_json())
+    return Warningmail.select().get().to_json()
 
 
 @authenticated
