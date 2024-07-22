@@ -1046,7 +1046,7 @@ def send_statistic_test_mails():
 def send_warning_test_mails():
     # send warning mails to user logged into sysmon
 
-    get_mailer().send([get_warning_mails()])
+    get_mailer().send(get_warning_mails())
 
 
 def get_warning_mails():
