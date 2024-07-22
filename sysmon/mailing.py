@@ -22,6 +22,7 @@ from sysmon.orm import (
     Newsletter,
     Newsletterlistitems,
     StatisticUserNotificationEmail,
+    Warningmail,
 )
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -897,6 +898,54 @@ class StatsSystemsByCustomer:
         return floor(self.systemsOffline / self.systemsAll * 100)
 
 
+def create_warning_email(email, customer):
+    # creates email with Customers who have more than 10% offline systems
+
+    sender = get_config().get(
+        "mailing", "sender", fallback="service@dasdigitalebrett.de"
+    )
+    mailbody = Warningmail.select().get().bodytext
+    mailsubject = Warningmail.select().get().subject
+    minpercent = Warningmail.select().get().minpercent
+    minsystems = Warningmail.select().get().minsystems
+    stats = []
+    stat = StatsSystemsByCustomer(customer)
+    for checkresult in get_latest_check_results(
+        (
+            (Deployment.customer == customer)
+            & (Deployment.testing == 0)
+            & (System.testing == 0)
+        )
+    ):
+        stat.systemsAll = stat.systemsAll + 1
+        if checkresult.icmp_request:
+            stat.systemsOnline = stat.systemsOnline + 1
+        else:
+            stat.systemsOffline = stat.systemsOffline + 1
+        stats.append(stat)
+
+    for stat in stats:
+        try:
+            customername = stat.customer.abbreviation
+        except:
+            customername = stat.customer
+        if stat.percentOffline >= minpercent & stat.systemsAll >= minsystems:
+            mailbody.format(
+                customer=customername,
+                percentOffline=stat.percentOffline,
+                systemsAll=stat.systemsAll,
+                systemsOffline=stat.systemsOffline,
+            )
+
+        return EMail(
+            subject=mailsubject,
+            sender=sender,
+            recipient=email,
+            html=mailbody,
+        )
+    return False
+
+
 def create_statistic_email(email):
     # creates email with Customers who have more than 10% offline systems
 
@@ -988,6 +1037,14 @@ def create_statistic_email(email):
 def send_statistic_test_mails():
     # send statistic mail to user logged into sysmon
     get_mailer().send([create_statistic_email(ACCOUNT.email)])
+
+
+def send_warning_test_mails():
+    # send warning mails to user logged into sysmon
+    for email in StatisticUserNotificationEmail.select():
+        warningMail = create_warning_email(ACCOUNT.email, email.customer)
+        if warningMail:
+            get_mailer().send([warningMail])
 
 
 def statistic():
