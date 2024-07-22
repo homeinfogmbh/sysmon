@@ -935,7 +935,7 @@ def create_warning_email(email, customer):
             customername = stat.customer.abbreviation
         except:
             customername = stat.customer
-        if stat.percentOffline >= minpercent & stat.systemsAll >= minsystems:
+        if stat.percentOffline >= minpercent and stat.systemsAll >= minsystems:
             mailbody = mailbody.format(
                 customer=customername,
                 percentOffline=stat.percentOffline,
