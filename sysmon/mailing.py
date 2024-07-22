@@ -1048,7 +1048,7 @@ def send_warning_test_mails():
 
     warningMails = get_warning_mails()
     if warningMails:
-        get_mailer().send(warningMails)
+        get_mailer().send([warningMails])
 
 
 def get_warning_mails():
