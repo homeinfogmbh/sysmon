@@ -1047,10 +1047,15 @@ def send_statistic_test_mails():
 
 def send_warning_test_mails():
     # send warning mails to user logged into sysmon
+
+    warningMails = get_warning_mails()
+    if warningMails:
+        get_mailer().send([warningMails])
+
+
+def get_warning_mails():
     for email in UserNotificationEmail.select():
-        warningMail = create_warning_email(ACCOUNT.email, email.customer)
-        if warningMail:
-            get_mailer().send([warningMail])
+        yield create_warning_email(ACCOUNT.email, email.customer)
 
 
 def statistic():
