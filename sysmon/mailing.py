@@ -1290,7 +1290,7 @@ def get_html(
         image = IMAGE_BLOCK
     else:
         image = ""
-
+    setlocale(LC_TIME, "de_DE.UTF-8")
     template = MAIL_START + MAIL_END
     if nl_to_send.more_text:
         linktemplate = LINK_BLOCK
