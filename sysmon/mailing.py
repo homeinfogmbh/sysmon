@@ -905,7 +905,7 @@ class StatsSystemsByCustomer:
 
 
 def create_warning_email(email, customer):
-    # creates email with Customers who have more than 10% offline systems
+    # creates email with Customers who have more than minpercent offline systems
 
     sender = get_config().get(
         "mailing", "sender", fallback="service@dasdigitalebrett.de"
@@ -941,6 +941,7 @@ def create_warning_email(email, customer):
                 percentOffline=stat.percentOffline,
                 systemsAll=stat.systemsAll,
                 systemsOffline=stat.systemsOffline,
+                customerId=stat.customer.id,
             )
             mailsubject = mailsubject.format(
                 customer=customername,
