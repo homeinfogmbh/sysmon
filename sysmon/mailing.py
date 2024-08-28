@@ -943,7 +943,7 @@ def create_warning_email(email, customer):
                 systemsOffline=stat.systemsOffline,
                 customerId=stat.customer.id,
                 weblink='<a href="https://portal.homeinfo.de/ddb-report?customer='
-                + stat.customer.id
+                + str(stat.customer.id)
                 + '">Link zur Webansicht</a>',
             )
             mailsubject = mailsubject.format(
