@@ -56,27 +56,46 @@ def create_check(system: System) -> CheckResults:
 
     now = datetime.now()
     http_request, sysinfo = get_sysinfo(system)
-    check_results = CheckResults(
-        system=system,
-        icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
-        ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
-        http_request=http_request,
-        application_state=get_application_state(sysinfo),
-        smart_check=get_smart_results(sysinfo),
-        baytrail_freeze=get_baytrail_freeze_state(sysinfo),
-        fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
-        application_version=get_application_version(sysinfo),
-        ram_total=get_ram_total(sysinfo),
-        ram_free=get_ram_free(sysinfo),
-        ram_available=get_ram_available(sysinfo),
-        efi_mount_ok=efi_mount_ok(sysinfo),
-        download=measure_speed(system),
-        upload=measure_speed(system, reverse=True),
-        root_not_ro=check_root_not_ro(sysinfo),
-        sensors=check_system_sensors(sysinfo),
-        in_sync=is_in_sync(system, now),
-        recent_touch_events=count_recent_touch_events(system.deployment, now),
-    )
+    if system.ddb_os:
+        check_results = CheckResults(
+            system=system,
+            icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
+            ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
+            http_request=http_request,
+            application_state=get_application_state(sysinfo),
+            smart_check=get_smart_results(sysinfo),
+            baytrail_freeze=get_baytrail_freeze_state(sysinfo),
+            fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
+            application_version=get_application_version(sysinfo),
+            ram_total=get_ram_total(sysinfo),
+            ram_free=get_ram_free(sysinfo),
+            ram_available=get_ram_available(sysinfo),
+            efi_mount_ok=efi_mount_ok(sysinfo),
+            download=measure_speed(system),
+            upload=measure_speed(system, reverse=True),
+            root_not_ro=check_root_not_ro(sysinfo),
+            sensors=check_system_sensors(sysinfo),
+            in_sync=is_in_sync(system, now),
+            recent_touch_events=count_recent_touch_events(system.deployment, now),
+        )
+    else:
+        check_results = CheckResults(
+            system=system,
+            icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
+            ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
+            http_request=http_request,
+            application_state=get_application_state(sysinfo),
+            smart_check=get_smart_results(sysinfo),
+            baytrail_freeze=get_baytrail_freeze_state(sysinfo),
+            fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
+            application_version=get_application_version(sysinfo),
+            efi_mount_ok=efi_mount_ok(sysinfo),
+            download=measure_speed(system),
+            upload=measure_speed(system, reverse=True),
+            root_not_ro=check_root_not_ro(sysinfo),
+            sensors=check_system_sensors(sysinfo),
+            recent_touch_events=count_recent_touch_events(system.deployment, now),
+        )
 
     try:
         last_check = get_last_check(system)
