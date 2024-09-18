@@ -14,7 +14,7 @@ def get_smart_results(sysinfo: dict[str, Any]) -> SuccessFailedUnsupported:
     if not (results := sysinfo.get("smartctl")):
         return SuccessFailedUnsupported.UNSUPPORTED
 
-    if all(result == "PASSED" for result in results.values()):
+    if all(result.lstrip() == "PASSED" for result in results.values()):
         return SuccessFailedUnsupported.SUCCESS
 
     return SuccessFailedUnsupported.FAILED
