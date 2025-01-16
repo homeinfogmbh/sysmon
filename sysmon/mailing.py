@@ -55,730 +55,393 @@ __all__ = [
     "send_warning_test_mails",
 ]
 
+LOGGER = getLogger("sysmon-mailing")
+MAIL_BLOCK = """
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Newsletter mieterinfo.tv</title>
+	<style type="text/css">
+		@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap');
 
-IMAGE_BLOCK = """
-  <div class="hide414">
-    <img class="hide414" src="cid:image1" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 700px; outline: none; text-decoration: none; width: 100%;" alt="" width="700" height="" border="0">
-  </div>
-"""
+		body {
+			height: 100% !important;
+			width: 100% !important;
+		}
 
-LIST_BLOCK = """
-<tr >
+		body, table, td, a {
+			-webkit-text-size-adjust: 100%;
+			-ms-text-size-adjust: 100%;
+		}
 
-     <td class="p2b" style="width: 32px; color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px;line-height: 26px;
- font-weight: 700;  padding-bottom: 0px; padding-left:12px; padding-top: 7px;" valign="top">
-     <p>•</p>
+		body, html {
+			margin: 0;
+			padding: 0;
+			width: 100% !important;
+			background-color: #3f3f3f;
+		}
 
-      </td>
+		a, a:hover, .link:hover {
+			text-decoration: none !important;
+		}
 
+		a, h1, h2, h3, img, li, p, ul {
+			font-family: 'Open Sans', Helvetica, sans-serif;
+			letter-spacing: 0;
+		}
 
-     <td style="direction:ltr;text-align:left; padding-bottom: 7px; padding-top: 7px; padding-right: 12px;" valign="top">
+		h1, h2, h3, h4, p {
+			padding: 0;
+			margin: 0;
+		}
 
+		h1, h2, h3, img, li, p, span, ul {
+			color: #000000;
+		}
 
-        <table class="basetable" style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
+		h1 {
+			font-size: 20px;
+			font-weight: bold;
+			line-height: 28px;
+			margin: 0px auto 25px;
+		}
 
-        <tbody><tr>
-          <td class="p1b" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; line-height: 26px; padding-bottom: 7px; padding-top: 0px;">{header}</td>
-        </tr>
+		h2 {
+			font-size: 18px;
+			font-weight: bold;
+			line-height: 25px;
+			margin: 0px auto 15px;
+		}
 
-        <tr>
-          <td class="p2" style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px;"><p>{text}</p>
-</td>
-        </tr>
+		h3 {
+			font-size: 15px;
+			font-weight: bold;
+			line-height: 21px;
+			margin: 0px auto 15px;
+		}
 
-        </tbody></table>  
+		img {
+			max-width: 700px;
+			width: 100%;
+			height: auto;
+			border: 0;
+			line-height: 100%;
+			outline: none;
+			text-decoration: none;
+			display: block;
+		}
 
+		p {
+			font-size: 13px;
+			font-weight: normal;
+			line-height: 20px;
+			margin: 0px auto 15px;
+		}
 
-     </td>
-  </tr>
-  """
+		table {
+			border-collapse: collapse;
+			mso-table-lspace: 0;
+			mso-table-rspace: 0; 
+		}
 
-LINK_BLOCK = """
-<tr>
-                     <td style="direction:ltr;text-align:left;">
-<!--[if (gte mso 9)|(IE)]>
-<table width="250" align="left" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
-<![endif]-->
-   <div class="btn" style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px;" lang="x-btn"> <a href="{mehrlink}"  style="background-color: #000000; border-color: #000000; border-radius: 0px; border-style: solid; border-width: 13px 18px; color: #ffffff; display: inline-block; letter-spacing: 1px; max-width: 300px; min-width: 100px; text-align: center; text-decoration: none; transition: all 0.2s ease-in;"><span style="float:left;text-align:left;">{merhlesen}</span> 
-   <!--[if !mso]><!-- -->
-   <!--<![endif]--> 
-   </a> </div>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->                        
-                     </td>
-                    </tr>
-"""
+		.btnGreen {
+			display: inline-block;
+			color: #ffffff;
+			font-size: 13px;
+			line-height: 19px;
+			text-decoration: none;
+			background-color: #62a53a;
+			border-radius: 18px;
+			padding: 8px 15px;
+			margin-top: 5px;
+		}
 
+		.btnWhite {
+			display: inline-block;
+			color: #000000;
+			font-size: 13px;
+			line-height: 19px;
+			text-decoration: none;
+			background-color: #ffffff;
+			border-radius: 18px;
+			padding: 8px 15px;
+			margin-top: 5px;
+		}
 
-MAIL_START = """<html>
-<style>h1,.h1{{
-  font-size: 60px !important;
-  line-height: 66px !important;
-}}h2,.h2{{
-  font-size: 44px !important;
-  line-height: 50px !important;
-}}.btn a:hover{{
-  background-color:#000000!important; 
-  border-color:#000000!important;
-}}.textcta a:hover{{
-  color:#000000!important;
-  }}p {{margin: 0 !important;}}.divbox:hover, * [lang~="x-divbox"]:hover {{
-  background-color: #000000 !important;
-}}.boxfont:hover, * [lang~="x-boxfont"]:hover {{
-  color: #ffffff !important;
-  
-}}
-.bgcol{{
-background-color: #ABE366;
-}}
-a {{text-decoration: none;}}a[x-apple-data-detectors] {{ color: inherit !important; text-decoration: none !important; font-size: inherit !important; font-family: inherit !important; font-weight: inherit !important; line-height: inherit !important }}table{{ mso-table-lspace: 0; mso-table-rspace: 0; mso-table-lspace: 0; border: none; border-collapse: collapse; border-spacing: 0;}}p {{margin: 0 !important;}}h1, .h1, .h1l {{ font-size: 60px !important; line-height: 66px !important; }}h2, .h2 {{ font-size: 44px !important; line-height: 50px !important; }}ul, ol {{margin:0; margin-left:8px !important;}}u + .body ul, u + .body ol {{ margin-left: 8px !important; }}.show670, .show414 {{display:none;}}sup {{ line-height:0; font-size:70%; }}</style>
+		.container {
+			width: 100%;
+			padding: 0;
+		}
 
+		.content {
+			display: block;
+			padding: 20px 20px 15px 20px;
+		}
+
+		.contentWT1 {
+			display: block;
+			padding: 20px;
+		}
+
+		.contentWT2 {
+			display: block;
+			padding: 0 20px 20px 20px;
+		}
+
+		.contentWT2 table {
+			margin-top: 20px;
+		}
+
+		.greenTable {
+			display: block;
+			padding: 15px 20px 5px 20px;
+			border-radius: 18px;
+			background-color: #62a53a;
+		}
+
+		.header {
+			padding: 10px 15px 20px 15px;
+		}
+
+		.header img {
+			width: 40%;
+			max-width: 228px;
+		}
+
+		.small {
+			color: #ffffff;
+			font-size: 12px;
+			line-height: 17px;
+			margin: 0;
+		}
+
+		.whiteTable {
+			display: block;
+			padding: 15px 20px 5px 20px;
+			border-radius: 18px;
+			background-color: #ffffff;
+		}
+
+		@media only screen and (min-width: 700px) {
+			h1 {
+				font-size: 36px;
+				line-height: 50px;
+				margin: 0px auto 40px !important;
+			}
+
+			h2 {
+				font-size: 24px;
+				line-height: 34px;
+				margin: 0px auto 25px !important;
+			}
+
+			h3 {
+				font-size: 18px;
+				line-height: 25px;
+				margin: 0px auto 25px !important;
+			}
+
+			.btnGreen {
+				font-size: 14px;
+				line-height: 22px;
+				text-decoration: none;
+				border-radius: 22px;
+				padding: 11px 22px;
+			}
+
+			.btnWhite {
+				font-size: 14px;
+				line-height: 22px;
+				text-decoration: none;
+				border-radius: 22px;
+				padding: 11px 22px !important;
+			}
+
+			.container {
+				max-width: 700px !important;
+				margin: 0 auto !important;
+				display: block !important;
+			}
+
+			.content {
+				display: table-cell !important;
+				padding: 45px 60px 30px 60px !important;
+			}
+
+			.contentWT1 {
+				display: table-cell !important;
+				padding: 45px 60px !important;
+			}
+
+			.contentWT2 {
+				display: block;
+				padding: 0 60px 45px 60px !important;
+			}
+
+			.contentWT2 table {
+				margin-top: 25px !important;
+			}
+
+			.greenTable {
+				padding: 30px 30px 5px 30px !important;
+				border-radius: 22px !important;
+			}
+
+			.header {
+				padding: 20px 50px 40px 50px !important;
+			}
+
+			.whiteTable {
+				padding: 30px 30px 5px 30px !important;
+				border-radius: 22px !important;
+			}
+		}
+	</style>
 </head>
 
-
-<body dir="ltr" style="-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#d6d6d5;margin:0;min-width:100%;padding:0;width:100%"><div class="moz-text-html" lang="x-unicode">
-
-
-<table style="background-color:#d6d6d5;border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" class="" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#d6d6d5">
-<tbody>
-<tr>
-<td style="display: block;" align="center">
-<!--[if (gte mso 9)|(IE)]>
-<table width="700" align="center" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
-<![endif]-->
-<table style="border:0;border-collapse:collapse;border-spacing:0;max-width:700px;mso-table-lspace:0;mso-table-rspace:0" class="" width="100%" cellspacing="0" cellpadding="0" border="0">
-<tbody>
-<tr>
-<td style="background-color:#ffffff">
-
-
-
-
-<table style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;"  width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tbody>
-  <tr>
-    <td class="outsidegutter bgcol" style=" direction: ltr; padding: 10px 14px 10px 14px; padding-left: 0; text-align: left;" align="left">
-
-      <table style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="" cellspacing="0" cellpadding="0" border="0">
-      <tbody>
-        <tr>
-        <td style="direction:ltr;text-align:left;padding-left:0; padding-right:0;" width="14">
-        </td>
-
-        <td style="direction:ltr;text-align:left; font-size:0; ">
-
-
-  <table  style="border: none; border-collapse: collapse; border-spacing: 0; display: inline-block; max-width: 616px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: middle; width: 100%;" cellspacing="0" cellpadding="0" border="0">
-    <tbody>
-      <tr>
-      <td style="direction:ltr;text-align:left;padding-left: 0; padding-right: 0;">
-      <table style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-        <tbody>
-          <tr>
-            <td style="direction:ltr;text-align:left;font-size:0;">
-
-
-              <table class="t4of12" style="border: none; border-collapse: collapse; border-spacing: 0; display: inline-block; max-width: 408px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: middle; width: 100%;" cellspacing="0" cellpadding="0" border="0">
-                <tbody>
-                  <tr>
-                  <td style="direction:ltr;text-align:left;padding-left: 12px; padding-right: 12px;">
-                      <table style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-                        <tbody>
-
-
-
-                    
-                      <tr>
-                        <td style="direction:ltr;text-align: left;">
-						    <img class="hide414" src="cid:header">
-    </td>
-                      </tr>
-
-
-                  
-
-                  </tbody>
-
-</table>
-</td>
-</tr>
-</tbody></table>
-
-
-
-</td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-
-
-
-</tbody></table> 
-<table style="border: none; border-collapse: collapse; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;"  width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tbody><tr>
-     <td class="" style="direction:ltr;text-align:left;" align="left">
-<table style="border: none; border-collapse: collapse; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="" cellspacing="0" cellpadding="0" border="0">
-           <tbody><tr>
-             
-
-      <td class="bgcol">
-
-
-
-
-
- 
-
-
-<table style="border: none; border-collapse: collapse; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tbody><tr>
-    <td style="direction:ltr;text-align:left;" width="14">&nbsp;</td>
-     <td class="xoutsidegutter" style="direction:ltr;text-align:left;" align="left">
-        <table style="border: none; border-collapse: collapse; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="" cellspacing="0" cellpadding="0" border="0">
-           <tbody><tr>
-              <td align="center">
-
-<!--[if mso]></td>
-<td valign="top">
-  <![endif]-->
-
-
-<!--[if (gte mso 9)|(IE)]>
-<table width="616" align="left" cellpadding="0" cellspacing="0" border="0">
-  <tr>
-     <td>
-        <![endif]-->
-        <table class="t11of12 layout" style="border-collapse: collapse;  width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
-           <tbody><tr>
-              <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important; padding-top: 0px;">
-                 <table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-                    <tbody><tr>
-                       <td style="direction:ltr;text-align:left;" valign="top">
-                         
-
-<!--[if (gte mso 9)|(IE)]>
-<table width="100%" align="left" cellpadding="0" cellspacing="0" border="0">
-  <tr>
-     <td valign="top">
-        <![endif]-->
-        <table class="t10of12 layout" style="border-collapse: collapse;  width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
-           <tbody><tr>
-            <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;" width="12">&nbsp;</td>
-              <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important; padding-top: 0px; padding-bottom: 25px;">
-                 <table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-                    
-
-<tbody><tr>
-  <td style="direction:ltr;text-align:left;">
-
-<!--[if (gte mso 9)|(IE)]>
-<table align="left" cellpadding="0" cellspacing="0" border="0">
-  <tr>
-     <td>
-        <![endif]-->
-        <table class="t9of12 layout" style="border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
-           <tbody><tr>
-              <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;">
-                 <table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-                    <tbody>
-
-                     
-
-
-
-                     <tr>
-                      <td class="h2_h2 h2" style="direction:ltr;text-align:left;color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 34px; font-weight: 500; line-height: 40px; padding-bottom: 7px; padding-top: 0px;">{header}
-</td>
-                     </tr>
-
-
-
-
-
-
-
-
-                 </tbody></table>
-              </td>
-           </tr>
-        </tbody></table>
-        <!--[if (gte mso 9)|(IE)]>
-     </td>
-  </tr>
-</table>
-<![endif]-->  
-
-
-  </td>
-</tr>
-
-
-
-                    <tr>
-                     <td style="direction:ltr;text-align:left;padding-bottom: 20px">
-<!--[if (gte mso 9)|(IE)]>
-<table width="504" align="left" cellpadding="0" cellspacing="0" border="0">
-  <tr>
-     <td>
-        <![endif]-->
-        <table class="t6of12 layout" style="border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
-           <tbody><tr>
-              <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;">
-                 <table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-                    <tbody>
-
-
-                      <tr>
-                       <td class="p1" style="direction:ltr;text-align:left;color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 20px; font-weight: normal; line-height: 26px; padding-bottom: 7px; padding-top: 7px;"><div>{text}
-"""
-
-MAIL_END = """</div>
-</td>
-                    </tr>
-
-
-
-
-
-                 </tbody></table>
-              </td>
-           </tr>
-        </tbody></table>
-        <!--[if (gte mso 9)|(IE)]>
-     </td>
-  </tr>
-</table>
-<![endif]-->                        
-                     </td>
-                    </tr>
-                    {thelink}
-                 </tbody></table>
-              </td>
-              <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;" width="12">&nbsp;</td>
-           </tr>
-        </tbody></table>
-        <!--[if (gte mso 9)|(IE)]>
-     </td>
-  </tr>
-</table>
-<![endif]-->
-
-
-
-
-
-
-                       </td>
-                    </tr>
-                 </tbody></table>
-              </td>
-           </tr>
-        </tbody></table>
-        <!--[if (gte mso 9)|(IE)]>
-     </td>
-  </tr>
-</table>
-<![endif]-->
-
-
-              </td>
-           </tr>
-        </tbody></table>
-     </td>
-     <td style="direction:ltr;text-align:left;" width="14">&nbsp;</td>
-  </tr>
-</tbody></table>            
-
-
-{image}
-
-
-
-
-
-
-
-             </td>
-           </tr>
-        </tbody></table>
-     </td>
-  </tr>
-</tbody></table>
-<table style="border:0;border-collapse:collapse;border-spacing:0;margin:auto;max-width:700px;mso-table-lspace:0;mso-table-rspace:0" class="tron" width="100%" cellspacing="0" cellpadding="0" border="0">
-<tbody>
-<tr>
-<td align="center">
-<table style="background-color:#fff;border:0;border-collapse:collapse;border-spacing:0;margin:auto;mso-table-lspace:0;mso-table-rspace:0" class="basetable" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff">
-<tbody>
-<tr>
-<td align="center">
-<!--[if (gte mso 9)|(IE)]>
-<table width="700" align="center" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td align="center">
-<![endif]-->
-<table class="basetable" style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" width="100%" cellspacing="0" cellpadding="0" border="0">
-<tbody>
-<tr>
-<td style="background-color:#ffffff" align="center">
-<table class="basetable" style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" width="100%" cellspacing="0" cellpadding="0" border="0">
-<tbody>
-<tr>
-<td>
-<!--[if (gte mso 9)|(IE)]>
-<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
-<![endif]-->
-<table class="basetable" style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" width="100%" cellspacing="0" cellpadding="0" border="0">
-<tbody>
-<tr>
-<td>
-<!--[if (gte mso 9)|(IE)]>
-<table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
-<![endif]-->
-<table style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" class="" width="100%" cellspacing="0" cellpadding="0" border="0">
-<tbody>
-<tr>
-<td>
-
-<table style="border-collapse: collapse; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0">
-<tbody>
-
-<tr>
-<td style="font-size:0; line-height: 1px; " height="25">&nbsp;
-</td>
-</tr>
-
-<tr>
-<td class="outsidegutter" style="direction:ltr;text-align:left; ; padding:15px 14px 15px 14px;" align="left">
-<table style="border-collapse: collapse; width: 100%;" cellspacing="0" cellpadding="0" border="0">
-<tbody><tr>
-<td style="direction:ltr;text-align:left;">
-<!--[if (gte mso 9)|(IE)]>
-<table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
-<![endif]-->
-<table class="t10of12" style="Margin: 0 auto; border-collapse: collapse; max-width: 560px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
-<tbody><tr>
-<td style="direction:ltr;text-align:left;">
-<table style="border-collapse: collapse; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-<tbody>
-
-
-<tr>
-<td style="direction:ltr;text-align:left;">
-<table style="border-collapse: collapse; table-layout: fixed; width: 560px;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-<tbody>
-
-{list}
-
-</tbody></table>
-</td>
-</tr>
-
-
-<tr><td colspan=2 style="color: #000000; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: normal; line-height: 22px; padding-bottom: 7px; padding-top: 0px">
-
+<body style="font-family: 'Open Sans', Helvetica, sans-serif">
+	<div lang="de" dir="ltr" style="padding:20px; margin:0;">
+		<table class="container" role="presentation" cellspacing="0" cellpadding="0" align="center" style="border-collapse:collapse;max-width:700px;width:100%;">
+			<tr>
+				<td class="header" style="width:100%;background-color:#2f3133;" align="right">
+					<img width="228" height="90" src="assets/base/mieterinfo.logo.png" alt="mieterinfo.tv">
+				</td>
+			</tr>
+			<tr>
+				<td style="background-color:#ffffff;">
+					<!--[if mso]>
+					<table role="presentation" align="center" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+						<tr>
+							<td>
+					<![endif]-->
+								<table align="center" role="presentation" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;max-width:700px;width:100%;">
+									<tr>
+										<td class="content" style="text-align: left;">
+											<h1>{header}</h1>
+											<p>{text}</p>
+											{the_link}
+										</td>
+									</tr>
+									<tr>
+										<td align="center" width="700">{the_image}</td>
+									</tr>
 {ddbtext}
-</td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-
-<tr>
-<td style="font-size:0; line-height: 1px; " height="25">&nbsp;
-</td>
-</tr>
-
-</tbody></table>
-</td>
-</tr>
-</tbody>
-</table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-</tbody>
-</table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-</tbody>
-</table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-</tbody>
-</table>
-<!-- END LIST-->
-</td>
-</tr>
-<!-- END BODY-->
-</tbody>
-</table>
-<table style="background-color: #000000; width: 100%;"  width="100%" cellspacing="0" cellpadding="0" border="0">
-<tbody><tr>
-<td class="outsidegutter" style="direction:ltr;text-align:left;" align="left">
-<table style="width: 100%;" class="" cellspacing="0" cellpadding="0" border="0">
-
-
-
-<tbody><tr>
-<td style="direction:ltr;text-align:left;padding: 30px 14px 30px 14px;">
-<!--[if (gte mso 9)|(IE)]>
-<table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td>
-<![endif]-->
-<table class="t10of12" style="Margin: 0 auto; max-width: 560px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
-<tbody><tr>
-<td>
-<table style="direction: rtl; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-<tbody><tr>
-<td class="ignoreTd" style="font-size:0; text-align: left;">
-<table class="t6of12" style="direction: ltr; display: inline-block; max-width: 560px; vertical-align: top; width: 100%;" cellspacing="0" cellpadding="0" border="0">
-<tbody><tr>
-<td>
-<table style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-<tbody><tr>
-<td>
-<!--[if (gte mso 9)|(IE)]>
-<table width="468" align="left" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td width="168">
-<![endif]-->
-<table class="t3of12" style="max-width: 168px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="left">
-<tbody><tr>
-<td style="direction:ltr;text-align:left;padding: 0 12px;">
-<table style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-
-<tbody>
-
-
-
-
-<tr>
-<td class="white" style="color: rgb(0, 0, 0); font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 18px; padding: 3px 0px; direction: ltr; text-align: left;">
-
-<a href="mailto:r.haupt@homeinfo.de?subject=UNSUBSCRIBE&body=Bitte tragen sie diese Emailadresse aus der Newsletter aus" style="text-decoration: none; color: #ffffff;">Abbestellen</a>
-
-</td>
-</tr>
-
-
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-<td width="300" valign="top" style="vertical-align: top;">
-<![endif]-->
-
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-<!-- END top half -->
-<!-- bottom half -->
-<tr>
-<td style="direction:ltr;text-align:left; padding: 0px 14px 30px 14px;">
-<!--[if (gte mso 9)|(IE)]>
-<table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td width="560">
-<![endif]-->
-<table class="t10of12" style="Margin: 0 auto; max-width: 560px; width: 100%;" cellspacing="0" cellpadding="0" border="0" align="center">
-<tbody><tr>
-<td>
-<table style="direction: rtl; table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-<tbody><tr>
-<td style="font-size:0; text-align: left">
-<!--[if (gte mso 9)|(IE)]>
-<table width="560" align="left" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td width="224">
-<![endif]-->
-<table class="t4of12" style="direction: ltr; display: inline-block; max-width: 224px; vertical-align: top; width: 100%;" cellspacing="0" cellpadding="0" border="0">
-<tbody><tr>
-<td style="direction:ltr;text-align:left;padding: 0 12px;">
-<table style="table-layout: fixed;" cellspacing="0" cellpadding="0" border="0" align="left">
-<tbody><tr>
-<td style="padding-bottom: 12px; direction:ltr;text-align:left;">
-
- 
-</td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-<td width="336">
-<![endif]-->
-<table class="t6of12" style="direction: ltr; display: inline-block; max-width: 336px; vertical-align: top; width: 100%;" cellspacing="0" cellpadding="0" border="0">
-<tbody><tr>
-<td style="direction:ltr;text-align:left;padding: 0 12px;">
-<table style="table-layout: fixed; width: 100%;" width="100%" cellspacing="0" cellpadding="0" border="0" align="left">
-<tbody><tr>
-<td style="direction:ltr;text-align:left;color: #e5e5e5; font-family: Helvetica, Arial, sans-serif; font-size: 10px; line-height: 18px;">
-
-
-
-
-
-
-mieterinfo.tv<br>
-Kommunikationssysteme GmbH & Co. KG<br><br>
-
-Burgstraße 6a<br>
-30826 Garbsen<br>
-
-Fon.: 0511 21 24 11 00<br>
-
-service@dasdigitalebrett.de<br>
-<a href="https://dasdigitalebrett.de/ "  style="text-decoration: none; color: #e5e5e5">https://dasdigitalebrett.de/ </a>
-
-
-
-
-</td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-
-
-</tbody></table>
-</td>
-</tr>
-</tbody></table>
-
-</td>
-</tr>
-</tbody>
-</table>
-<!--[if (gte mso 9)|(IE)]>
-</td>
-</tr>
-</table>
-<![endif]-->
-</td>
-</tr>
-</tbody>
-</table>
-
-
-</div></body>
-
-</html>"""
-
-DDB_TEXT = """<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihrer Digitalen Bretter:<br>
-Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.
-</p>
-<p>
-Sofern sich dazu im Vorfeld Fragen ergeben, stehen wir Ihnen natürlich wie gewohnt sehr gern zur Verfügung.<br>
+									<tr>
+										<td class="contentWT2" style="text-align: left; background-color: #f5f5f5;">
+											<h2>Updates aus dem letzten Monat</h2>
+											{list}
+										</td>
+									</tr>
+								</table>
+					<!--[if mso]>
+							</td>
+						</tr>
+					</table>
+					<![endif]-->
+				</td>
+			</tr>
+			<tr>
+				<td class="footer" style="width:100%;background-color:#2f3133;">
+					<!--[if mso]>
+					<table role="presentation" align="center" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+						<tr>
+							<td>
+					<![endif]-->
+								<table align="center" role="presentation" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;max-width:700px;width:100%;">
+									<tr>
+										<td class="content" style="text-align: left;">
+											<!--[if mso]>
+											<table role="presentation" align="center" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+												<tr>
+													<td>
+											<![endif]-->
+														<table align="center" role="presentation" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;max-width:580;width:100%;margin-bottom: 25px;">
+															<tr>
+																<td colspan="2">
+																	<p><a style="color: #ffffff; text-decoration: underline !important;" href="#"><strong>Abbestellen</strong></a></p>
+																</td>
+															</tr>
+															<tr>
+																<td width="50%" valign="top" style="width: 50%;vertical-align: top;">
+																	<p class="small">mieterinfo.tv<br>Kommunikationssysteme GmbH &amp; Co. KG<br>Burgstraße 6a<br>30823 Garbsen</p>
+																</td>
+																<td width="50%" valign="top" style="width: 50%;vertical-align: top;">
+																	<p class="small">Fon: 0511 21 24 11 00<br><a style="color: #ffffff; text-decoration: none;" href="mailto:service@dasdigitalebrett.de">service@dasdigitalebrett.de</a><br><a style="color: #ffffff; text-decoration: none;" href="https://dasdigitalebrett.de" target="_blank">https://dasdigitalebrett.de</a></p>
+																</td>
+															</tr>
+														</table>
+											<!--[if mso]>
+													</td>
+												</tr>
+											</table>
+											<![endif]-->
+										</td>
+									</tr>
+								</table>
+					<!--[if mso]>
+							</td>
+						</tr>
+					</table>
+					<![endif]-->
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
+"""
+LINK_BLOCK = """<p><a class="btnGreen" href="{mehrlink}" target="_blank"><strong>{merhlesen}</strong></a></p>"""
+IMAGE_BLOCK = (
+    """<img width="700" height="250" src="cid:image1" alt="Newsletter Bild">"""
+)
+DDB_TEXT = """<tr>
+										<td class="contentWT1" style="text-align: left; background-color: #f5f5f5;">
+											<!--[if mso]>
+											<table role="presentation" align="center" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+												<tr>
+													<td>
+											<![endif]-->
+														<table align="center" role="presentation" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;max-width:580;width:100%;">
+															<tr>
+																<td class="greenTable">
+																	<h2>Ihre Statistik</h2>
+																	<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihrer Digitalen Bretter:<br>
+Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.</p>
+																	<p>Sofern sich dazu im Vorfeld Fragen ergeben, stehen wir Ihnen natürlich wie gewohnt sehr gern zur Verfügung.<br>
 Bitte nutzen Sie den Link zur detaillierten Monatsstatistik. Hier werden Ihnen auch weiterführende Abläufe beschrieben:<br>
-<a href="https://portal.homeinfo.de/ddb-report?customer={customer.id}">Link zur Webansicht</a>
-</p>"""
-LOGGER = getLogger("sysmon-mailing")
-
+<a class="btnWhite" href="https://portal.homeinfo.de/ddb-report?customer={customer.id}"" target="_blank" title="Link zur Webansicht"><strong>Link zur Webansicht</strong></a></p>
+																</td>
+															</tr>
+														</table>
+											<!--[if mso]>
+													</td>
+												</tr>
+											</table>
+											<![endif]-->
+										</td>
+									</tr>
+"""
+LIST_BLOCK = """<!--[if mso]>
+											<table role="presentation" align="center" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+												<tr>
+													<td>
+											<![endif]-->
+														<table align="center" role="presentation" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;max-width:580;width:100%;">
+															<tr>
+																<td class="whiteTable">
+																	<h3>{header}</h3>
+																	<p>{text}</p>
+																</td>
+															</tr>
+														</table>
+											<!--[if mso]>
+													</td>
+												</tr>
+											</table>
+											<![endif]-->
+"""
 FOOTER_TEXT = """ """
 
 
@@ -1112,7 +775,7 @@ def create_other_test_email(newsletter: int, recipient: str):
     images_cid = list()
     images_cid.append(
         MailImage(
-            "https://sysmon.homeinfo.de/newsletter-image/1074324", "header", "PNG"
+            "https://sysmon.homeinfo.de/newsletter-image/1135829", "header", "PNG"
         )
     )
     try:
@@ -1295,7 +958,7 @@ def get_html(
     else:
         image = ""
     setlocale(LC_TIME, "de_DE.UTF-8")
-    template = MAIL_START + MAIL_END
+    template = MAIL_BLOCK
     if nl_to_send.more_text:
         linktemplate = LINK_BLOCK
         linktemplate = linktemplate.format(
@@ -1331,7 +994,7 @@ def get_html(
 def get_html_other(nl_to_send: Newsletter) -> str:
     """Return the email body's for non DDB customers."""
 
-    template = MAIL_START + MAIL_END
+    template = MAIL_BLOCK
     if nl_to_send.image:
         image = IMAGE_BLOCK
     else:
