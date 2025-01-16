@@ -360,7 +360,7 @@ MAIL_BLOCK = """
 														<table align="center" role="presentation" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;max-width:580;width:100%;margin-bottom: 25px;">
 															<tr>
 																<td colspan="2">
-																	<p><a style="color: #ffffff; text-decoration: underline !important;" href="#"><strong>Abbestellen</strong></a></p>
+																	<p><a style="color: #ffffff; text-decoration: underline !important;" href="mailto:r.haupt@homeinfo.de?subject=UNSUBSCRIBE&body=Bitte tragen sie diese Emailadresse aus der Newsletter aus"><strong>Abbestellen</strong></a></p>
 																</td>
 															</tr>
 															<tr>
