@@ -66,63 +66,63 @@ MAIL_BLOCK = """
 	<style type="text/css">
 		@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap');
 
-		body {
+		body {{
 			height: 100% !important;
 			width: 100% !important;
-		}
+		}}
 
-		body, table, td, a {
+		body, table, td, a {{
 			-webkit-text-size-adjust: 100%;
 			-ms-text-size-adjust: 100%;
-		}
+		}}
 
-		body, html {
+		body, html {{
 			margin: 0;
 			padding: 0;
 			width: 100% !important;
 			background-color: #3f3f3f;
-		}
+		}}
 
-		a, a:hover, .link:hover {
+		a, a:hover, .link:hover {{
 			text-decoration: none !important;
-		}
+		}}
 
-		a, h1, h2, h3, img, li, p, ul {
+		a, h1, h2, h3, img, li, p, ul {{
 			font-family: 'Open Sans', Helvetica, sans-serif;
 			letter-spacing: 0;
-		}
+		}}
 
-		h1, h2, h3, h4, p {
+		h1, h2, h3, h4, p {{
 			padding: 0;
 			margin: 0;
-		}
+		}}
 
-		h1, h2, h3, img, li, p, span, ul {
+		h1, h2, h3, img, li, p, span, ul {{
 			color: #000000;
-		}
+		}}
 
-		h1 {
+		h1 {{
 			font-size: 20px;
 			font-weight: bold;
 			line-height: 28px;
 			margin: 0px auto 25px;
-		}
+		}}
 
-		h2 {
+		h2 {{
 			font-size: 18px;
 			font-weight: bold;
 			line-height: 25px;
 			margin: 0px auto 15px;
-		}
+		}}
 
-		h3 {
+		h3 {{
 			font-size: 15px;
 			font-weight: bold;
 			line-height: 21px;
 			margin: 0px auto 15px;
-		}
+		}}
 
-		img {
+		img {{
 			max-width: 700px;
 			width: 100%;
 			height: auto;
@@ -131,22 +131,22 @@ MAIL_BLOCK = """
 			outline: none;
 			text-decoration: none;
 			display: block;
-		}
+		}}
 
-		p {
+		p {{
 			font-size: 13px;
 			font-weight: normal;
 			line-height: 20px;
 			margin: 0px auto 15px;
-		}
+		}}
 
-		table {
+		table {{
 			border-collapse: collapse;
 			mso-table-lspace: 0;
 			mso-table-rspace: 0; 
-		}
+		}}
 
-		.btnGreen {
+		.btnGreen {{
 			display: inline-block;
 			color: #ffffff;
 			font-size: 13px;
@@ -156,9 +156,9 @@ MAIL_BLOCK = """
 			border-radius: 18px;
 			padding: 8px 15px;
 			margin-top: 5px;
-		}
+		}}
 
-		.btnWhite {
+		.btnWhite {{
 			display: inline-block;
 			color: #000000;
 			font-size: 13px;
@@ -168,136 +168,136 @@ MAIL_BLOCK = """
 			border-radius: 18px;
 			padding: 8px 15px;
 			margin-top: 5px;
-		}
+		}}
 
-		.container {
+		.container {{
 			width: 100%;
 			padding: 0;
-		}
+		}}
 
-		.content {
+		.content {{
 			display: block;
 			padding: 20px 20px 15px 20px;
-		}
+		}}
 
-		.contentWT1 {
+		.contentWT1 {{
 			display: block;
 			padding: 20px;
-		}
+		}}
 
-		.contentWT2 {
+		.contentWT2 {{
 			display: block;
 			padding: 0 20px 20px 20px;
-		}
+		}}
 
-		.contentWT2 table {
+		.contentWT2 table {{
 			margin-top: 20px;
-		}
+		}}
 
-		.greenTable {
+		.greenTable {{
 			display: block;
 			padding: 15px 20px 5px 20px;
 			border-radius: 18px;
 			background-color: #62a53a;
-		}
+		}}
 
-		.header {
+		.header {{
 			padding: 10px 15px 20px 15px;
-		}
+		}}
 
-		.header img {
+		.header img {{
 			width: 40%;
 			max-width: 228px;
-		}
+		}}
 
-		.small {
+		.small {{
 			color: #ffffff;
 			font-size: 12px;
 			line-height: 17px;
 			margin: 0;
-		}
+		}}
 
-		.whiteTable {
+		.whiteTable {{
 			display: block;
 			padding: 15px 20px 5px 20px;
 			border-radius: 18px;
 			background-color: #ffffff;
-		}
+		}}
 
-		@media only screen and (min-width: 700px) {
-			h1 {
+		@media only screen and (min-width: 700px) {{
+			h1 {{
 				font-size: 36px;
 				line-height: 50px;
 				margin: 0px auto 40px !important;
-			}
+			}}
 
-			h2 {
+			h2 {{
 				font-size: 24px;
 				line-height: 34px;
 				margin: 0px auto 25px !important;
-			}
+			}}
 
-			h3 {
+			h3 {{
 				font-size: 18px;
 				line-height: 25px;
 				margin: 0px auto 25px !important;
-			}
+			}}
 
-			.btnGreen {
+			.btnGreen {{
 				font-size: 14px;
 				line-height: 22px;
 				text-decoration: none;
 				border-radius: 22px;
 				padding: 11px 22px;
-			}
+			}}
 
-			.btnWhite {
+			.btnWhite {{
 				font-size: 14px;
 				line-height: 22px;
 				text-decoration: none;
 				border-radius: 22px;
 				padding: 11px 22px !important;
-			}
+			}}
 
-			.container {
+			.container {{
 				max-width: 700px !important;
 				margin: 0 auto !important;
 				display: block !important;
-			}
+			}}
 
-			.content {
+			.content {{
 				display: table-cell !important;
 				padding: 45px 60px 30px 60px !important;
-			}
+			}}
 
-			.contentWT1 {
+			.contentWT1 {{
 				display: table-cell !important;
 				padding: 45px 60px !important;
-			}
+			}}
 
-			.contentWT2 {
+			.contentWT2 {{
 				display: block;
 				padding: 0 60px 45px 60px !important;
-			}
+			}}
 
-			.contentWT2 table {
+			.contentWT2 table {{
 				margin-top: 25px !important;
-			}
+			}}
 
-			.greenTable {
+			.greenTable {{
 				padding: 30px 30px 5px 30px !important;
 				border-radius: 22px !important;
-			}
+			}}
 
-			.header {
+			.header {{
 				padding: 20px 50px 40px 50px !important;
-			}
+			}}
 
-			.whiteTable {
+			.whiteTable {{
 				padding: 30px 30px 5px 30px !important;
 				border-radius: 22px !important;
-			}
-		}
+			}}
+		}}
 	</style>
 </head>
 
