@@ -321,11 +321,11 @@ MAIL_BLOCK = """
 										<td class="content" style="text-align: left;">
 											<h1>{header}</h1>
 											<p>{text}</p>
-											{the_link}
+											{thelink}
 										</td>
 									</tr>
 									<tr>
-										<td align="center" width="700">{the_image}</td>
+										<td align="center" width="700">{image}</td>
 									</tr>
 {ddbtext}
 									<tr>
