@@ -306,7 +306,7 @@ MAIL_BLOCK = """
 		<table class="container" role="presentation" cellspacing="0" cellpadding="0" align="center" style="border-collapse:collapse;max-width:700px;width:100%;">
 			<tr>
 				<td class="header" style="width:100%;background-color:#2f3133;" align="right">
-					<img width="228" height="90" src="assets/base/mieterinfo.logo.png" alt="mieterinfo.tv">
+					<img width="228" height="90" src="cid:image1" alt="mieterinfo.tv">
 				</td>
 			</tr>
 			<tr>
