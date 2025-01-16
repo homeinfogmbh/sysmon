@@ -271,13 +271,13 @@ MAIL_BLOCK = """
 			}}
 
 			.contentWT1 {{
-				display: table-cell !important;
-				padding: 45px 60px !important;
+				display: table-cell !important;	
+				padding: 45px 60px 0 60px !important;
 			}}
 
 			.contentWT2 {{
 				display: block;
-				padding: 0 60px 45px 60px !important;
+				padding: 45px 60px !important;
 			}}
 
 			.contentWT2 table {{
