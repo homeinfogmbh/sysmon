@@ -775,7 +775,7 @@ def create_other_test_email(newsletter: int, recipient: str):
     images_cid = list()
     images_cid.append(
         MailImage(
-            "https://sysmon.homeinfo.de/newsletter-image/1135829", "header", "PNG"
+            "https://sysmon.homeinfo.de/newsletter-image/1137174", "header", "PNG"
         )
     )
     try:
@@ -826,7 +826,7 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
     images_cid = list()
     images_cid.append(
         MailImage(
-            "https://sysmon.homeinfo.de/newsletter-image/1135829", "header", "PNG"
+            "https://sysmon.homeinfo.de/newsletter-image/1137174", "header", "PNG"
         )
     )
     try:
@@ -924,7 +924,7 @@ def create_customer_emails(
     images_cid = list()
     images_cid.append(
         MailImage(
-            "https://sysmon.homeinfo.de/newsletter-image/1135829", "header", "PNG"
+            "https://sysmon.homeinfo.de/newsletter-image/1137174", "header", "PNG"
         )
     )
     try:
