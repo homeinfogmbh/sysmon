@@ -406,9 +406,9 @@ DDB_TEXT = """<tr>
 														<table align="center" role="presentation" border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;max-width:580;width:100%;">
 															<tr>
 																<td class="greenTable">
-																	<h2>Ihre Statistik</h2>
+																	<h2>Ihre Statistik - {month} {year}</h2>
 																	<p>Hiermit erhalten Sie einen Statusbericht für den Monat {month} {year} Ihrer Digitalen Bretter:<br>
-Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.</p>
+<b>Im Monat {month} waren {percent_online}% Ihrer Digitalen Bretter online.</b></p>
 																	<p>Sofern sich dazu im Vorfeld Fragen ergeben, stehen wir Ihnen natürlich wie gewohnt sehr gern zur Verfügung.<br>
 Bitte nutzen Sie den Link zur detaillierten Monatsstatistik. Hier werden Ihnen auch weiterführende Abläufe beschrieben:<br>
 <a class="btnWhite" href="https://portal.homeinfo.de/ddb-report?customer={customer.id}"" target="_blank" title="Link zur Webansicht"><strong>Link zur Webansicht</strong></a></p>
