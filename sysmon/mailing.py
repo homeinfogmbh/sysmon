@@ -813,13 +813,18 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
             get_check_results_for_month(customer, last_month)
         )
     ):
-        html = get_html_other(nl_to_send)
+        html = get_html(
+            nl_to_send,
+            customer,
+            "0",
+            last_month,
+        )
 
     else:
         html = get_html(
             nl_to_send,
             customer,
-            MeanStats.from_system_check_results(check_results),
+            MeanStats.from_system_check_results(check_results).percent_online,
             last_month,
         )
     images_cid = list()
@@ -911,13 +916,18 @@ def create_customer_emails(
             get_check_results_for_month(customer, last_month)
         )
     ):
-        html = get_html_other(nl_to_send)
+        html = get_html(
+            nl_to_send,
+            customer,
+            "0",
+            last_month,
+        )
 
     else:
         html = get_html(
             nl_to_send,
             customer,
-            MeanStats.from_system_check_results(check_results),
+            MeanStats.from_system_check_results(check_results).percent_online,
             last_month,
         )
     images_cid = list()
@@ -949,7 +959,7 @@ def create_customer_emails(
 
 
 def get_html(
-    nl_to_send: Newsletter, customer: Customer, stats: MeanStats, last_month: date
+    nl_to_send: Newsletter, customer: Customer, stats: String, last_month: date
 ) -> str:
     """Return the email body's for DDB customers."""
     if nl_to_send.image:
@@ -977,7 +987,7 @@ def get_html(
         month=last_month.strftime("%B"),
         year=last_month.strftime("%Y"),
         customer=customer,
-        percent_online=stats.percent_online,
+        percent_online=stats,
         out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
     )
     return template.format(
