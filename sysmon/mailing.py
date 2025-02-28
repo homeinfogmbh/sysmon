@@ -922,7 +922,7 @@ def create_customer_emails(
             nl_to_send,
             customer,
             "0",
-            "0"
+            "0",
             last_month,
         )
 
