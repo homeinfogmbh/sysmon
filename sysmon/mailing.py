@@ -817,6 +817,7 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
             nl_to_send,
             customer,
             "0",
+            "0",
             last_month,
         )
 
@@ -825,6 +826,7 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
             nl_to_send,
             customer,
             MeanStats.from_system_check_results(check_results).percent_online,
+            len(MeanStats.out_of_date(datetime.now())),
             last_month,
         )
     images_cid = list()
@@ -920,6 +922,7 @@ def create_customer_emails(
             nl_to_send,
             customer,
             "0",
+            "0"
             last_month,
         )
 
@@ -928,6 +931,7 @@ def create_customer_emails(
             nl_to_send,
             customer,
             MeanStats.from_system_check_results(check_results).percent_online,
+            len(MeanStats.out_of_date(datetime.now())),
             last_month,
         )
     images_cid = list()
@@ -959,7 +963,7 @@ def create_customer_emails(
 
 
 def get_html(
-    nl_to_send: Newsletter, customer: Customer, stats, last_month: date
+    nl_to_send: Newsletter, customer: Customer, stats, outOfDate, last_month: date
 ) -> str:
     """Return the email body's for DDB customers."""
     if nl_to_send.image:
@@ -988,7 +992,7 @@ def get_html(
         year=last_month.strftime("%Y"),
         customer=customer,
         percent_online=stats,
-        out_of_sync_but_online=len(stats.out_of_date(datetime.now())),
+        out_of_sync_but_online=outOfDate,
     )
     return template.format(
         ddbtext=ddb_text,
