@@ -826,7 +826,7 @@ def create_customer_test_email(newsletter: int, customer: Customer, recipient: s
             nl_to_send,
             customer,
             MeanStats.from_system_check_results(check_results).percent_online,
-            len(MeanStats.out_of_date(datetime.now())),
+            "0",
             last_month,
         )
     images_cid = list()
@@ -931,7 +931,7 @@ def create_customer_emails(
             nl_to_send,
             customer,
             MeanStats.from_system_check_results(check_results).percent_online,
-            len(MeanStats.out_of_date(datetime.now())),
+            "0",
             last_month,
         )
     images_cid = list()
