@@ -959,7 +959,7 @@ def create_customer_emails(
 
 
 def get_html(
-    nl_to_send: Newsletter, customer: Customer, stats: String, last_month: date
+    nl_to_send: Newsletter, customer: Customer, stats, last_month: date
 ) -> str:
     """Return the email body's for DDB customers."""
     if nl_to_send.image:
