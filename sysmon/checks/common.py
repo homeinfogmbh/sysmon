@@ -11,6 +11,7 @@ from hwdb import System
 from sysmon.enumerations import SuccessFailedUnsupported
 from sysmon.orm import CheckResults
 
+import requests
 
 __all__ = ["extract_package_version", "get_last_check", "get_sysinfo"]
 
@@ -46,7 +47,7 @@ def get_sysinfo(
 
     try:
         response = system.sysinfo(timeout=timeout)
-    except (ConnectionError, ReadTimeout, Timeout):
+    except (ConnectionError, ReadTimeout, Timeout, requests.exceptions.ReadTimeout):
         return SuccessFailedUnsupported.UNSUPPORTED, {}
 
     if response.status_code != 200:
