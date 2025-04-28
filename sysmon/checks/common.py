@@ -5,7 +5,7 @@ from re import fullmatch
 from typing import Any
 
 from requests import ConnectionError, ReadTimeout, Timeout
-
+from urllib3.exceptions import ReadTimeoutError
 from hwdb import System
 
 from sysmon.enumerations import SuccessFailedUnsupported
@@ -47,7 +47,7 @@ def get_sysinfo(
 
     try:
         response = system.sysinfo(timeout=timeout)
-    except (ConnectionError, ReadTimeout, Timeout, requests.exceptions.ReadTimeout):
+    except (ConnectionError, ReadTimeout, Timeout, ReadTimeoutError):
         return SuccessFailedUnsupported.UNSUPPORTED, {}
 
     if response.status_code != 200:
