@@ -37,6 +37,7 @@ __all__ = [
     "DATABASE",
     "SysmonModel",
     "CheckResults",
+    "NewestCheckResults",
     "OfflineHistory",
     "UserNotificationEmail",
     "Newsletter",
@@ -187,6 +188,12 @@ class CheckResults(SysmonModel):
         json = super().to_json(*args, **kwargs)
         json["online"] = self.online
         return json
+
+
+class NewestCheckResults(CheckResults):
+    """Storage container for newest Check result by System."""
+
+    icmp_request = BooleanField()
 
 
 class OfflineHistory(SysmonModel):

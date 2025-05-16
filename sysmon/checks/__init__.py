@@ -7,7 +7,7 @@ from typing import Iterable
 from hwdb import System
 
 from sysmon.config import LOGGER
-from sysmon.orm import CheckResults
+from sysmon.orm import CheckResults, NewestCheckResults
 
 from sysmon.checks.application import get_application_state
 from sysmon.checks.application import get_application_version
@@ -48,6 +48,30 @@ def check_system(system: System) -> CheckResults:
     LOGGER.info("Checking system: %i", system.id)
     system_check = create_check(system)
     system_check.save()
+
+    # delete old check and add newest check to db
+    NewestCheckResults.delete().where(
+        NewestCheckResults.system == system_check.system
+    ).execute()
+    newest_check_results = NewestCheckResults(
+        system=system_check.system,
+        icmp_request=system_check.icmp_request,
+        ssh_login=system_check.ssh_login,
+        http_request=system_check.http_request,
+        application_state=system_check.application_state,
+        smart_check=system_check.smart_check,
+        baytrail_freeze=system_check.baytrail_freeze,
+        fsck_repair=system_check.fsck_repair,
+        application_version=system_check.application_version,
+        efi_mount_ok=system_check.efi_mount_ok,
+        download=system_check.download,
+        upload=system_check.upload,
+        root_not_ro=system_check.root_not_ro,
+        sensors=system_check.sensors,
+        in_sync=system_check.in_sync,
+        recent_touch_events=system_check.recent_touch_events,
+    )
+    newest_check_results.save()
     return system_check
 
 
