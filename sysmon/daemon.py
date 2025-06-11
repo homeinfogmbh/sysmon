@@ -4,7 +4,6 @@ from datetime import date
 from logging import INFO, basicConfig
 
 from hwdb import System
-from hwdb.enumerations import Connection
 
 from sysmon.blacklist import load_blacklist
 from sysmon.checks import check_systems
@@ -19,9 +18,5 @@ def spawn() -> None:
     """Runs the daemon."""
 
     basicConfig(level=INFO, format=LOG_FORMAT)
-    check_systems(
-        System.select(cascade=True).where(
-            System.deployment.connection != Connection.LTE
-        )
-    )
+    check_systems(System.select(cascade=True))
     update_offline_systems(date.today(), blacklist=load_blacklist())

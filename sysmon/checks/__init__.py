@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from multiprocessing import Pool
-from typing import Iterable
+from typing import Iterable, Optional
 
 from hwdb import System
 
@@ -28,6 +28,7 @@ from sysmon.checks.ssh import check_ssh
 from sysmon.checks.synchronization import is_in_sync
 from sysmon.checks.touchscreen import count_recent_touch_events
 
+from hwdb.enumerations import Connection
 
 __all__ = ["check_system", "check_systems"]
 
@@ -39,87 +40,147 @@ def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
     """Checks the given systems."""
 
     with Pool(processes=3) as pool:
-        pool.map(check_system, systems, chunksize=chunk_size)
+        pool.map(check_system, systems, nobwiflte=True, chunksize=chunk_size)
 
 
-def check_system(system: System) -> CheckResults:
+def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResults:
     """Check the given system."""
+    if nobwiflte and system.deployment.connection == Connection.LTE:
+        LOGGER.info("Checking LTE ( no bandwith test system: %i", system.id)
+        system_check = create_check(system, nobwiflte)
+    else:
+        LOGGER.info("Checking system: %i", system.id)
+        system_check = create_check(system)
 
-    LOGGER.info("Checking system: %i", system.id)
-    system_check = create_check(system)
     system_check.save()
 
     # delete old check and add newest check to db
     NewestCheckResults.delete().where(
         NewestCheckResults.system == system_check.system
     ).execute()
-    newest_check_results = NewestCheckResults(
-        system=system_check.system,
-        icmp_request=system_check.icmp_request,
-        ssh_login=system_check.ssh_login,
-        http_request=system_check.http_request,
-        application_state=system_check.application_state,
-        smart_check=system_check.smart_check,
-        baytrail_freeze=system_check.baytrail_freeze,
-        fsck_repair=system_check.fsck_repair,
-        application_version=system_check.application_version,
-        efi_mount_ok=system_check.efi_mount_ok,
-        download=system_check.download,
-        upload=system_check.upload,
-        root_not_ro=system_check.root_not_ro,
-        sensors=system_check.sensors,
-        in_sync=system_check.in_sync,
-        recent_touch_events=system_check.recent_touch_events,
-    )
+    if nobwiflte:
+        newest_check_results = NewestCheckResults(
+            system=system_check.system,
+            icmp_request=system_check.icmp_request,
+            ssh_login=system_check.ssh_login,
+            http_request=system_check.http_request,
+            application_state=system_check.application_state,
+            smart_check=system_check.smart_check,
+            baytrail_freeze=system_check.baytrail_freeze,
+            fsck_repair=system_check.fsck_repair,
+            application_version=system_check.application_version,
+            efi_mount_ok=system_check.efi_mount_ok,
+            root_not_ro=system_check.root_not_ro,
+            sensors=system_check.sensors,
+            in_sync=system_check.in_sync,
+            recent_touch_events=system_check.recent_touch_events,
+        )
+    else:
+        newest_check_results = NewestCheckResults(
+            system=system_check.system,
+            icmp_request=system_check.icmp_request,
+            ssh_login=system_check.ssh_login,
+            http_request=system_check.http_request,
+            application_state=system_check.application_state,
+            smart_check=system_check.smart_check,
+            baytrail_freeze=system_check.baytrail_freeze,
+            fsck_repair=system_check.fsck_repair,
+            application_version=system_check.application_version,
+            efi_mount_ok=system_check.efi_mount_ok,
+            download=system_check.download,
+            upload=system_check.upload,
+            root_not_ro=system_check.root_not_ro,
+            sensors=system_check.sensors,
+            in_sync=system_check.in_sync,
+            recent_touch_events=system_check.recent_touch_events,
+        )
     newest_check_results.save()
     return system_check
 
 
-def create_check(system: System) -> CheckResults:
+def create_check(system: System, nobwiflte: Optional[bool] = False) -> CheckResults:
     """Checks a system."""
 
     now = datetime.now()
     http_request, sysinfo = get_sysinfo(system)
     if system.ddb_os:
-        check_results = CheckResults(
-            system=system,
-            icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
-            ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
-            http_request=http_request,
-            application_state=get_application_state(sysinfo),
-            smart_check=get_smart_results(sysinfo),
-            baytrail_freeze=get_baytrail_freeze_state(sysinfo),
-            fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
-            application_version=get_application_version(sysinfo),
-            efi_mount_ok=efi_mount_ok(sysinfo),
-            download=measure_speed(system),
-            upload=measure_speed(system, reverse=True),
-            root_not_ro=check_root_not_ro(sysinfo),
-            sensors=check_system_sensors(sysinfo),
-            in_sync=is_in_sync(system, now),
-            recent_touch_events=count_recent_touch_events(system.deployment, now),
-        )
+        if nobwiflte:
+            check_results = CheckResults(
+                system=system,
+                icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
+                ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
+                http_request=http_request,
+                application_state=get_application_state(sysinfo),
+                smart_check=get_smart_results(sysinfo),
+                baytrail_freeze=get_baytrail_freeze_state(sysinfo),
+                fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
+                application_version=get_application_version(sysinfo),
+                efi_mount_ok=efi_mount_ok(sysinfo),
+                root_not_ro=check_root_not_ro(sysinfo),
+                sensors=check_system_sensors(sysinfo),
+                in_sync=is_in_sync(system, now),
+                recent_touch_events=count_recent_touch_events(system.deployment, now),
+            )
+        else:
+            check_results = CheckResults(
+                system=system,
+                icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
+                ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
+                http_request=http_request,
+                application_state=get_application_state(sysinfo),
+                smart_check=get_smart_results(sysinfo),
+                baytrail_freeze=get_baytrail_freeze_state(sysinfo),
+                fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
+                application_version=get_application_version(sysinfo),
+                efi_mount_ok=efi_mount_ok(sysinfo),
+                download=measure_speed(system),
+                upload=measure_speed(system, reverse=True),
+                root_not_ro=check_root_not_ro(sysinfo),
+                sensors=check_system_sensors(sysinfo),
+                in_sync=is_in_sync(system, now),
+                recent_touch_events=count_recent_touch_events(system.deployment, now),
+            )
     else:
-        check_results = CheckResults(
-            system=system,
-            icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
-            ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
-            http_request=http_request,
-            application_state=get_application_state(sysinfo),
-            smart_check=get_smart_results(sysinfo),
-            baytrail_freeze=get_baytrail_freeze_state(sysinfo),
-            fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
-            application_version=get_application_version(sysinfo),
-            ram_total=get_ram_total(sysinfo),
-            ram_free=get_ram_free(sysinfo),
-            ram_available=get_ram_available(sysinfo),
-            efi_mount_ok=efi_mount_ok(sysinfo),
-            download=measure_speed(system),
-            upload=measure_speed(system, reverse=True),
-            root_not_ro=check_root_not_ro(sysinfo),
-            sensors=check_system_sensors(sysinfo),
-            recent_touch_events=count_recent_touch_events(system.deployment, now),
-        )
+        if nobwiflte:
+            check_results = CheckResults(
+                system=system,
+                icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
+                ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
+                http_request=http_request,
+                application_state=get_application_state(sysinfo),
+                smart_check=get_smart_results(sysinfo),
+                baytrail_freeze=get_baytrail_freeze_state(sysinfo),
+                fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
+                application_version=get_application_version(sysinfo),
+                ram_total=get_ram_total(sysinfo),
+                ram_free=get_ram_free(sysinfo),
+                ram_available=get_ram_available(sysinfo),
+                efi_mount_ok=efi_mount_ok(sysinfo),
+                root_not_ro=check_root_not_ro(sysinfo),
+                sensors=check_system_sensors(sysinfo),
+                recent_touch_events=count_recent_touch_events(system.deployment, now),
+            )
+        else:
+            check_results = CheckResults(
+                system=system,
+                icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
+                ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
+                http_request=http_request,
+                application_state=get_application_state(sysinfo),
+                smart_check=get_smart_results(sysinfo),
+                baytrail_freeze=get_baytrail_freeze_state(sysinfo),
+                fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
+                application_version=get_application_version(sysinfo),
+                ram_total=get_ram_total(sysinfo),
+                ram_free=get_ram_free(sysinfo),
+                ram_available=get_ram_available(sysinfo),
+                efi_mount_ok=efi_mount_ok(sysinfo),
+                download=measure_speed(system),
+                upload=measure_speed(system, reverse=True),
+                root_not_ro=check_root_not_ro(sysinfo),
+                sensors=check_system_sensors(sysinfo),
+                recent_touch_events=count_recent_touch_events(system.deployment, now),
+            )
 
     try:
         last_check = get_last_check(system)
