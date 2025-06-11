@@ -42,7 +42,7 @@ def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
 
     with Pool(processes=3) as pool:
         pool.map(
-            partial(check_system, nobwiflte=Flase), systems, True, chunksize=chunk_size
+            partial(check_system, nobwiflte=False), systems, True, chunksize=chunk_size
         )
 
 
