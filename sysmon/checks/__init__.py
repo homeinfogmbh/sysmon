@@ -1,6 +1,7 @@
 """System checking."""
 
 from datetime import datetime
+from functools import partial
 from multiprocessing import Pool
 from typing import Iterable, Optional
 
@@ -40,7 +41,9 @@ def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
     """Checks the given systems."""
 
     with Pool(processes=3) as pool:
-        pool.map(check_system, args=(systems, True), chunksize=chunk_size)
+        pool.map(
+            partial(check_system, nobwiflte=Flase), systems, True, chunksize=chunk_size
+        )
 
 
 def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResults:
