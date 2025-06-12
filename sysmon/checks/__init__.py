@@ -41,7 +41,7 @@ def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
     """Checks the given systems."""
 
     with Pool(processes=3) as pool:
-        pool.map(partial(check_system, nobwiflte=False), systems, chunksize=chunk_size)
+        pool.map(partial(check_system, nobwiflte=True), systems, chunksize=chunk_size)
 
 
 def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResults:
