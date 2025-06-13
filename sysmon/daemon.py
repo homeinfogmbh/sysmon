@@ -18,5 +18,5 @@ def spawn() -> None:
     """Runs the daemon."""
 
     basicConfig(level=INFO, format=LOG_FORMAT)
-    check_systems(System.select(cascade=True))
+    check_systems(System.select(cascade=True).where(System.deployment != None))
     update_offline_systems(date.today(), blacklist=load_blacklist())
