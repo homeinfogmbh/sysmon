@@ -59,7 +59,7 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
     NewestCheckResults.delete().where(
         NewestCheckResults.system == system_check.system
     ).execute()
-    if nobwiflte:
+    if nobwiflte and system.deployment.connection == Connection.LTE:
         newest_check_results = NewestCheckResults(
             system=system_check.system,
             icmp_request=system_check.icmp_request,
@@ -105,7 +105,7 @@ def create_check(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
     now = datetime.now()
     http_request, sysinfo = get_sysinfo(system)
     if system.ddb_os:
-        if nobwiflte:
+        if nobwiflte and system.deployment.connection == Connection.LTE:
             check_results = CheckResults(
                 system=system,
                 icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
