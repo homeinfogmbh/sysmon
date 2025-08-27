@@ -142,7 +142,7 @@ def create_check(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
             )
     else:
-        if nobwiflte:
+        if nobwiflte and system.deployment.connection == Connection.LTE:
             check_results = CheckResults(
                 system=system,
                 icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
