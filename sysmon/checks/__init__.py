@@ -103,7 +103,10 @@ def create_check(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
     """Checks a system."""
 
     now = datetime.now()
-    http_request, sysinfo = get_sysinfo(system)
+    try:
+        http_request, sysinfo = get_sysinfo(system)
+    except Exception as e:
+        print(e)
     if system.ddb_os:
         if nobwiflte and system.deployment.connection == Connection.LTE:
             check_results = CheckResults(
