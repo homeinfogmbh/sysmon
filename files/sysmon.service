@@ -7,3 +7,7 @@ OnFailure=notify-failed@%n
 User=sysmon
 Group=sysmon
 ExecStart=/usr/local/bin/sysmon
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
