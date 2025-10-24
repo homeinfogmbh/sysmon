@@ -20,7 +20,7 @@ def spawn() -> None:
     basicConfig(level=INFO, format=LOG_FORMAT)
     check_systems(
         System.select(cascade=True).where(
-            System.deployment != None & System.isvirtual == 0
+            System.deployment.is_null(False) & System.isvirtual == 0
         )
     )
     update_offline_systems(date.today(), blacklist=load_blacklist())
