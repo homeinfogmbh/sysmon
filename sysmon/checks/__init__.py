@@ -40,7 +40,7 @@ TCP_TIMEOUT = 5  # seconds
 def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
     """Checks the given systems."""
 
-    with Pool(processes=3) as pool:
+    with Pool(processes=6) as pool:
         pool.map(partial(check_system, nobwiflte=True), systems, chunksize=chunk_size)
 
 
