@@ -55,6 +55,7 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             system_check = create_check(system)
     except AttributeError:
         LOGGER.info("Checking system: %i, no connection type found", system.id)
+        system_check = create_check(system)
 
     system_check.save()
 
