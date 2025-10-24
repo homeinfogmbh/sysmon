@@ -46,12 +46,15 @@ def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
 
 def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResults:
     """Check the given system."""
-    if nobwiflte and system.deployment.connection == Connection.LTE:
-        LOGGER.info("Checking LTE ( no bandwith test system: %i", system.id)
-        system_check = create_check(system, nobwiflte)
-    else:
-        LOGGER.info("Checking system: %i", system.id)
-        system_check = create_check(system)
+    try:
+        if nobwiflte and system.deployment.connection == Connection.LTE:
+            LOGGER.info("Checking LTE ( no bandwith test system: %i", system.id)
+            system_check = create_check(system, nobwiflte)
+        else:
+            LOGGER.info("Checking system: %i", system.id)
+            system_check = create_check(system)
+    except AttributeError:
+        LOGGER.info("Checking system: %i, no connection type found", system.id)
 
     system_check.save()
 
