@@ -46,10 +46,12 @@ def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
 
 def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResults:
     """Check the given system."""
+    islte = fFalse
     try:
         if nobwiflte and system.deployment.connection == Connection.LTE:
             LOGGER.info("Checking LTE ( no bandwith test system: %i", system.id)
-            system_check = create_check(system, nobwiflte)
+            system_check = create_check(system, nobwiflte, islte)
+            islte = True
         else:
             LOGGER.info("Checking system: %i", system.id)
             system_check = create_check(system)
@@ -63,7 +65,7 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
     NewestCheckResults.delete().where(
         NewestCheckResults.system == system_check.system
     ).execute()
-    if nobwiflte and system.deployment.connection == Connection.LTE:
+    if islte:
         newest_check_results = NewestCheckResults(
             system=system_check.system,
             icmp_request=system_check.icmp_request,
@@ -103,7 +105,9 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
     return system_check
 
 
-def create_check(system: System, nobwiflte: Optional[bool] = False) -> CheckResults:
+def create_check(
+    system: System, nobwiflte: Optional[bool] = False, islte: Optional[bool] = False
+) -> CheckResults:
     """Checks a system."""
 
     now = datetime.now()
@@ -112,7 +116,7 @@ def create_check(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
     except Exception as e:
         print(e)
     if system.ddb_os:
-        if nobwiflte and system.deployment.connection == Connection.LTE:
+        if nobwiflte and islte:
             check_results = CheckResults(
                 system=system,
                 icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
@@ -149,7 +153,7 @@ def create_check(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
             )
     else:
-        if nobwiflte and system.deployment.connection == Connection.LTE:
+        if nobwiflte and islte:
             check_results = CheckResults(
                 system=system,
                 icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
