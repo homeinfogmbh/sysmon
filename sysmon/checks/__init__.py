@@ -46,7 +46,7 @@ def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
 
 def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResults:
     """Check the given system."""
-    islte = fFalse
+    islte = False
     try:
         if nobwiflte and system.deployment.connection == Connection.LTE:
             LOGGER.info("Checking LTE ( no bandwith test system: %i", system.id)
