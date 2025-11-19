@@ -107,16 +107,16 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
         )
     newest_check_results.save()
     try:
-        response = post(
+        post(
             SMITRAC_URL,
             data={
-                "customer": system_check.deployment.customer,
+                "customer": system_check.system.deployment.customer,
                 "system": system_check.system,
                 "password": get_config().get("smitrac", "apipassword"),
             },
         )
     except:
-        print("error sending check to smitrac api" )
+        print("error sending check to smitrac api")
     return system_check
 
 
