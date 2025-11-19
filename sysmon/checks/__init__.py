@@ -116,7 +116,7 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             },
         )
     except:
-        print("error sending check to smitrac api" + response.text)
+        print("error sending check to smitrac api" )
     return system_check
 
 
