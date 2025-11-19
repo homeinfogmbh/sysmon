@@ -39,8 +39,6 @@ __all__ = ["check_system", "check_systems"]
 
 TCP_TIMEOUT = 5  # seconds
 
-SMITRAC_URL = "https://portal.homeinfo.de/api/smitracjsons"
-
 
 def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
     """Checks the given systems."""
@@ -107,9 +105,10 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             recent_touch_events=system_check.recent_touch_events,
         )
     newest_check_results.save()
+
     try:
         post(
-            SMITRAC_URL,
+            get_config().get("smitrac", "url"),
             data=dumps(
                 {
                     "customer": system_check.system.deployment.customer.id,

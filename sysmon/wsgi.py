@@ -8,11 +8,13 @@ from hwdb import SystemOffline, Deployment, System
 from mdb import Customer, Company
 
 from requests.exceptions import Timeout
+from requests import post
 from wsgilib import Binary, JSON, JSONMessage, get_int, get_bool
-
+from json import dumps
 from flask import request
 
 from sysmon.blacklist import authorized_blacklist, load_blacklist
+from sysmon.config import get_config
 from sysmon.checks import check_system
 from sysmon.checks.common import get_sysinfo
 from sysmon.checks.systemd import unit_status
@@ -285,6 +287,19 @@ def do_check_system(system: int) -> JSON:
     system = get_system(system, ACCOUNT)
     check_result = check_system(system)
     update_offline_systems(date.today(), blacklist=load_blacklist())
+    try:
+        post(
+            get_config().get("smitrac", "url"),
+            data=dumps(
+                {
+                    "customer": check_result.system.deployment.customer.id,
+                    "system": check_result.system.id,
+                    "password": get_config().get("smitrac", "apipassword"),
+                }
+            ),
+        )
+    except:
+        print("error sending check to smitrac api")
     return JSON(check_result.to_json())
 
 
