@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from functools import partial
+from json import dumps
 from multiprocessing import Pool
 from typing import Iterable, Optional
 from requests import post
@@ -109,11 +110,13 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
     try:
         post(
             SMITRAC_URL,
-            data={
-                "customer": system_check.system.deployment.customer,
-                "system": system_check.system,
-                "password": get_config().get("smitrac", "apipassword"),
-            },
+            data=dumps(
+                {
+                    "customer": system_check.system.deployment.customer,
+                    "system": system_check.system,
+                    "password": get_config().get("smitrac", "apipassword"),
+                }
+            ),
         )
     except:
         print("error sending check to smitrac api")
