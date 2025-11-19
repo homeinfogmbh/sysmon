@@ -112,8 +112,8 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             SMITRAC_URL,
             data=dumps(
                 {
-                    "customer": system_check.system.deployment.customer,
-                    "system": system_check.system,
+                    "customer": system_check.system.deployment.customer.id,
+                    "system": system_check.system.id,
                     "password": get_config().get("smitrac", "apipassword"),
                 }
             ),
