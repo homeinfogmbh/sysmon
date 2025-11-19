@@ -4,6 +4,7 @@ from datetime import datetime
 from functools import partial
 from multiprocessing import Pool
 from typing import Iterable, Optional
+from requests import post
 
 from hwdb import System
 
@@ -28,6 +29,7 @@ from sysmon.checks.smart import get_smart_results
 from sysmon.checks.ssh import check_ssh
 from sysmon.checks.synchronization import is_in_sync
 from sysmon.checks.touchscreen import count_recent_touch_events
+from sysmon.config import get_config
 
 from hwdb.enumerations import Connection
 
@@ -35,6 +37,8 @@ __all__ = ["check_system", "check_systems"]
 
 
 TCP_TIMEOUT = 5  # seconds
+
+SMITRAC_URL = "https://portal.homeinfo.de/api/smitracjsons"
 
 
 def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
@@ -102,6 +106,17 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             recent_touch_events=system_check.recent_touch_events,
         )
     newest_check_results.save()
+    try:
+        response = post(
+            SMITRAC_URL,
+            data={
+                "customer": system_check.deployment.customer,
+                "system": system_check.system,
+                "password": get_config().get("smitrac", "apipassword"),
+            },
+        )
+    except:
+        print("error sending check to smitrac api" + response.text)
     return system_check
 
 
