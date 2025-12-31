@@ -104,6 +104,7 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             in_sync=system_check.in_sync,
             recent_touch_events=system_check.recent_touch_events,
         )
+    newest_check_results.offline_since = system_check.offline_since
     newest_check_results.save()
 
     try:
