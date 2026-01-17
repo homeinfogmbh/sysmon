@@ -5,6 +5,11 @@ from re import fullmatch
 from typing import Any
 
 from requests import ConnectionError, ReadTimeout, Timeout
+
+from subprocess import CalledProcessError, TimeoutExpired
+from requests.exceptions import ConnectTimeout
+
+
 from urllib3.exceptions import ReadTimeoutError
 from hwdb import System
 
@@ -13,7 +18,12 @@ from sysmon.orm import CheckResults
 
 import requests
 
-__all__ = ["extract_package_version", "get_last_check", "get_sysinfo"]
+__all__ = [
+    "extract_package_version",
+    "get_last_check",
+    "get_sysinfo",
+    "get_application",
+]
 
 
 REPO_DIR = Path("/srv/http/de/homeinfo/mirror/prop/pacman")
@@ -62,3 +72,16 @@ def get_sysinfo(
         temp_return["application"]["version"] = "DDBOS 1"
 
     return SuccessFailedUnsupported.SUCCESS, temp_return
+
+
+def get_application(system: System) -> bool:
+    """returns the application mode"""
+    try:
+        application = system.application()
+        result = application.json()
+    except (CalledProcessError, TimeoutExpired, ConnectTimeout):
+        return False
+    if system.ddb_os:
+        return result
+    else:
+        return result["mode"]

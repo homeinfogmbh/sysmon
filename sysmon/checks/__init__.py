@@ -16,7 +16,7 @@ from sysmon.checks.application import get_application_state
 from sysmon.checks.application import get_application_version
 from sysmon.checks.baytrail import get_baytrail_freeze_state
 from sysmon.checks.black_screen import get_blackscreen_since
-from sysmon.checks.common import get_last_check, get_sysinfo
+from sysmon.checks.common import get_last_check, get_sysinfo, get_application
 from sysmon.checks.efi import efi_mount_ok
 from sysmon.checks.icmp import check_icmp_request
 from sysmon.checks.iperf3 import measure_speed
@@ -84,6 +84,7 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             sensors=system_check.sensors,
             in_sync=system_check.in_sync,
             recent_touch_events=system_check.recent_touch_events,
+            application_mode=system.application_mode,
         )
     else:
         newest_check_results = NewestCheckResults(
@@ -103,6 +104,7 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             sensors=system_check.sensors,
             in_sync=system_check.in_sync,
             recent_touch_events=system_check.recent_touch_events,
+            application_mode=system.application_mode,
         )
     newest_check_results.offline_since = system_check.offline_since
     newest_check_results.save()
@@ -150,6 +152,7 @@ def create_check(
                 sensors=check_system_sensors(sysinfo),
                 in_sync=is_in_sync(system, now),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
+                application_mode=get_application(system),
             )
         else:
             check_results = CheckResults(
@@ -169,6 +172,7 @@ def create_check(
                 sensors=check_system_sensors(sysinfo),
                 in_sync=is_in_sync(system, now),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
+                application_mode=get_application(system),
             )
     else:
         if nobwiflte and islte:
@@ -189,6 +193,7 @@ def create_check(
                 root_not_ro=check_root_not_ro(sysinfo),
                 sensors=check_system_sensors(sysinfo),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
+                application_mode=get_application(system),
             )
         else:
             check_results = CheckResults(
@@ -210,6 +215,7 @@ def create_check(
                 root_not_ro=check_root_not_ro(sysinfo),
                 sensors=check_system_sensors(sysinfo),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
+                application_mode=get_application(system),
             )
 
     try:
