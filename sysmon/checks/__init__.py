@@ -84,7 +84,7 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             sensors=system_check.sensors,
             in_sync=system_check.in_sync,
             recent_touch_events=system_check.recent_touch_events,
-            application_mode=system.application_mode,
+            application_mode=system_check.application_mode,
         )
     else:
         newest_check_results = NewestCheckResults(
@@ -104,7 +104,7 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             sensors=system_check.sensors,
             in_sync=system_check.in_sync,
             recent_touch_events=system_check.recent_touch_events,
-            application_mode=system.application_mode,
+            application_mode=system_check.application_mode,
         )
     newest_check_results.offline_since = system_check.offline_since
     newest_check_results.save()
