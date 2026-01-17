@@ -134,6 +134,7 @@ class CheckResults(SysmonModel):
     # Failed-since timestamps
     offline_since = DateTimeField(null=True)
     blackscreen_since = DateTimeField(null=True)
+    application_mode = CharField(12, null=True)
 
     @classmethod
     def select(cls, *args, cascade: bool = False) -> ModelSelect:
