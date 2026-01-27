@@ -79,7 +79,7 @@ def get_application(system: System) -> bool:
     try:
         application = system.application()
         result = application.json()
-    except (CalledProcessError, TimeoutExpired, ConnectTimeout):
+    except (CalledProcessError, TimeoutExpired, ConnectTimeout, ConnectionError):
         return False
     if system.ddb_os:
         return result
