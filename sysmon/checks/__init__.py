@@ -139,7 +139,7 @@ def create_check(
     try:
         http_request, sysinfo = get_sysinfo(system)
     except Exception as e:
-        print(e)
+        print(e, system.id)
     if system.ddb_os:
         if nobwiflte and islte:
             check_results = CheckResults(
