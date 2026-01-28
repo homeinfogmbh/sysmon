@@ -74,12 +74,12 @@ def get_sysinfo(
     return SuccessFailedUnsupported.SUCCESS, temp_return
 
 
-def get_application(system: System) -> bool:
+def get_application(system: System):
     """returns the application mode"""
     try:
         application = system.application()
         result = application.json()
-    except (CalledProcessError, TimeoutExpired, ConnectTimeout, ConnectionError):
+    except Exception:
         return False
     if system.ddb_os:
         return result
