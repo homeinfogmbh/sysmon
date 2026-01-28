@@ -49,7 +49,7 @@ def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
                 partial(check_system, nobwiflte=True), systems, chunksize=chunk_size
             )
         except Exception as e:
-            print(e)
+            print(e, " Exception check_system")
 
 
 def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResults:
