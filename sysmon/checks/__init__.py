@@ -1,6 +1,6 @@
 """System checking."""
 
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 
 from functools import partial
 from json import dumps
@@ -394,17 +394,15 @@ def create_check_bw_once_a_day(
     except CheckResults.DoesNotExist:
         last_check = None
 
-    yesterday = date.today() - timedelta(days=1)
-    last_check_date = last_check.timestamp.date()
-    """If last check is from yesterday do bandwidth check, else use todays result"""
-    if last_check_date == yesterday:
-        check_results.upload = measure_speed(system)
-        check_results.download = measure_speed(system, reverse=True)
-        LOGGER.info("New Bandwidth check for System: %i", system.id)
-    else:
+    """If last check is from today no bandwidth check"""
+    if (last_check is not None) and (last_check.timestamp.date() == date.today()):
         check_results.upload = last_check.upload
         check_results.download = last_check.download
         LOGGER.info("Use Bandwidth check from last check for System: %i", system.id)
+    else:
+        check_results.upload = measure_speed(system)
+        check_results.download = measure_speed(system, reverse=True)
+        LOGGER.info("New Bandwidth check for System: %i", system.id)
 
     check_results.offline_since = get_offline_since(check_results, last_check)
     check_results.blackscreen_since = get_blackscreen_since(check_results, last_check)
