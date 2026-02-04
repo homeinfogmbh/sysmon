@@ -380,7 +380,6 @@ def create_check_bw_once_a_day(
                 ram_free=get_ram_free(sysinfo),
                 ram_available=get_ram_available(sysinfo),
                 efi_mount_ok=efi_mount_ok(sysinfo),
-
                 root_not_ro=check_root_not_ro(sysinfo),
                 sensors=check_system_sensors(sysinfo),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
