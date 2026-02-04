@@ -35,7 +35,7 @@ from sysmon.config import get_config
 
 from hwdb.enumerations import Connection
 
-__all__ = ["check_system", "check_systems"]
+__all__ = ["check_system", "check_systems", "check_systems_bw_once_a_day"]
 
 
 TCP_TIMEOUT = 5  # seconds
@@ -51,6 +51,22 @@ def check_systems(systems: Iterable[System], *, chunk_size: int = 10) -> None:
             )
         except Exception as e:
             print(e, " Exception check_system pool.map")
+
+
+def check_systems_bw_once_a_day(
+    systems: Iterable[System], *, chunk_size: int = 10
+) -> None:
+    """Checks the given systems. Bandwidth check once a day"""
+
+    with Pool(processes=6) as pool:
+        try:
+            pool.map(
+                partial(check_system_bw_once_a_day, nobwiflte=True),
+                systems,
+                chunksize=chunk_size,
+            )
+        except Exception as e:
+            print(e, " Exception check_systems_bw_once_a_day pool.map")
 
 
 def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResults:

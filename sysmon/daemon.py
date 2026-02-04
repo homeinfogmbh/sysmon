@@ -6,7 +6,7 @@ from logging import INFO, basicConfig
 from hwdb import System
 
 from sysmon.blacklist import load_blacklist
-from sysmon.checks import check_systems
+from sysmon.checks import check_systems_bw_once_a_day
 from sysmon.config import LOG_FORMAT
 from sysmon.offline_history import update_offline_systems
 
@@ -18,7 +18,7 @@ def spawn() -> None:
     """Runs the daemon."""
 
     basicConfig(level=INFO, format=LOG_FORMAT)
-    check_systems(
+    check_systems_bw_once_a_day(
         System.select(cascade=True).where(
             (System.deployment is not None)
             & (System.isvirtual == 0)
