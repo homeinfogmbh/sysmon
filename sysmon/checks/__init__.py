@@ -395,7 +395,7 @@ def create_check_bw_once_a_day(
         last_check = None
 
     yesterday = date.today() - timedelta(days=1)
-    last_check_date = last_check.timestamp.date() - timedelta(days=1)
+    last_check_date = last_check.timestamp.date()
     """If last check is from yesterday do bandwidth check, else use todays result"""
     if last_check_date == yesterday:
         check_results.upload = measure_speed(system)
