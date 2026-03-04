@@ -433,7 +433,7 @@ def create_check_no_bw(
     check_results.save()
 
     NewestCheckResults.delete().where(
-        NewestCheckResults.system == system_check.system
+        NewestCheckResults.system == check_results.system
     ).execute()
     newest_check_results = NewestCheckResults(
         system=check_results.system,
