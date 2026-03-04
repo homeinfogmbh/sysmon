@@ -454,7 +454,7 @@ def create_check_no_bw(
         recent_touch_events=check_results.recent_touch_events,
         application_mode=check_results.application_mode,
     )
-    newest_check_results.offline_since = system_check.offline_since
+    newest_check_results.offline_since = check_results.offline_since
     newest_check_results.save()
 
     try:
