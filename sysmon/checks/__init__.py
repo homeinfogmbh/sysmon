@@ -40,6 +40,7 @@ __all__ = [
     "check_systems",
     "check_systems_bw_once_a_day",
     "check_system_bw_once_a_day",
+    "create_check_no_bw",
 ]
 
 
@@ -89,6 +90,70 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
         except AttributeError:
             LOGGER.info("Checking system: %i, no connection type found", system.id)
             system_check = create_check(system)
+
+        system_check.save()
+
+        # delete old check and add newest check to db
+        NewestCheckResults.delete().where(
+            NewestCheckResults.system == system_check.system
+        ).execute()
+        newest_check_results = NewestCheckResults(
+            system=system_check.system,
+            icmp_request=system_check.icmp_request,
+            ssh_login=system_check.ssh_login,
+            http_request=system_check.http_request,
+            application_state=system_check.application_state,
+            smart_check=system_check.smart_check,
+            baytrail_freeze=system_check.baytrail_freeze,
+            fsck_repair=system_check.fsck_repair,
+            application_version=system_check.application_version,
+            efi_mount_ok=system_check.efi_mount_ok,
+            download=system_check.download,
+            upload=system_check.upload,
+            root_not_ro=system_check.root_not_ro,
+            sensors=system_check.sensors,
+            in_sync=system_check.in_sync,
+            recent_touch_events=system_check.recent_touch_events,
+            application_mode=system_check.application_mode,
+        )
+        newest_check_results.offline_since = system_check.offline_since
+        newest_check_results.save()
+
+        try:
+            post(
+                get_config().get("smitrac", "url"),
+                data=dumps(
+                    {
+                        "customer": system_check.system.deployment.customer.id,
+                        "system": system_check.system.id,
+                        "password": get_config().get("smitrac", "apipassword"),
+                    }
+                ),
+            )
+        except:
+            print("error sending check to smitrac api system ", system_check.system.id)
+        return system_check
+    except Exception as e:
+        print(e, "exception in check_system, systemid:", system.id)
+
+
+def check_system_no_bw(
+    system: System, nobwiflte: Optional[bool] = False
+) -> CheckResults:
+    try:
+        """Check the given system. No Bandwidth test"""
+        islte = False
+        try:
+            if nobwiflte and system.deployment.connection == Connection.LTE:
+                LOGGER.info("Checking LTE ( no bandwith test system: %i", system.id)
+                system_check = create_check_no_bw(system, nobwiflte, islte)
+                islte = True
+            else:
+                LOGGER.info("Checking system: %i", system.id)
+                system_check = create_check_no_bw(system)
+        except AttributeError:
+            LOGGER.info("Checking system: %i, no connection type found", system.id)
+            system_check = create_check_no_bw(system)
 
         system_check.save()
 
@@ -292,6 +357,47 @@ def create_check(
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
                 application_mode=get_application(system),
             )
+
+    try:
+        last_check = get_last_check(system)
+    except CheckResults.DoesNotExist:
+        last_check = None
+
+    check_results.offline_since = get_offline_since(check_results, last_check)
+    check_results.blackscreen_since = get_blackscreen_since(check_results, last_check)
+    return check_results
+
+
+def create_check_no_bw(
+    system: System, nobwiflte: Optional[bool] = False, islte: Optional[bool] = False
+) -> CheckResults:
+    """Checks a system."""
+
+    now = datetime.now()
+    try:
+        http_request, sysinfo = get_sysinfo(system)
+    except Exception as e:
+        print(e, system.id)
+
+    check_results = CheckResults(
+        system=system,
+        icmp_request=check_icmp_request(system, timeout=TCP_TIMEOUT),
+        ssh_login=check_ssh(system, timeout=TCP_TIMEOUT),
+        http_request=http_request,
+        application_state=get_application_state(sysinfo),
+        smart_check=get_smart_results(sysinfo),
+        baytrail_freeze=get_baytrail_freeze_state(sysinfo),
+        fsck_repair=sysinfo.get("cmdline", {}).get("fsck.repair"),
+        application_version=get_application_version(sysinfo),
+        ram_total=get_ram_total(sysinfo),
+        ram_free=get_ram_free(sysinfo),
+        ram_available=get_ram_available(sysinfo),
+        efi_mount_ok=efi_mount_ok(sysinfo),
+        root_not_ro=check_root_not_ro(sysinfo),
+        sensors=check_system_sensors(sysinfo),
+        recent_touch_events=count_recent_touch_events(system.deployment, now),
+        application_mode=get_application(system),
+    )
 
     try:
         last_check = get_last_check(system)

@@ -15,7 +15,7 @@ from flask import request
 
 from sysmon.blacklist import authorized_blacklist, load_blacklist
 from sysmon.config import get_config
-from sysmon.checks import check_system, check_system_bw_once_a_day
+from sysmon.checks import check_system, create_check_no_bw
 from sysmon.checks.common import get_sysinfo
 from sysmon.checks.systemd import unit_status
 from sysmon.checks.application import current_application_version
@@ -298,7 +298,7 @@ def do_quickcheck_system(system: int) -> JSON:
     """List uptime details of a system."""
 
     system = get_system(system, ACCOUNT)
-    check_result = check_system_bw_once_a_day(system)
+    check_result = create_check_no_bw(system)
     update_offline_systems(date.today(), blacklist=load_blacklist())
     return JSON(check_result.to_json())
 
