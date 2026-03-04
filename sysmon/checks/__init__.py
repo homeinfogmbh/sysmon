@@ -372,7 +372,6 @@ def create_check(
         print("error sending check to smitrac api system ", system_check.system.id)
 
     return check_results
-    return check_results
 
 
 def create_check_no_bw(
@@ -428,9 +427,36 @@ def create_check_no_bw(
         last_check = get_last_check(system)
     except CheckResults.DoesNotExist:
         last_check = None
-
-    check_results.offline_since = get_offline_since(check_results, last_check)
+    if last_check is not None:
+        check_results.upload = last_check.upload
+        check_results.download = last_check.download
     check_results.save()
+
+    NewestCheckResults.delete().where(
+        NewestCheckResults.system == system_check.system
+    ).execute()
+    newest_check_results = NewestCheckResults(
+        system=check_results.system,
+        icmp_request=check_results.icmp_request,
+        ssh_login=check_results.ssh_login,
+        http_request=check_results.http_request,
+        application_state=check_results.application_state,
+        smart_check=check_results.smart_check,
+        baytrail_freeze=check_results.baytrail_freeze,
+        fsck_repair=check_results.fsck_repair,
+        application_version=check_results.application_version,
+        efi_mount_ok=check_results.efi_mount_ok,
+        download=check_results.download,
+        upload=check_results.upload,
+        root_not_ro=check_results.root_not_ro,
+        sensors=check_results.sensors,
+        in_sync=check_results.in_sync,
+        recent_touch_events=check_results.recent_touch_events,
+        application_mode=check_results.application_mode,
+    )
+    newest_check_results.offline_since = system_check.offline_since
+    newest_check_results.save()
+
     try:
         post(
             get_config().get("smitrac", "url"),
