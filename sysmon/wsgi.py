@@ -15,7 +15,7 @@ from flask import request
 
 from sysmon.blacklist import authorized_blacklist, load_blacklist
 from sysmon.config import get_config
-from sysmon.checks import check_system
+from sysmon.checks import check_system, check_system_bw_once_a_day
 from sysmon.checks.common import get_sysinfo
 from sysmon.checks.systemd import unit_status
 from sysmon.checks.application import current_application_version
@@ -286,6 +286,31 @@ def do_check_system(system: int) -> JSON:
 
     system = get_system(system, ACCOUNT)
     check_result = check_system(system)
+    update_offline_systems(date.today(), blacklist=load_blacklist())
+    try:
+        post(
+            get_config().get("smitrac", "url"),
+            data=dumps(
+                {
+                    "customer": check_result.system.deployment.customer.id,
+                    "system": check_result.system.id,
+                    "password": get_config().get("smitrac", "apipassword"),
+                }
+            ),
+        )
+    except:
+        print("error sending check to smitrac api")
+    return JSON(check_result.to_json())
+
+
+@APPLICATION.route("/quickcheck/<int:system>", methods=["GET"], strict_slashes=False)
+@authenticated
+@authorized("sysmon")
+def do_quickcheck_system(system: int) -> JSON:
+    """List uptime details of a system."""
+
+    system = get_system(system, ACCOUNT)
+    check_result = check_system_bw_once_a_day(system)
     update_offline_systems(date.today(), blacklist=load_blacklist())
     try:
         post(

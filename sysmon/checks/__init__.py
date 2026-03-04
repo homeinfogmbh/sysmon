@@ -35,7 +35,12 @@ from sysmon.config import get_config
 
 from hwdb.enumerations import Connection
 
-__all__ = ["check_system", "check_systems", "check_systems_bw_once_a_day"]
+__all__ = [
+    "check_system",
+    "check_systems",
+    "check_systems_bw_once_a_day",
+    "check_system_bw_once_a_day",
+]
 
 
 TCP_TIMEOUT = 5  # seconds
