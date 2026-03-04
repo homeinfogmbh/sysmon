@@ -299,7 +299,7 @@ def do_quickcheck_system(system: int) -> JSON:
 
     system = get_system(system, ACCOUNT)
     check_result = create_check_no_bw(system)
-    update_offline_systems(date.today(), blacklist=load_blacklist())
+    # update_offline_systems(date.today(), blacklist=load_blacklist())
     return JSON(check_result.to_json())
 
 
