@@ -355,6 +355,23 @@ def create_check(
 
     check_results.offline_since = get_offline_since(check_results, last_check)
     check_results.blackscreen_since = get_blackscreen_since(check_results, last_check)
+    check_results.offline_since = get_offline_since(check_results, last_check)
+    check_results.save()
+    try:
+        post(
+            get_config().get("smitrac", "url"),
+            data=dumps(
+                {
+                    "customer": check_results.system.deployment.customer.id,
+                    "system": check_results.system.id,
+                    "password": get_config().get("smitrac", "apipassword"),
+                }
+            ),
+        )
+    except:
+        print("error sending check to smitrac api system ", system_check.system.id)
+
+    return check_results
     return check_results
 
 
@@ -413,7 +430,21 @@ def create_check_no_bw(
         last_check = None
 
     check_results.offline_since = get_offline_since(check_results, last_check)
-    check_results.blackscreen_since = get_blackscreen_since(check_results, last_check)
+    check_results.save()
+    try:
+        post(
+            get_config().get("smitrac", "url"),
+            data=dumps(
+                {
+                    "customer": check_results.system.deployment.customer.id,
+                    "system": check_results.system.id,
+                    "password": get_config().get("smitrac", "apipassword"),
+                }
+            ),
+        )
+    except:
+        print("error sending check to smitrac api system ", system_check.system.id)
+
     return check_results
 
 
