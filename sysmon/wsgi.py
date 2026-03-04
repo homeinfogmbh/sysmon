@@ -287,19 +287,7 @@ def do_check_system(system: int) -> JSON:
     system = get_system(system, ACCOUNT)
     check_result = check_system(system)
     update_offline_systems(date.today(), blacklist=load_blacklist())
-    try:
-        post(
-            get_config().get("smitrac", "url"),
-            data=dumps(
-                {
-                    "customer": check_result.system.deployment.customer.id,
-                    "system": check_result.system.id,
-                    "password": get_config().get("smitrac", "apipassword"),
-                }
-            ),
-        )
-    except:
-        print("error sending check to smitrac api")
+
     return JSON(check_result.to_json())
 
 
@@ -312,19 +300,6 @@ def do_quickcheck_system(system: int) -> JSON:
     system = get_system(system, ACCOUNT)
     check_result = check_system_bw_once_a_day(system)
     update_offline_systems(date.today(), blacklist=load_blacklist())
-    try:
-        post(
-            get_config().get("smitrac", "url"),
-            data=dumps(
-                {
-                    "customer": check_result.system.deployment.customer.id,
-                    "system": check_result.system.id,
-                    "password": get_config().get("smitrac", "apipassword"),
-                }
-            ),
-        )
-    except:
-        print("error sending check to smitrac api")
     return JSON(check_result.to_json())
 
 
