@@ -369,7 +369,7 @@ def create_check(
             ),
         )
     except:
-        print("error sending check to smitrac api system ", system_check.system.id)
+        print("error sending check to smitrac api system ", check_results.system.id)
 
     return check_results
 
@@ -469,7 +469,7 @@ def create_check_no_bw(
             ),
         )
     except:
-        print("error sending check to smitrac api system ", system_check.system.id)
+        print("error sending check to smitrac api system ", check_results.system.id)
 
     return check_results
 
