@@ -461,6 +461,7 @@ def create_check_no_bw(
         system_to_post = System.select(cascade=True).where(System.id == check_results.system.id).get()
         post(
             get_config().get("smitrac", "url"),
+            timeout=20,
             data=dumps(
                 {
                     "customer": system_to_post.deployment.customer.id,
@@ -568,7 +569,7 @@ def create_check_bw_once_a_day(
         last_check = None
 
     """If last check is from today no bandwidth check"""
-    if (last_check is not None) and (last_check.timestamp.date() == date.today()):
+    if (last_check is not None) and (last_check.timestamp.date().day == date.today().day):
         check_results.upload = last_check.upload
         check_results.download = last_check.download
         LOGGER.info("Use Bandwidth check from last check for System: %i", system.id)
