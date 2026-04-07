@@ -468,8 +468,8 @@ def create_check_no_bw(
                 }
             ),
         )
-    except:
-        print("error sending check to smitrac api system ", check_results.system.id)
+    except Exception as e:
+        print(e,"error sending check to smitrac api system ", check_results.system.id)
 
     return check_results
 
