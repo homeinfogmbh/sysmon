@@ -458,12 +458,13 @@ def create_check_no_bw(
     newest_check_results.save()
 
     try:
+        system_to_post = System.select(cascade=True).where(System.id == check_results.system.id).get()
         post(
             get_config().get("smitrac", "url"),
             data=dumps(
                 {
-                    "customer": check_results.system.deployment.customer.id,
-                    "system": check_results.system.id,
+                    "customer": system_to_post.deployment.customer.id,
+                    "system": system_to_post.id,
                     "password": get_config().get("smitrac", "apipassword"),
                 }
             ),
