@@ -569,7 +569,7 @@ def create_check_bw_once_a_day(
         last_check = None
 
     """If last check is from today no bandwidth check"""
-    if (last_check is not None) and (last_check.timestamp.date().day == date.today().day):
+    if (last_check is not None) and (last_check.timestamp.date().day == now.day):
         check_results.upload = last_check.upload
         check_results.download = last_check.download
         LOGGER.info("Use Bandwidth check from last check for System: %i", system.id)
