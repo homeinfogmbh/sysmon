@@ -251,17 +251,6 @@ def check_system_bw_once_a_day(
                     }
                 )
                 Thread(target=post, kwargs={"url":  get_config().get("smitrac", "url"), "data": data}, daemon=True).start()
-
-                post(
-                    get_config().get("smitrac", "url"),
-                    data=dumps(
-                        {
-                            "customer": system_to_post.deployment.customer.id,
-                            "system": system_to_post.id,
-                            "password": get_config().get("smitrac", "apipassword"),
-                        }
-                    ), timeout=(None, 0.00001)
-                )
             except ReadTimeout:
                 pass
         return system_check
