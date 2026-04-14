@@ -7,6 +7,7 @@ from json import dumps
 from multiprocessing import Pool
 from typing import Iterable, Optional
 from requests import post
+from requests.exceptions import ReadTimeout
 
 from hwdb import System
 
@@ -249,10 +250,10 @@ def check_system_bw_once_a_day(
                             "system": system_to_post.id,
                             "password": get_config().get("smitrac", "apipassword"),
                         }
-                    ),
+                    ), timeout=(None, 0.00001)
                 )
-            except Exception as e:
-                print(e, "error sending check to smitrac api system ", system_check.system.id)
+            except ReadTimeout:
+                pass
         return system_check
     except Exception as e:
         print(e, "exception in check_system, systemid:", system.id)
