@@ -8,6 +8,7 @@ from multiprocessing import Pool
 from typing import Iterable, Optional
 from requests import post
 from requests.exceptions import ReadTimeout
+from threading import Thread
 
 from hwdb import System
 
@@ -122,16 +123,14 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
         if get_config().get("smitrac", "enabled"):
             try:
                 system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
-                post(
-                    get_config().get("smitrac", "url"),
-                    data=dumps(
-                        {
-                            "customer": system_to_post.system.deployment.customer.id,
-                            "system": system_to_post.system.id,
-                            "password": get_config().get("smitrac", "apipassword"),
-                        }
-                    ),
+                data = dumps(
+                    {
+                        "customer": system_to_post.deployment.customer.id,
+                        "system": system_to_post.id,
+                        "password": get_config().get("smitrac", "apipassword"),
+                    }
                 )
+                Thread(target=post, kwargs={"url":  get_config().get("smitrac", "url"), "data": data}, daemon=True).start()
             except Exception as e:
                 print(e, "error sending check to smitrac api system ", system_check.system.id)
         return system_check
@@ -177,16 +176,14 @@ def check_system_no_bw(
         if get_config().get("smitrac", "enabled"):
             try:
                 system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
-                post(
-                    get_config().get("smitrac", "url"),
-                    data=dumps(
-                        {
-                            "customer": system_to_post.deployment.customer.id,
-                            "system": system_to_post.id,
-                            "password": get_config().get("smitrac", "apipassword"),
-                        }
-                    ),
+                data = dumps(
+                    {
+                        "customer": system_to_post.deployment.customer.id,
+                        "system": system_to_post.id,
+                        "password": get_config().get("smitrac", "apipassword"),
+                    }
                 )
+                Thread(target=post, kwargs={"url":  get_config().get("smitrac", "url"), "data": data}, daemon=True).start()
             except Exception as e:
                 print(e, "error sending check to smitrac api system ", system_check.system.id)
         return system_check
@@ -241,7 +238,6 @@ def check_system_bw_once_a_day(
         newest_check_results.save()
         if get_config().get("smitrac", "enabled"):
             try:
-                from threading import Thread
                 system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
                 data = dumps(
                     {
@@ -363,17 +359,14 @@ def create_check(
     if get_config().get("smitrac", "enabled"):
         try:
             system_to_post = System.select(cascade=True).where(System.id == check_results.system.id).get()
-            post(
-                get_config().get("smitrac", "url"),
-                data=dumps(
-                    {
-                        "customer": system_to_post.deployment.customer.id,
-                        "system": system_to_post.id,
-                        "password": get_config().get("smitrac", "apipassword"),
-                    }
-                ),
-                timeout=10
+            data = dumps(
+                {
+                    "customer": system_to_post.deployment.customer.id,
+                    "system": system_to_post.id,
+                    "password": get_config().get("smitrac", "apipassword"),
+                }
             )
+            Thread(target=post, kwargs={"url": get_config().get("smitrac", "url"), "data": data}, daemon=True).start()
         except Exception as e:
             print(e, "error sending check to smitrac api system ", system_check.system.id)
     return check_results
@@ -464,17 +457,14 @@ def create_check_no_bw(
     if get_config().get("smitrac", "enabled"):
         try:
             system_to_post = System.select(cascade=True).where(System.id == check_results.system.id).get()
-            post(
-                get_config().get("smitrac", "url"),
-                timeout=20,
-                data=dumps(
-                    {
-                        "customer": system_to_post.deployment.customer.id,
-                        "system": system_to_post.id,
-                        "password": get_config().get("smitrac", "apipassword"),
-                    }
-                ),
+            data = dumps(
+                {
+                    "customer": system_to_post.deployment.customer.id,
+                    "system": system_to_post.id,
+                    "password": get_config().get("smitrac", "apipassword"),
+                }
             )
+            Thread(target=post, kwargs={"url": get_config().get("smitrac", "url"), "data": data}, daemon=True).start()
         except Exception as e:
             print(e,"error sending check to smitrac api system ", check_results.system.id)
 
