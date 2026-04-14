@@ -118,21 +118,21 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
         )
         newest_check_results.offline_since = system_check.offline_since
         newest_check_results.save()
-
-        try:
-            system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
-            post(
-                get_config().get("smitrac", "url"),
-                data=dumps(
-                    {
-                        "customer": system_to_post.system.deployment.customer.id,
-                        "system": system_to_post.system.id,
-                        "password": get_config().get("smitrac", "apipassword"),
-                    }
-                ),
-            )
-        except Exception as e:
-            print(e, "error sending check to smitrac api system ", system_check.system.id)
+        if get_config().get("smitrac", "enabled"):
+            try:
+                system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
+                post(
+                    get_config().get("smitrac", "url"),
+                    data=dumps(
+                        {
+                            "customer": system_to_post.system.deployment.customer.id,
+                            "system": system_to_post.system.id,
+                            "password": get_config().get("smitrac", "apipassword"),
+                        }
+                    ),
+                )
+            except Exception as e:
+                print(e, "error sending check to smitrac api system ", system_check.system.id)
         return system_check
     except Exception as e:
         print(e, "exception in check_system, systemid:", system.id)
@@ -173,21 +173,21 @@ def check_system_no_bw(
         )
         newest_check_results.offline_since = system_check.offline_since
         newest_check_results.save()
-
-        try:
-            system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
-            post(
-                get_config().get("smitrac", "url"),
-                data=dumps(
-                    {
-                        "customer": system_to_post.deployment.customer.id,
-                        "system": system_to_post.id,
-                        "password": get_config().get("smitrac", "apipassword"),
-                    }
-                ),
-            )
-        except Exception as e:
-            print(e, "error sending check to smitrac api system ", system_check.system.id)
+        if get_config().get("smitrac", "enabled"):
+            try:
+                system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
+                post(
+                    get_config().get("smitrac", "url"),
+                    data=dumps(
+                        {
+                            "customer": system_to_post.deployment.customer.id,
+                            "system": system_to_post.id,
+                            "password": get_config().get("smitrac", "apipassword"),
+                        }
+                    ),
+                )
+            except Exception as e:
+                print(e, "error sending check to smitrac api system ", system_check.system.id)
         return system_check
     except Exception as e:
         print(e, "exception in check_system, systemid:", system.id)
@@ -238,21 +238,21 @@ def check_system_bw_once_a_day(
         )
         newest_check_results.offline_since = system_check.offline_since
         newest_check_results.save()
-
-        try:
-            system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
-            post(
-                get_config().get("smitrac", "url"),
-                data=dumps(
-                    {
-                        "customer": system_to_post.deployment.customer.id,
-                        "system": system_to_post.id,
-                        "password": get_config().get("smitrac", "apipassword"),
-                    }
-                ),
-            )
-        except Exception as e:
-            print(e, "error sending check to smitrac api system ", system_check.system.id)
+        if get_config().get("smitrac", "enabled"):
+            try:
+                system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
+                post(
+                    get_config().get("smitrac", "url"),
+                    data=dumps(
+                        {
+                            "customer": system_to_post.deployment.customer.id,
+                            "system": system_to_post.id,
+                            "password": get_config().get("smitrac", "apipassword"),
+                        }
+                    ),
+                )
+            except Exception as e:
+                print(e, "error sending check to smitrac api system ", system_check.system.id)
         return system_check
     except Exception as e:
         print(e, "exception in check_system, systemid:", system.id)
@@ -360,21 +360,22 @@ def create_check(
     check_results.blackscreen_since = get_blackscreen_since(check_results, last_check)
     check_results.offline_since = get_offline_since(check_results, last_check)
     check_results.save()
-    try:
-        system_to_post = System.select(cascade=True).where(System.id == check_results.system.id).get()
-        post(
-            get_config().get("smitrac", "url"),
-            data=dumps(
-                {
-                    "customer": system_to_post.deployment.customer.id,
-                    "system": system_to_post.id,
-                    "password": get_config().get("smitrac", "apipassword"),
-                }
-            ),
-        )
-    except Exception as e:
-        print(e, "error sending check to smitrac api system ", system_check.system.id)
-
+    if get_config().get("smitrac", "enabled"):
+        try:
+            system_to_post = System.select(cascade=True).where(System.id == check_results.system.id).get()
+            post(
+                get_config().get("smitrac", "url"),
+                data=dumps(
+                    {
+                        "customer": system_to_post.deployment.customer.id,
+                        "system": system_to_post.id,
+                        "password": get_config().get("smitrac", "apipassword"),
+                    }
+                ),
+                timeout=10
+            )
+        except Exception as e:
+            print(e, "error sending check to smitrac api system ", system_check.system.id)
     return check_results
 
 
@@ -460,22 +461,22 @@ def create_check_no_bw(
     )
     newest_check_results.offline_since = check_results.offline_since
     newest_check_results.save()
-
-    try:
-        system_to_post = System.select(cascade=True).where(System.id == check_results.system.id).get()
-        post(
-            get_config().get("smitrac", "url"),
-            timeout=20,
-            data=dumps(
-                {
-                    "customer": system_to_post.deployment.customer.id,
-                    "system": system_to_post.id,
-                    "password": get_config().get("smitrac", "apipassword"),
-                }
-            ),
-        )
-    except Exception as e:
-        print(e,"error sending check to smitrac api system ", check_results.system.id)
+    if get_config().get("smitrac", "enabled"):
+        try:
+            system_to_post = System.select(cascade=True).where(System.id == check_results.system.id).get()
+            post(
+                get_config().get("smitrac", "url"),
+                timeout=20,
+                data=dumps(
+                    {
+                        "customer": system_to_post.deployment.customer.id,
+                        "system": system_to_post.id,
+                        "password": get_config().get("smitrac", "apipassword"),
+                    }
+                ),
+            )
+        except Exception as e:
+            print(e,"error sending check to smitrac api system ", check_results.system.id)
 
     return check_results
 
