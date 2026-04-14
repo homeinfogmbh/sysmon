@@ -241,7 +241,17 @@ def check_system_bw_once_a_day(
         newest_check_results.save()
         if get_config().get("smitrac", "enabled"):
             try:
+                from threading import Thread
                 system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
+                data = dumps(
+                    {
+                        "customer": system_to_post.deployment.customer.id,
+                        "system": system_to_post.id,
+                        "password": get_config().get("smitrac", "apipassword"),
+                    }
+                )
+                Thread(target=post, kwargs={"url":  get_config().get("smitrac", "url"), "data": data}, daemon=True).start()
+
                 post(
                     get_config().get("smitrac", "url"),
                     data=dumps(
