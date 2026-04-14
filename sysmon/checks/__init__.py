@@ -131,8 +131,8 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
                     }
                 ),
             )
-        except:
-            print("error sending check to smitrac api system ", system_check.system.id)
+        except Exception as e:
+            print(e, "error sending check to smitrac api system ", system_check.system.id)
         return system_check
     except Exception as e:
         print(e, "exception in check_system, systemid:", system.id)
@@ -186,8 +186,8 @@ def check_system_no_bw(
                     }
                 ),
             )
-        except:
-            print("error sending check to smitrac api system ", system_check.system.id)
+        except Exception as e:
+            print(e, "error sending check to smitrac api system ", system_check.system.id)
         return system_check
     except Exception as e:
         print(e, "exception in check_system, systemid:", system.id)
@@ -251,8 +251,8 @@ def check_system_bw_once_a_day(
                     }
                 ),
             )
-        except:
-            print("error sending check to smitrac api system ", system_check.system.id)
+        except Exception as e:
+            print(e, "error sending check to smitrac api system ", system_check.system.id)
         return system_check
     except Exception as e:
         print(e, "exception in check_system, systemid:", system.id)
@@ -372,8 +372,8 @@ def create_check(
                 }
             ),
         )
-    except:
-        print("error sending check to smitrac api system ", check_results.system.id)
+    except Exception as e:
+        print(e, "error sending check to smitrac api system ", system_check.system.id)
 
     return check_results
 
