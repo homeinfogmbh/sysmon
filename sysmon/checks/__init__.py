@@ -120,12 +120,13 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
         newest_check_results.save()
 
         try:
+            system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
             post(
                 get_config().get("smitrac", "url"),
                 data=dumps(
                     {
-                        "customer": system_check.system.deployment.customer.id,
-                        "system": system_check.system.id,
+                        "customer": system_to_post.system.deployment.customer.id,
+                        "system": system_to_post.system.id,
                         "password": get_config().get("smitrac", "apipassword"),
                     }
                 ),
@@ -174,12 +175,13 @@ def check_system_no_bw(
         newest_check_results.save()
 
         try:
+            system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
             post(
                 get_config().get("smitrac", "url"),
                 data=dumps(
                     {
-                        "customer": system_check.system.deployment.customer.id,
-                        "system": system_check.system.id,
+                        "customer": system_to_post.deployment.customer.id,
+                        "system": system_to_post.id,
                         "password": get_config().get("smitrac", "apipassword"),
                     }
                 ),
@@ -238,12 +240,13 @@ def check_system_bw_once_a_day(
         newest_check_results.save()
 
         try:
+            system_to_post = System.select(cascade=True).where(System.id == system_check.system.id).get()
             post(
                 get_config().get("smitrac", "url"),
                 data=dumps(
                     {
-                        "customer": system_check.system.deployment.customer.id,
-                        "system": system_check.system.id,
+                        "customer": system_to_post.deployment.customer.id,
+                        "system": system_to_post.id,
                         "password": get_config().get("smitrac", "apipassword"),
                     }
                 ),
@@ -358,12 +361,13 @@ def create_check(
     check_results.offline_since = get_offline_since(check_results, last_check)
     check_results.save()
     try:
+        system_to_post = System.select(cascade=True).where(System.id == check_results.system.id).get()
         post(
             get_config().get("smitrac", "url"),
             data=dumps(
                 {
-                    "customer": check_results.system.deployment.customer.id,
-                    "system": check_results.system.id,
+                    "customer": system_to_post.deployment.customer.id,
+                    "system": system_to_post.id,
                     "password": get_config().get("smitrac", "apipassword"),
                 }
             ),
