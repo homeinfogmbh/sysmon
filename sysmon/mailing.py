@@ -623,90 +623,63 @@ def create_warning_email(email, customer):
 
 
 def create_statistic_email(email):
-    # creates email with Customers who have more than 10% offline systems
-
     sender = get_config().get(
         "mailing", "sender", fallback="service@dasdigitalebrett.de"
     )
     mailbody = """
     <style>
-    td { 
-    padding: 10px;
-    padding-bottom:0px;
-}
-
+    td { padding: 10px; padding-bottom:0px; }
     </style>
     <p>Hier finden Sie eine Liste der Kunden, bei denen in den letzten 48 Stunden mehr als 10% ihrer Systeme offline waren
-    </p> """
-    stats = []
-    for customer in Customer.select():
-        stat = StatsSystemsByCustomer(customer)
-        for checkresult in get_latest_check_results(
-            (
-                (Deployment.customer == customer)
-                & (Deployment.testing == 0)
-                & (System.testing == 0)
-            )
-        ):
-            stat.systemsAll = stat.systemsAll + 1
-            if checkresult.icmp_request:
-                stat.systemsOnline = stat.systemsOnline + 1
-            else:
-                stat.systemsOffline = stat.systemsOffline + 1
-        stats.append(stat)
+    </p>"""
+
+    # Single query for all customers at once
+    stats: dict[int, StatsSystemsByCustomer] = {}
+    for checkresult in get_latest_check_results(
+        (Deployment.testing == 0) & (System.testing == 0)
+    ):
+        customer = checkresult.system.deployment.customer
+        if customer.id not in stats:
+            stats[customer.id] = StatsSystemsByCustomer(customer)
+        stat = stats[customer.id]
+        stat.systemsAll += 1
+        if checkresult.icmp_request:
+            stat.systemsOnline += 1
+        else:
+            stat.systemsOffline += 1
+
     html = ""
-    htmlSystemsHightlited = ""
-    for stat in stats:
+    htmlSystemsHighlighted = ""
+    for stat in stats.values():
         try:
             customername = stat.customer.abbreviation
-        except:
+        except Exception:
             customername = stat.customer
+        row = (
+            f"<tr><td>{customername}</td>"
+            f"<td>{stat.percentOffline}% ({stat.systemsOffline})</td>"
+            f"<td>{stat.systemsAll}</td></tr>"
+        )
         if stat.percentOffline > 9:
-            htmlSystemsHightlited = (
-                htmlSystemsHightlited
-                + "<tr><td>"
-                + str(customername)
-                + "</td>"
-                + "<td>"
-                + str(stat.percentOffline)
-                + "% ("
-                + str(stat.systemsOffline)
-                + ")</td>"
-                + "<td>"
-                + str(stat.systemsAll)
-                + "</td></tr>"
-            )
+            htmlSystemsHighlighted += row
         else:
-            html = (
-                html
-                + "<tr><td>"
-                + str(customername)
-                + "</td>"
-                + "<td>"
-                + str(stat.percentOffline)
-                + "% ("
-                + str(stat.systemsOffline)
-                + ")</td>"
-                + "<td>"
-                + str(stat.systemsAll)
-                + "</td></tr>"
-            )
+            html += row
+
     html = (
-        "<h1>Alle Kunden</h1><table><tr><th>Kunde</th><th>Offline</th><th>Gesamt</th></tr>"
-        + html
-        + "</table>"
-    )
-    htmlSystemsHightlited = (
+        "<h1>Alle Kunden</h1>"
         "<table><tr><th>Kunde</th><th>Offline</th><th>Gesamt</th></tr>"
-        + htmlSystemsHightlited
-        + "</table>"
+        + html + "</table>"
+    )
+    htmlSystemsHighlighted = (
+        "<table><tr><th>Kunde</th><th>Offline</th><th>Gesamt</th></tr>"
+        + htmlSystemsHighlighted + "</table>"
     )
 
     return EMail(
         subject="Homeinfo Service Notification",
         sender=sender,
         recipient=email,
-        html=mailbody + htmlSystemsHightlited + html,
+        html=mailbody + htmlSystemsHighlighted + html,
     )
 
 
