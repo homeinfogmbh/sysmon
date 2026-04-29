@@ -45,7 +45,7 @@ from io import BytesIO
 from mdb import Address, Company, Customer
 from hwdb import Deployment
 from math import floor
-from sysmon.functions import get_latest_check_results
+from sysmon.functions import get_latest_check_results,get_latest_check_results_48h
 
 __all__ = [
     "main",
@@ -578,7 +578,7 @@ def create_warning_email(email, customer):
     minsystems = Warningmail.select().get().minsystems
     stats = []
     stat = StatsSystemsByCustomer(customer)
-    for checkresult in get_latest_check_results(
+    for checkresult in get_latest_check_results_48h(
         (
             (Deployment.customer == customer)
             & (Deployment.testing == 0)
@@ -635,7 +635,7 @@ def create_statistic_email(email):
 
     # Single query for all customers at once
     stats: dict[int, StatsSystemsByCustomer] = {}
-    for checkresult in get_latest_check_results(
+    for checkresult in get_latest_check_results_48h(
         (Deployment.testing == 0) & (System.testing == 0)
     ):
         customer = checkresult.system.deployment.customer

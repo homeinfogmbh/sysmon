@@ -5,6 +5,7 @@ from typing import Any, Iterable, Iterator, Optional, Union
 
 from peewee import DateTimeField, Expression, ModelSelect, fn
 
+
 from his import Account
 from hwdb import Deployment, System
 from mdb import Customer
@@ -22,6 +23,7 @@ __all__ = [
     "get_check_results",
     "get_check_results_for_system",
     "get_customer_check_results",
+    "get_latest_check_results_48h",
     "get_latest_check_results_per_system",
     "get_latest_check_results_per_group",
     "get_authenticated_systems",
@@ -137,6 +139,31 @@ def get_latest_check_results(
     )
 
 
+
+def get_latest_check_results_48h(condition):
+    """Like get_latest_check_results but scoped to the last 48 hours."""
+    cutoff = datetime.now() - timedelta(hours=48)
+    CheckResultsAlias = CheckResults.alias()
+    subquery = (
+        CheckResultsAlias.select(
+            CheckResultsAlias.system,
+            fn.MAX(CheckResultsAlias.timestamp).alias("latest_timestamp"),
+        )
+        .where(CheckResultsAlias.timestamp >= cutoff)
+        .group_by(CheckResultsAlias.system)
+    )
+    return (
+        CheckResults.select(cascade=True)
+        .join_from(
+            CheckResults,
+            subquery,
+            on=(
+                (CheckResults.timestamp == subquery.c.latest_timestamp)
+                & (CheckResults.system == subquery.c.system)
+            ),
+        )
+        .where(condition)
+    )
 def get_latest_check_results_per_system(
     account: Account, date_: Optional[date] = None
 ) -> ModelSelect:
