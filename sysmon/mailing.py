@@ -730,7 +730,7 @@ def get_warning_mails_test():
 def send_warning_mails():
     # send warning mails to user logged into sysmon
 
-    get_mailer().send(get_warning_mails())
+    get_mailer().send(list(get_warning_mails()))
 
 
 def get_warning_mails():
@@ -742,7 +742,7 @@ def get_warning_mails():
 
 def statistic():
     # sends statistic mailing to users in database
-    get_mailer().send(create_statistic_emails())
+    get_mailer().send(list(create_statistic_emails()))
 
 
 def send_test_mails(newsletter: int):
