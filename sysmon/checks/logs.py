@@ -93,10 +93,10 @@ def get_chromium_log(
 
 
 def get_smartctl_full(system: System) -> Optional[str]:
-    """Fetch full smartctl output from the system via SSH."""
+    """Fetch full smartctl output as JSON from the system via SSH."""
     output = _run_ssh(
         system,
-        "/usr/bin/smartctl -a /dev/sda 2>/dev/null || /usr/bin/smartctl -a /dev/nvme0 2>/dev/null",
+        "/usr/bin/smartctl -a --json /dev/sda 2>/dev/null || /usr/bin/smartctl -a --json /dev/nvme0 2>/dev/null",
     )
     if output is None:
         return None
