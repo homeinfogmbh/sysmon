@@ -195,8 +195,9 @@ class CheckResults(SysmonModel):
         json["online"] = self.online
         if self.smartctl_full:
             try:
-                json["smartctlFull"] = loads(self.smartctl_full)
-            except (JSONDecodeError, ValueError):
+                smartctl = loads(self.smartctl_full)
+                json["hdUptime"] = smartctl["power_on_time"]["hours"]
+            except (JSONDecodeError, ValueError, KeyError):
                 pass
         return json
 
