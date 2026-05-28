@@ -5,20 +5,21 @@ from typing import Optional
 
 from hwdb import OperatingSystem, System
 
+from sysmon.config import get_config
+
 
 __all__ = ["get_error_log", "get_chromium_log", "get_smartctl_full"]
 
 
 SSH_USERS = ("root", "homeinfo")
 SSH_CAPABLE_OSS = {OperatingSystem.ARCH_LINUX, OperatingSystem.ARCH_LINUX_ARM}
-SSH_KEY = "/root/.ssh/terminals"
 SSH_TIMEOUT = 10
 
 
 def _ssh_command(system: System, user: str, remote_cmd: str) -> list[str]:
     return [
         "/usr/bin/ssh",
-        "-i", SSH_KEY,
+        "-i", get_config().get("ssh", "keyfile"),
         "-o", "LogLevel=error",
         "-o", "UserKnownHostsFile=/dev/null",
         "-o", "StrictHostKeyChecking=no",
