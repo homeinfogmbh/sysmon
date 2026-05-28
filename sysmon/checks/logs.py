@@ -20,6 +20,7 @@ CHROM_KERN_RE = re.compile(
     r"\bchrome\b|\bchromium\b|\brenderer\b|gpu.process",
     re.IGNORECASE,
 )
+CHROM_NOISE_RE = re.compile(r":VERBOSE\d+:")
 
 
 def _ssh_command(system: System, user: str, remote_cmd: str) -> list[str]:
@@ -89,7 +90,9 @@ def get_chromium_log(
 
     lines = [
         line for line in output.splitlines()
-        if line.strip() and CHROM_KERN_RE.search(line)
+        if line.strip()
+        and not CHROM_NOISE_RE.search(line)
+        and CHROM_KERN_RE.search(line)
     ]
     return "\n".join(lines[-max_lines:]) or None
 
