@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from datetime import date, datetime
+from json import JSONDecodeError, loads
 from typing import Any
 
 from peewee import JOIN
@@ -192,6 +193,11 @@ class CheckResults(SysmonModel):
         """Return a JSON-ish dict."""
         json = super().to_json(*args, **kwargs)
         json["online"] = self.online
+        if self.smartctl_full:
+            try:
+                json["smartctlFull"] = loads(self.smartctl_full)
+            except (JSONDecodeError, ValueError):
+                pass
         return json
 
 
