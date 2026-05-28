@@ -455,6 +455,9 @@ def create_check_no_bw(
             error_log=error_log,
             chromium_log=chromium_log,
             smartctl_full=smartctl_full,
+            hd_uptime=hd_uptime,
+            hd_size=hd_size,
+            hd_free=hd_free,
         )
     else:
         check_results = CheckResults(
@@ -478,6 +481,9 @@ def create_check_no_bw(
             error_log=error_log,
             chromium_log=chromium_log,
             smartctl_full=smartctl_full,
+            hd_uptime=hd_uptime,
+            hd_size=hd_size,
+            hd_free=hd_free,
         )
 
     try:

@@ -196,6 +196,9 @@ class CheckResults(SysmonModel):
         json = super().to_json(*args, **kwargs)
         json["online"] = self.online
         json.pop("smartctlFull", None)
+        json["hdUptime"] = self.hd_uptime
+        json["hdSize"] = self.hd_size
+        json["hdFree"] = self.hd_free
         return json
 
 
