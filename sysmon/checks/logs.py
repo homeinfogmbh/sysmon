@@ -20,7 +20,7 @@ CHROM_KERN_RE = re.compile(
     r"\bchrome\b|\bchromium\b|\brenderer\b|gpu.process",
     re.IGNORECASE,
 )
-CHROM_NOISE_RE = re.compile(r":VERBOSE\d+:")
+CHROM_NOISE_RE = re.compile(r":VERBOSE\d+:|:INFO:|:WARNING:")
 
 
 def _ssh_command(system: System, user: str, remote_cmd: str) -> list[str]:
