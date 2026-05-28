@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from datetime import date, datetime
-from json import JSONDecodeError, loads
 from typing import Any
 
 from peewee import JOIN
@@ -140,6 +139,7 @@ class CheckResults(SysmonModel):
     error_log = TextField(null=True)
     chromium_log = TextField(null=True)
     smartctl_full = TextField(null=True)
+    hd_uptime = IntegerField(null=True)
 
     @classmethod
     def select(cls, *args, cascade: bool = False) -> ModelSelect:
@@ -194,12 +194,6 @@ class CheckResults(SysmonModel):
         json = super().to_json(*args, **kwargs)
         json["online"] = self.online
         json.pop("smartctlFull", None)
-        if self.smartctl_full:
-            try:
-                smartctl = loads(self.smartctl_full)
-                json["hdUptime"] = smartctl["power_on_time"]["hours"]
-            except (JSONDecodeError, ValueError, KeyError):
-                pass
         return json
 
 

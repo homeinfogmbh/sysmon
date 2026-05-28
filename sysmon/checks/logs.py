@@ -1,6 +1,7 @@
 """Log collection via SSH."""
 
 import re
+from json import JSONDecodeError, loads
 from subprocess import PIPE, CalledProcessError, TimeoutExpired, run
 from typing import Optional
 
@@ -9,7 +10,7 @@ from hwdb import OperatingSystem, System
 from sysmon.config import get_config
 
 
-__all__ = ["get_error_log", "get_chromium_log", "get_smartctl_full"]
+__all__ = ["get_error_log", "get_chromium_log", "get_smartctl_full", "parse_hd_uptime"]
 
 
 SSH_USERS = ("root", "homeinfo")
@@ -106,3 +107,13 @@ def get_smartctl_full(system: System) -> Optional[str]:
     if output is None:
         return None
     return output.strip() or None
+
+
+def parse_hd_uptime(smartctl_json: Optional[str]) -> Optional[int]:
+    """Extract power-on hours from a smartctl JSON string."""
+    if not smartctl_json:
+        return None
+    try:
+        return loads(smartctl_json)["power_on_time"]["hours"]
+    except (JSONDecodeError, ValueError, KeyError):
+        return None
