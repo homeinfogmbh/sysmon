@@ -14,6 +14,7 @@ __all__ = ["get_error_log", "get_chromium_log", "get_smartctl_full"]
 SSH_USERS = ("root", "homeinfo")
 SSH_CAPABLE_OSS = {OperatingSystem.ARCH_LINUX, OperatingSystem.ARCH_LINUX_ARM}
 SSH_TIMEOUT = 10
+CHROMIUM_LOG_PATH = "/home/digsig/.config/chromium/chrome_debug.log"
 
 
 def _ssh_command(system: System, user: str, remote_cmd: str) -> list[str]:
@@ -52,7 +53,7 @@ def _run_ssh(system: System, remote_cmd: str) -> Optional[str]:
 
 
 def get_error_log(
-    system: System, *, since: str = "24 hours ago", max_lines: int = 150
+    system: System, *, since: str = "4 days ago", max_lines: int = 150
 ) -> Optional[str]:
     """Fetch critical journald entries from the system via SSH."""
     output = _run_ssh(
@@ -74,22 +75,15 @@ def get_error_log(
 
 
 def get_chromium_log(
-    system: System, *, since: str = "24 hours ago", max_lines: int = 150
+    system: System, *, max_lines: int = 150
 ) -> Optional[str]:
-    """Fetch Chromium error journal entries from the system via SSH."""
-    output = _run_ssh(
-        system,
-        f"/usr/bin/journalctl -t chromium --priority=err --since '{since}' --no-pager -o short-iso",
-    )
+    """Fetch Chromium debug log from the system via SSH."""
+    output = _run_ssh(system, f"cat {CHROMIUM_LOG_PATH} 2>/dev/null")
     if output is None:
         return None
 
-    lines = [
-        line.strip()
-        for line in output.splitlines()
-        if line.strip() and not line.strip().startswith("--")
-    ]
-    return "\n".join(lines[:max_lines]) or None
+    lines = [line for line in output.splitlines() if line.strip()]
+    return "\n".join(lines[-max_lines:]) or None
 
 
 def get_smartctl_full(system: System) -> Optional[str]:
