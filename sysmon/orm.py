@@ -13,6 +13,7 @@ from peewee import ForeignKeyField
 from peewee import IntegerField
 from peewee import ModelSelect
 from peewee import SmallIntegerField
+from peewee import TextField
 
 from hwdb import Deployment, System
 from mdb import Address, Company, Customer
@@ -135,6 +136,9 @@ class CheckResults(SysmonModel):
     offline_since = DateTimeField(null=True)
     blackscreen_since = DateTimeField(null=True)
     application_mode = CharField(12, null=True)
+    error_log = TextField(null=True)
+    chromium_log = TextField(null=True)
+    smartctl_full = TextField(null=True)
 
     @classmethod
     def select(cls, *args, cascade: bool = False) -> ModelSelect:

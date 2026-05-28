@@ -29,6 +29,7 @@ from sysmon.checks.meminfo import get_ram_total
 from sysmon.checks.offline import get_offline_since
 from sysmon.checks.root_partition import check_root_not_ro
 from sysmon.checks.sensors import check_system_sensors
+from sysmon.checks.logs import get_chromium_log, get_error_log, get_smartctl_full
 from sysmon.checks.smart import get_smart_results
 from sysmon.checks.ssh import check_ssh
 from sysmon.checks.synchronization import is_in_sync
@@ -117,6 +118,9 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             in_sync=system_check.in_sync,
             recent_touch_events=system_check.recent_touch_events,
             application_mode=system_check.application_mode,
+            error_log=system_check.error_log,
+            chromium_log=system_check.chromium_log,
+            smartctl_full=system_check.smartctl_full,
         )
         newest_check_results.offline_since = system_check.offline_since
         newest_check_results.save()
@@ -170,6 +174,9 @@ def check_system_no_bw(
             in_sync=system_check.in_sync,
             recent_touch_events=system_check.recent_touch_events,
             application_mode=system_check.application_mode,
+            error_log=system_check.error_log,
+            chromium_log=system_check.chromium_log,
+            smartctl_full=system_check.smartctl_full,
         )
         newest_check_results.offline_since = system_check.offline_since
         newest_check_results.save()
@@ -233,6 +240,9 @@ def check_system_bw_once_a_day(
             in_sync=system_check.in_sync,
             recent_touch_events=system_check.recent_touch_events,
             application_mode=system_check.application_mode,
+            error_log=system_check.error_log,
+            chromium_log=system_check.chromium_log,
+            smartctl_full=system_check.smartctl_full,
         )
         newest_check_results.offline_since = system_check.offline_since
         newest_check_results.save()
@@ -264,6 +274,9 @@ def create_check(
         http_request, sysinfo = get_sysinfo(system)
     except Exception as e:
         print(e, system.id)
+    error_log = get_error_log(system)
+    chromium_log = get_chromium_log(system)
+    smartctl_full = get_smartctl_full(system)
     if system.ddb_os:
         if nobwiflte and islte:
             check_results = CheckResults(
@@ -282,6 +295,9 @@ def create_check(
                 in_sync=is_in_sync(system, now),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
                 application_mode=get_application(system),
+                error_log=error_log,
+                chromium_log=chromium_log,
+                smartctl_full=smartctl_full,
             )
         else:
             check_results = CheckResults(
@@ -302,6 +318,9 @@ def create_check(
                 in_sync=is_in_sync(system, now),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
                 application_mode=get_application(system),
+                error_log=error_log,
+                chromium_log=chromium_log,
+                smartctl_full=smartctl_full,
             )
     else:
         if nobwiflte and islte:
@@ -323,6 +342,9 @@ def create_check(
                 sensors=check_system_sensors(sysinfo),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
                 application_mode=get_application(system),
+                error_log=error_log,
+                chromium_log=chromium_log,
+                smartctl_full=smartctl_full,
             )
         else:
             check_results = CheckResults(
@@ -345,6 +367,9 @@ def create_check(
                 sensors=check_system_sensors(sysinfo),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
                 application_mode=get_application(system),
+                error_log=error_log,
+                chromium_log=chromium_log,
+                smartctl_full=smartctl_full,
             )
 
     try:
@@ -382,6 +407,9 @@ def create_check_no_bw(
         http_request, sysinfo = get_sysinfo(system)
     except Exception as e:
         print(e, system.id)
+    error_log = get_error_log(system)
+    chromium_log = get_chromium_log(system)
+    smartctl_full = get_smartctl_full(system)
     if system.ddb_os:
         check_results = CheckResults(
             system=system,
@@ -399,6 +427,9 @@ def create_check_no_bw(
             in_sync=is_in_sync(system, now),
             recent_touch_events=count_recent_touch_events(system.deployment, now),
             application_mode=get_application(system),
+            error_log=error_log,
+            chromium_log=chromium_log,
+            smartctl_full=smartctl_full,
         )
     else:
         check_results = CheckResults(
@@ -419,6 +450,9 @@ def create_check_no_bw(
             sensors=check_system_sensors(sysinfo),
             recent_touch_events=count_recent_touch_events(system.deployment, now),
             application_mode=get_application(system),
+            error_log=error_log,
+            chromium_log=chromium_log,
+            smartctl_full=smartctl_full,
         )
 
     try:
@@ -451,6 +485,9 @@ def create_check_no_bw(
         in_sync=check_results.in_sync,
         recent_touch_events=check_results.recent_touch_events,
         application_mode=check_results.application_mode,
+        error_log=check_results.error_log,
+        chromium_log=check_results.chromium_log,
+        smartctl_full=check_results.smartctl_full,
     )
     newest_check_results.offline_since = check_results.offline_since
     newest_check_results.save()
@@ -480,6 +517,9 @@ def create_check_bw_once_a_day(
         http_request, sysinfo = get_sysinfo(system)
     except Exception as e:
         print(e, system.id)
+    error_log = get_error_log(system)
+    chromium_log = get_chromium_log(system)
+    smartctl_full = get_smartctl_full(system)
     if system.ddb_os:
         if nobwiflte and islte:
             check_results = CheckResults(
@@ -498,6 +538,9 @@ def create_check_bw_once_a_day(
                 in_sync=is_in_sync(system, now),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
                 application_mode=get_application(system),
+                error_log=error_log,
+                chromium_log=chromium_log,
+                smartctl_full=smartctl_full,
             )
         else:
             check_results = CheckResults(
@@ -516,6 +559,9 @@ def create_check_bw_once_a_day(
                 in_sync=is_in_sync(system, now),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
                 application_mode=get_application(system),
+                error_log=error_log,
+                chromium_log=chromium_log,
+                smartctl_full=smartctl_full,
             )
     else:
         if nobwiflte and islte:
@@ -537,6 +583,9 @@ def create_check_bw_once_a_day(
                 sensors=check_system_sensors(sysinfo),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
                 application_mode=get_application(system),
+                error_log=error_log,
+                chromium_log=chromium_log,
+                smartctl_full=smartctl_full,
             )
         else:
             check_results = CheckResults(
@@ -557,6 +606,9 @@ def create_check_bw_once_a_day(
                 sensors=check_system_sensors(sysinfo),
                 recent_touch_events=count_recent_touch_events(system.deployment, now),
                 application_mode=get_application(system),
+                error_log=error_log,
+                chromium_log=chromium_log,
+                smartctl_full=smartctl_full,
             )
     try:
         last_check = get_last_check(system)
