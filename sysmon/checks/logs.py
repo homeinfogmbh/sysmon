@@ -1,5 +1,6 @@
 """Log collection via SSH."""
 
+import re
 from subprocess import PIPE, CalledProcessError, TimeoutExpired, run
 from typing import Optional
 
@@ -15,6 +16,10 @@ SSH_USERS = ("root", "homeinfo")
 SSH_CAPABLE_OSS = {OperatingSystem.ARCH_LINUX, OperatingSystem.ARCH_LINUX_ARM}
 SSH_TIMEOUT = 10
 CHROMIUM_LOG_PATH = "/home/digsig/.config/chromium/chrome_debug.log"
+CHROM_KERN_RE = re.compile(
+    r"\bchrome\b|\bchromium\b|\brenderer\b|gpu.process",
+    re.IGNORECASE,
+)
 
 
 def _ssh_command(system: System, user: str, remote_cmd: str) -> list[str]:
@@ -82,7 +87,10 @@ def get_chromium_log(
     if output is None:
         return None
 
-    lines = [line for line in output.splitlines() if line.strip()]
+    lines = [
+        line for line in output.splitlines()
+        if line.strip() and CHROM_KERN_RE.search(line)
+    ]
     return "\n".join(lines[-max_lines:]) or None
 
 
