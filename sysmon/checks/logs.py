@@ -1,6 +1,7 @@
 """Log collection via SSH."""
 
 from subprocess import PIPE, CalledProcessError, TimeoutExpired, run
+from typing import Optional
 
 from hwdb import OperatingSystem, System
 
@@ -27,7 +28,7 @@ def _ssh_command(system: System, user: str, remote_cmd: str) -> list[str]:
     ]
 
 
-def _run_ssh(system: System, remote_cmd: str) -> str | None:
+def _run_ssh(system: System, remote_cmd: str) -> Optional[str]:
     """Run a command on the system via SSH, return stdout or None on failure."""
     if system.operating_system not in SSH_CAPABLE_OSS:
         return None
@@ -51,7 +52,7 @@ def _run_ssh(system: System, remote_cmd: str) -> str | None:
 
 def get_error_log(
     system: System, *, since: str = "24 hours ago", max_lines: int = 150
-) -> str | None:
+) -> Optional[str]:
     """Fetch critical journald entries from the system via SSH."""
     output = _run_ssh(
         system,
@@ -73,7 +74,7 @@ def get_error_log(
 
 def get_chromium_log(
     system: System, *, since: str = "24 hours ago", max_lines: int = 150
-) -> str | None:
+) -> Optional[str]:
     """Fetch Chromium error journal entries from the system via SSH."""
     output = _run_ssh(
         system,
@@ -90,7 +91,7 @@ def get_chromium_log(
     return "\n".join(lines[:max_lines]) or None
 
 
-def get_smartctl_full(system: System) -> str | None:
+def get_smartctl_full(system: System) -> Optional[str]:
     """Fetch full smartctl output from the system via SSH."""
     output = _run_ssh(
         system,
