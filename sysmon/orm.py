@@ -140,6 +140,8 @@ class CheckResults(SysmonModel):
     chromium_log = TextField(null=True)
     smartctl_full = TextField(null=True)
     hd_uptime = IntegerField(null=True)
+    hd_size = IntegerField(null=True)   # MB
+    hd_free = IntegerField(null=True)   # MB
 
     @classmethod
     def select(cls, *args, cascade: bool = False) -> ModelSelect:

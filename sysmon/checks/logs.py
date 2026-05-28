@@ -10,7 +10,7 @@ from hwdb import OperatingSystem, System
 from sysmon.config import get_config
 
 
-__all__ = ["get_error_log", "get_chromium_log", "get_smartctl_full", "parse_hd_uptime"]
+__all__ = ["get_error_log", "get_chromium_log", "get_smartctl_full", "parse_hd_uptime", "get_disk_usage"]
 
 
 SSH_USERS = ("root", "homeinfo")
@@ -117,3 +117,17 @@ def parse_hd_uptime(smartctl_json: Optional[str]) -> Optional[int]:
         return loads(smartctl_json)["power_on_time"]["hours"]
     except (JSONDecodeError, ValueError, KeyError):
         return None
+
+
+def get_disk_usage(system: System) -> tuple:
+    """Return (total_mb, free_mb) of the root partition via SSH, or (None, None) on failure."""
+    output = _run_ssh(system, "df -BM / | awk 'NR==2 {gsub(/M/,\"\",$2); gsub(/M/,\"\",$4); print $2, $4}'")
+    if output is None:
+        return None, None
+    parts = output.strip().split()
+    if len(parts) != 2:
+        return None, None
+    try:
+        return int(parts[0]), int(parts[1])
+    except ValueError:
+        return None, None

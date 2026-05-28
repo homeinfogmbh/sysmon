@@ -29,7 +29,7 @@ from sysmon.checks.meminfo import get_ram_total
 from sysmon.checks.offline import get_offline_since
 from sysmon.checks.root_partition import check_root_not_ro
 from sysmon.checks.sensors import check_system_sensors
-from sysmon.checks.logs import get_chromium_log, get_error_log, get_smartctl_full, parse_hd_uptime
+from sysmon.checks.logs import get_chromium_log, get_disk_usage, get_error_log, get_smartctl_full, parse_hd_uptime
 from sysmon.checks.smart import get_smart_results
 from sysmon.checks.ssh import check_ssh
 from sysmon.checks.synchronization import is_in_sync
@@ -122,6 +122,8 @@ def check_system(system: System, nobwiflte: Optional[bool] = False) -> CheckResu
             chromium_log=system_check.chromium_log,
             smartctl_full=system_check.smartctl_full,
             hd_uptime=system_check.hd_uptime,
+            hd_size=system_check.hd_size,
+            hd_free=system_check.hd_free,
         )
         newest_check_results.offline_since = system_check.offline_since
         newest_check_results.save()
@@ -179,6 +181,8 @@ def check_system_no_bw(
             chromium_log=system_check.chromium_log,
             smartctl_full=system_check.smartctl_full,
             hd_uptime=system_check.hd_uptime,
+            hd_size=system_check.hd_size,
+            hd_free=system_check.hd_free,
         )
         newest_check_results.offline_since = system_check.offline_since
         newest_check_results.save()
@@ -246,6 +250,8 @@ def check_system_bw_once_a_day(
             chromium_log=system_check.chromium_log,
             smartctl_full=system_check.smartctl_full,
             hd_uptime=system_check.hd_uptime,
+            hd_size=system_check.hd_size,
+            hd_free=system_check.hd_free,
         )
         newest_check_results.offline_since = system_check.offline_since
         newest_check_results.save()
@@ -281,6 +287,7 @@ def create_check(
     chromium_log = get_chromium_log(system)
     smartctl_full = get_smartctl_full(system)
     hd_uptime = parse_hd_uptime(smartctl_full)
+    hd_size, hd_free = get_disk_usage(system)
     if system.ddb_os:
         if nobwiflte and islte:
             check_results = CheckResults(
@@ -303,6 +310,8 @@ def create_check(
                 chromium_log=chromium_log,
                 smartctl_full=smartctl_full,
                 hd_uptime=hd_uptime,
+                hd_size=hd_size,
+                hd_free=hd_free,
             )
         else:
             check_results = CheckResults(
@@ -327,6 +336,8 @@ def create_check(
                 chromium_log=chromium_log,
                 smartctl_full=smartctl_full,
                 hd_uptime=hd_uptime,
+                hd_size=hd_size,
+                hd_free=hd_free,
             )
     else:
         if nobwiflte and islte:
@@ -352,6 +363,8 @@ def create_check(
                 chromium_log=chromium_log,
                 smartctl_full=smartctl_full,
                 hd_uptime=hd_uptime,
+                hd_size=hd_size,
+                hd_free=hd_free,
             )
         else:
             check_results = CheckResults(
@@ -378,6 +391,8 @@ def create_check(
                 chromium_log=chromium_log,
                 smartctl_full=smartctl_full,
                 hd_uptime=hd_uptime,
+                hd_size=hd_size,
+                hd_free=hd_free,
             )
 
     try:
@@ -419,6 +434,7 @@ def create_check_no_bw(
     chromium_log = get_chromium_log(system)
     smartctl_full = get_smartctl_full(system)
     hd_uptime = parse_hd_uptime(smartctl_full)
+    hd_size, hd_free = get_disk_usage(system)
     if system.ddb_os:
         check_results = CheckResults(
             system=system,
@@ -498,6 +514,8 @@ def create_check_no_bw(
         chromium_log=check_results.chromium_log,
         smartctl_full=check_results.smartctl_full,
         hd_uptime=check_results.hd_uptime,
+        hd_size=check_results.hd_size,
+        hd_free=check_results.hd_free,
     )
     newest_check_results.offline_since = check_results.offline_since
     newest_check_results.save()
@@ -531,6 +549,7 @@ def create_check_bw_once_a_day(
     chromium_log = get_chromium_log(system)
     smartctl_full = get_smartctl_full(system)
     hd_uptime = parse_hd_uptime(smartctl_full)
+    hd_size, hd_free = get_disk_usage(system)
     if system.ddb_os:
         if nobwiflte and islte:
             check_results = CheckResults(
@@ -553,6 +572,8 @@ def create_check_bw_once_a_day(
                 chromium_log=chromium_log,
                 smartctl_full=smartctl_full,
                 hd_uptime=hd_uptime,
+                hd_size=hd_size,
+                hd_free=hd_free,
             )
         else:
             check_results = CheckResults(
@@ -575,6 +596,8 @@ def create_check_bw_once_a_day(
                 chromium_log=chromium_log,
                 smartctl_full=smartctl_full,
                 hd_uptime=hd_uptime,
+                hd_size=hd_size,
+                hd_free=hd_free,
             )
     else:
         if nobwiflte and islte:
@@ -600,6 +623,8 @@ def create_check_bw_once_a_day(
                 chromium_log=chromium_log,
                 smartctl_full=smartctl_full,
                 hd_uptime=hd_uptime,
+                hd_size=hd_size,
+                hd_free=hd_free,
             )
         else:
             check_results = CheckResults(
@@ -624,6 +649,8 @@ def create_check_bw_once_a_day(
                 chromium_log=chromium_log,
                 smartctl_full=smartctl_full,
                 hd_uptime=hd_uptime,
+                hd_size=hd_size,
+                hd_free=hd_free,
             )
     try:
         last_check = get_last_check(system)
