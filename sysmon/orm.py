@@ -193,6 +193,7 @@ class CheckResults(SysmonModel):
         """Return a JSON-ish dict."""
         json = super().to_json(*args, **kwargs)
         json["online"] = self.online
+        json.pop("smartctlFull", None)
         if self.smartctl_full:
             try:
                 smartctl = loads(self.smartctl_full)
