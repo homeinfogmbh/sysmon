@@ -1,0 +1,13 @@
+# Normalize line endings: keep LF in the repo and on checkout so that
+# script shebangs (./setup.py) and Makefiles work on Linux.
+* text=auto eol=lf
+
+# Binary assets must not be touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.gz binary
+*.zip binary
+*.pdf binary
