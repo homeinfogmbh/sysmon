@@ -1,12 +1,12 @@
 # sysmon
-Stand: 2026-07-29, geprüft gegen Commit 8263325
+Stand: 2026-08-04, geprüft gegen Commit af6c113
 
 ## Zweck
 Systems-Monitoring der Digital-Signage-Systeme. Ein Dienst sammelt periodisch
 Statusinformationen der Systeme (Erreichbarkeit, Applikations-Zustand, SMART,
 Speicher, Sensoren u. v. m.) und schreibt sie in eine Datenbank. Zusätzlich ein
 Web-Application-Backend, um diese Informationen berechtigten Nutzern anzuzeigen
-(sysmon.homeinfo.de), plus Mailing-/Newsletter-/Warnungs-Funktionen.
+(sysmon.homeinfo.de), plus Statistik-/Warnungs-Mailings.
 
 ## Stack & Einstiegspunkte
 Python 3, Flask über das Homeinfo-`his`-Framework (WSGI), Peewee-ORM via
@@ -16,7 +16,7 @@ Frontend-Modul `sysmon.mjs`; JSON-Schemas unter `jsonschema/`.
 Console-Scripts (`setup.py`):
 - `sysmon` = `sysmon.daemon:spawn` — Monitoring-Daemon (Sammellauf).
 - `sysmon-cleanup`, `sysmon-notify`, `sysmon-generate-blacklist`,
-  `sysmon-send-mailing`, `sysmon-send-statistic`, `sysmon-send-warning`.
+  `sysmon-send-statistic`, `sysmon-send-warning`.
 
 Der Daemon iteriert über `hwdb.System` (deployt, nicht virtuell) und führt die
 Checks in `sysmon/checks/` aus (parallel via Pool): `application` (Zustand/
@@ -35,13 +35,16 @@ Version), `black_screen`, `baytrail`, `efi`, `icmp`, `iperf3`, `meminfo`,
 
 ### Bietet an
 - **Eigene MySQL-DB `sysmon`** mit Modellen: `CheckResults`,
-  `NewestCheckResults`, `Warningmail`, `Newsletter`, `Newsletterlistitems`.
+  `NewestCheckResults`, `Warningmail`, Notification-Email-Modelle
+  (`UserNotificationEmail`, `ExtraUserNotificationEmail`,
+  `StatisticUserNotificationEmail`). ⚠️ Das entfernte Newsletter-Feature ließ die
+  DB-Tabellen `newsletter`/`newsletterlistitems` verwaist zurück (bei Bedarf droppen).
 - **HTTP-Endpoints** (Auth via `his`, `@authorized("sysmon")`, `@root`), u. a.:
   `GET /checks` (alle Check-Ergebnisse), `GET /check/<system>` (Live-Check),
-  `GET /screenshot/<system>` (JPEG), sowie Newsletter-/Warningmail-/Customer-
-  Endpoints. Details in `doc/apidoc.md`.
+  `GET /screenshot/<system>` (JPEG), sowie Warningmail-/Customer-/
+  Notification-Email-Endpoints. Details in `doc/apidoc.md`.
 - **systemd-Units + Timer** (installiert nach `/usr/lib/systemd/system`):
-  `sysmon`, `sysmon-cleanup`, `sysmon-generate-blacklist`, `sysmon-mailing`,
+  `sysmon`, `sysmon-cleanup`, `sysmon-generate-blacklist`,
   `sysmon-statistic`, `sysmon-warning` — je `.service` + `.timer`.
 - **JSON-Schemas** für Check-Ergebnisse (`check-results`, `checked-systems` …).
 

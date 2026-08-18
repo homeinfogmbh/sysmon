@@ -2,7 +2,6 @@
 
 from datetime import date, timedelta
 from typing import Union
-from filedb import File
 from his import ACCOUNT, CUSTOMER, Application, authenticated, authorized, root, admin
 from hwdb import SystemOffline, Deployment, System
 from mdb import Customer, Company
@@ -24,19 +23,12 @@ from sysmon.functions import get_check_results_for_system
 from sysmon.functions import get_customer_check_results
 from sysmon.functions import get_system
 from sysmon.functions import get_latest_check_results_per_system
-from sysmon.mailing import (
-    send_mailing,
-    get_newsletter_by_date,
-    send_test_mails,
-    send_warning_test_mails,
-)
+from sysmon.mailing import send_warning_test_mails
 from sysmon.offline_history import get_offline_systems
 from sysmon.offline_history import update_offline_systems
 from sysmon.orm import (
     UserNotificationEmail,
-    Newsletter,
     ExtraUserNotificationEmail,
-    Newsletterlistitems,
     StatisticUserNotificationEmail,
     Warningmail,
 )
@@ -96,162 +88,6 @@ def add_customer():
     customer.company.save()
     customer.save(force_insert=True)
     return JSONMessage("New Customer created." + str(customer.id), status=200)
-
-
-@authenticated
-@authorized("sysmon")
-@root
-@APPLICATION.route(
-    "/send_test_mails/<int:newsletter>", methods=["POST"], strict_slashes=False
-)
-def test_mail(newsletter: int):
-    """Sends a Newsletter test to Account.email."""
-    send_test_mails(newsletter)
-    return JSONMessage("Testmail sent.", status=200)
-
-
-@authenticated
-@authorized("sysmon")
-@root
-@APPLICATION.route("/newsletter_by_date", methods=["GET"], strict_slashes=False)
-def newsletter_by_date():
-    """Gets Newsletter for now."""
-    now = date.today()
-    return JSON(get_newsletter_by_date(now).to_json())
-
-
-@authenticated
-@authorized("sysmon")
-@root
-@APPLICATION.route(
-    "/patch_newsletter/<int:newsletter>", methods=["POST"], strict_slashes=False
-)
-def patch_newsletter(newsletter: int):
-    """Patches a  Newsletter."""
-    nl = Newsletter.select().where(Newsletter.id == newsletter).get()
-    nl.patch_json(request.json)
-    return JSON({"status": nl.save()})
-
-
-@authenticated
-@authorized("sysmon")
-@root
-@APPLICATION.route(
-    "/newsletter_list_patch/<int:listitem>", methods=["POST"], strict_slashes=False
-)
-def patch_listitem(listitem: int):
-    """Patches a  Newsletter list item."""
-    li = Newsletterlistitems.select().where(Newsletterlistitems.id == listitem).get()
-    li.patch_json(request.json)
-    li.save()
-    return JSON(li.to_json())
-
-
-@authenticated
-@authorized("sysmon")
-@root
-@APPLICATION.route("/newsletter_list_add/", methods=["POST"], strict_slashes=False)
-def add_listitem():
-    """Adds a  Newsletter list item."""
-    li = Newsletterlistitems.from_json(request.json)
-    li.save()
-    return JSON(li.to_json())
-
-
-@authenticated
-@authorized("sysmon")
-@root
-@APPLICATION.route(
-    "/newsletter_list_del/<int:listid>", methods=["POST"], strict_slashes=False
-)
-def del_listitem(listid: int):
-    """Deletes a  Newsletter list item."""
-    Newsletterlistitems.select().where(
-        Newsletterlistitems.id == listid
-    ).get().delete_instance()
-    return JSON({"status": "deleted list"})
-
-
-@authenticated
-@authorized("sysmon")
-@root
-@APPLICATION.route("/add_newsletter", methods=["POST"], strict_slashes=False)
-def add_newsletter():
-    """Adds a  Newsletter ."""
-    nl = Newsletter.from_json(request.json)
-    nl.is_default = 0
-    nl.save()
-    return JSON(nl.to_json())
-
-
-@APPLICATION.route(
-    "/newsletter/<int:newsletter>", methods=["GET"], strict_slashes=False
-)
-@authenticated
-@authorized("sysmon")
-def get_newsletter(newsletter: int):
-    """Get Newsletter by id."""
-    return JSON(Newsletter.select().where(Newsletter.id == newsletter).get().to_json())
-
-
-@APPLICATION.route(
-    "/newsletter-image/<int:newsletter>", methods=["POST"], strict_slashes=False
-)
-@authenticated
-@authorized("sysmon")
-def post(newsletter: int) -> JSONMessage:
-    """Adds a new file."""
-    data = request.files["file"]
-    file = File.from_bytes(data.read())
-    file.save()
-    nl = Newsletter.select().where(Newsletter.id == newsletter).get()
-    nl.image = file.id
-    nl.save()
-    return JSONMessage("The file has been created.", id=file.id, status=201)
-
-
-@APPLICATION.route(
-    "/newsletter-image/<int:image>", methods=["DELETE"], strict_slashes=False
-)
-@authenticated
-@authorized("sysmon")
-def delete_file(image: int):
-    nl = Newsletter.select().where(Newsletter.image == image).get()
-    nl.image = None
-    nl.save()
-    File.select().where(File.id == image).get().delete()
-    return JSONMessage("The file has deleted.", id=image, status=201)
-
-
-@APPLICATION.route(
-    "/newsletter-image/<int:image>", methods=["GET"], strict_slashes=False
-)
-def get_file(image: int):
-    """Get image for Newsletter."""
-    return Binary(File.select().where(File.id == image).get().bytes)
-
-
-@APPLICATION.route("/default_newsletter", methods=["GET"], strict_slashes=False)
-@authenticated
-@authorized("sysmon")
-def get_default_newsletters():
-    """Get default Newsletter"""
-
-    return JSON(Newsletter.select().where(Newsletter.isdefault == 1).get().to_json())
-
-
-@APPLICATION.route("/newsletters", methods=["GET"], strict_slashes=False)
-@authenticated
-@authorized("sysmon")
-def get_newsletters():
-    """List all Newsletters."""
-
-    return JSON(
-        [
-            newsletter.to_json()
-            for newsletter in Newsletter.select().where(Newsletter.isdefault == 0)
-        ]
-    )
 
 
 @APPLICATION.route("/checks", methods=["GET"], strict_slashes=False)
@@ -419,16 +255,6 @@ def gen_preview_token(deployment: int) -> Union[JSON, JSONMessage]:
         return JSONMessage("No such deployment.", status=404)
 
     return JSON({"token": token.token.hex})
-
-
-@APPLICATION.route("/send-mailing", methods=["GET"], strict_slashes=False)
-@authenticated
-@authorized("sysmon")
-@root
-def _send_mailing() -> Union[JSON, JSONMessage]:
-    """Send monthly customer statistics mailing manually."""
-
-    return JSON(send_mailing())
 
 
 @APPLICATION.route("/user-notification-emails", methods=["GET"], strict_slashes=False)

@@ -35,7 +35,6 @@ setup(
             "sysmon-cleanup = sysmon.cleanup:main",
             "sysmon-notify = sysmon.notify:notify",
             "sysmon-generate-blacklist = sysmon.blacklist:generate_blacklist",
-            "sysmon-send-mailing = sysmon.mailing:main",
             "sysmon-send-statistic = sysmon.mailing:statistic",
             "sysmon-send-warning = sysmon.mailing:send_warning_mails",
         ]
@@ -50,8 +49,6 @@ setup(
                 "files/sysmon-cleanup.timer",
                 "files/sysmon-generate-blacklist.service",
                 "files/sysmon-generate-blacklist.timer",
-                "files/sysmon-mailing.service",
-                "files/sysmon-mailing.timer",
                 "files/sysmon-statistic.service",
                 "files/sysmon-statistic.timer",
                 "files/sysmon-warning.service",

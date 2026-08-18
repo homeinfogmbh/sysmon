@@ -25,7 +25,6 @@ from peeweeplus import (
     HTMLTextField,
     EMailField,
 )
-from filedb import File
 
 
 from sysmon.config import MIN_DOWNLOAD
@@ -41,9 +40,7 @@ __all__ = [
     "NewestCheckResults",
     "OfflineHistory",
     "UserNotificationEmail",
-    "Newsletter",
     "ExtraUserNotificationEmail",
-    "Newsletterlistitems",
     "StatisticUserNotificationEmail",
     "Warningmail",
 ]
@@ -65,42 +62,6 @@ class Warningmail(SysmonModel):
     subject = CharField()
     minsystems = IntegerField()
     minpercent = IntegerField()
-
-
-class Newsletter(SysmonModel):
-    period = DateField()
-    visible = BooleanField(default=0)
-    isdefault = BooleanField(default=0)
-    text = HTMLTextField(null=True)
-    subject = CharField()
-    header = CharField()
-    more_link = CharField()
-    more_text = CharField()
-    list_header1 = CharField()
-    list_header2 = CharField()
-    list_header3 = CharField()
-    list_text1 = HTMLTextField(null=True)
-    list_text2 = HTMLTextField(null=True)
-    list_text3 = HTMLTextField(null=True)
-    image = ForeignKeyField(File, column_name="image", null=True)
-
-    def to_json(self, *args, **kwargs) -> dict[str, Any]:
-        """Return a JSON-ish dict."""
-        json = super().to_json(*args, **kwargs)
-
-        json["listitems"] = list()
-        for listitem in Newsletterlistitems.select().where(
-            Newsletterlistitems.newsletter == self.id
-        ):
-            json["listitems"].append(listitem.to_json())
-
-        return json
-
-
-class Newsletterlistitems(SysmonModel):
-    text = HTMLTextField(null=True)
-    header = CharField()
-    newsletter = IntegerField()
 
 
 class CheckResults(SysmonModel):
