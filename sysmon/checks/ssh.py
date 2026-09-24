@@ -14,7 +14,18 @@ from sysmon.enumerations import SuccessFailedUnsupported
 __all__ = ["check_ssh"]
 
 
-SSH_USERS = {"root", "homeinfo"}
+# Nur root. Der frueher zusaetzlich probierte User "homeinfo" existiert zwar auf den
+# Terminals, hat dort aber keine authorized_keys - jeder Versuch war damit eine garantierte
+# Fehlanmeldung. Das kostete Zeit in jedem Check, verrauschte die Journale der Terminals
+# und war vor allem eine Falle: OpenSSH 9.9 hat PerSourcePenalties per Default an
+# (authfail:5 ... min:15). Ab wenigen Fehlanmeldungen kurz hintereinander weist das Terminal
+# die Quelladresse fuer alles ab - auch fuer root und auch fuer einen Login von Hand.
+# Vor dem Entfernen flottenweit geprueft: die Terminals antworten als root, und die wenigen
+# mit hinterlegtem homeinfo-Key sind ebenfalls als root erreichbar. Der Fallback konnte
+# also nie einen Check retten.
+# Nebenbei war SSH_USERS ein set: die Iterationsreihenfolge haengt am Hash-Seed des
+# Prozesses, homeinfo kam mal vor und mal nach root dran.
+SSH_USERS = ("root",)
 SSH_CAPABLE_OSS = {OperatingSystem.ARCH_LINUX, OperatingSystem.ARCH_LINUX_ARM}
 
 

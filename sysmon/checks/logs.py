@@ -13,7 +13,11 @@ from sysmon.config import get_config
 __all__ = ["get_error_log", "get_chromium_log", "get_smartctl_full", "parse_hd_uptime", "get_disk_usage"]
 
 
-SSH_USERS = ("root", "homeinfo")
+# Nur root - siehe die ausfuehrliche Begruendung in checks/ssh.py. Hier fiel der Fallback
+# zusaetzlich immer dann an, wenn das Remote-Kommando selbst nicht sauber zurueckkam
+# (Exitcode != 0 oder Timeout): dann lief der naechste Versuch als homeinfo und scheiterte
+# an der Anmeldung, statt das eigentliche Problem zu zeigen.
+SSH_USERS = ("root",)
 SSH_CAPABLE_OSS = {OperatingSystem.ARCH_LINUX, OperatingSystem.ARCH_LINUX_ARM}
 SSH_TIMEOUT = 10
 CHROMIUM_LOG_PATH = "/home/digsig/.config/chromium/chrome_debug.log"
