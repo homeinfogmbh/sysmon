@@ -17,6 +17,15 @@ SSH_USERS = ("root", "homeinfo")
 SSH_CAPABLE_OSS = {OperatingSystem.ARCH_LINUX, OperatingSystem.ARCH_LINUX_ARM}
 SSH_TIMEOUT = 10
 CHROMIUM_LOG_PATH = "/home/digsig/.config/chromium/chrome_debug.log"
+# Das Debug-Log kann sehr gross werden. Frueher wurde es komplett per cat ueber den Tunnel
+# geholt: der Transfer lief dann in seinen Timeout und hat dabei die Leitung fuer den
+# unmittelbar folgenden check_ssh() blockiert, der nur wenige Sekunden Budget hat. Ergebnis
+# waren sporadische, falsche ssh_login=failed bei einwandfrei erreichbaren Systemen.
+# Ausgewertet werden ohnehin nur die letzten max_lines Zeilen, deshalb wird nur noch das
+# Ende der Datei uebertragen. Das Fenster ist bewusst klein gewaehlt - auf schmalbandigen
+# Anbindungen kostet jedes zusaetzliche Megabyte spuerbar Zeit und holt den alten Effekt
+# zurueck.
+CHROMIUM_LOG_MAX_BYTES = 256 * 1024
 CHROM_KERN_RE = re.compile(
     r"\bchrome\b|\bchromium\b|\brenderer\b|gpu.process",
     re.IGNORECASE,
@@ -84,8 +93,16 @@ def get_error_log(
 def get_chromium_log(
     system: System, *, max_lines: int = 150
 ) -> Optional[str]:
-    """Fetch Chromium debug log from the system via SSH."""
-    output = _run_ssh(system, f"cat {CHROMIUM_LOG_PATH} 2>/dev/null")
+    """Fetch the tail of the Chromium debug log from the system via SSH."""
+    # tail -c schneidet mitten in der Zeile, deshalb faellt die erste Zeile weg - aber nur,
+    # wenn die Datei tatsaechlich groesser als das Fenster war.
+    output = _run_ssh(
+        system,
+        f'if [ "$(stat -c %s {CHROMIUM_LOG_PATH} 2>/dev/null || echo 0)" '
+        f'-gt {CHROMIUM_LOG_MAX_BYTES} ]; '
+        f'then tail -c {CHROMIUM_LOG_MAX_BYTES} {CHROMIUM_LOG_PATH} 2>/dev/null | tail -n +2; '
+        f'else cat {CHROMIUM_LOG_PATH} 2>/dev/null; fi',
+    )
     if output is None:
         return None
 
