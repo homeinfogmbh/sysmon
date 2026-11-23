@@ -43,12 +43,12 @@ APPLICATION = Application("sysmon")
 SERVICE_UNITS = {"hipster": "hipster.service", "sysmon": "sysmon.service"}
 
 
-@authenticated
-@authorized("sysmon")
-@root
 @APPLICATION.route(
     "/patch_warningmail/<int:warningmail>", methods=["POST"], strict_slashes=False
 )
+@authenticated
+@authorized("sysmon")
+@root
 def patch_warningmail(warningmail: int):
     """Patches a  warningmail."""
     warning = Warningmail.select().where(Warningmail.id == warningmail).get()
@@ -56,29 +56,29 @@ def patch_warningmail(warningmail: int):
     return JSON({"status": warning.save()})
 
 
+@APPLICATION.route("/test_warningmail", methods=["GET"], strict_slashes=False)
 @authenticated
 @authorized("sysmon")
 @root
-@APPLICATION.route("/test_warningmail", methods=["GET"], strict_slashes=False)
 def send_warningmail_test():
     """Gets Warningmail."""
     send_warning_test_mails()
     return JSONMessage("Warning Testmail sent", status=200)
 
 
+@APPLICATION.route("/warningmail", methods=["GET"], strict_slashes=False)
 @authenticated
 @authorized("sysmon")
 @root
-@APPLICATION.route("/warningmail", methods=["GET"], strict_slashes=False)
 def get_warningmail():
     """Gets Warningmail."""
     return Warningmail.select().get().to_json()
 
 
+@APPLICATION.route("/customer_add", methods=["POST"], strict_slashes=False)
 @authenticated
 @authorized("sysmon")
 @root
-@APPLICATION.route("/customer_add", methods=["POST"], strict_slashes=False)
 def add_customer():
     """Adds Customer and basic company information."""
 
@@ -258,6 +258,7 @@ def gen_preview_token(deployment: int) -> Union[JSON, JSONMessage]:
 
 
 @APPLICATION.route("/user-notification-emails", methods=["GET"], strict_slashes=False)
+@authenticated
 @authorized("sysmon")
 def get_emails() -> JSON:
     """Deletes the respective message."""
@@ -273,6 +274,7 @@ def get_emails() -> JSON:
 
 
 @APPLICATION.route("/user-notification-emails", methods=["POST"], strict_slashes=False)
+@authenticated
 @authorized("sysmon")
 @root
 def set_emails() -> JSONMessage:
@@ -293,6 +295,7 @@ def set_emails() -> JSONMessage:
 @APPLICATION.route(
     "/extra-user-notification-emails", methods=["GET"], strict_slashes=False
 )
+@authenticated
 @authorized("sysmon")
 def get_extra_emails() -> JSON:
     """Get all extra emails"""
@@ -303,6 +306,7 @@ def get_extra_emails() -> JSON:
 @APPLICATION.route(
     "/extra-user-notification-emails", methods=["POST"], strict_slashes=False
 )
+@authenticated
 @authorized("sysmon")
 @root
 def set_extra_emails() -> JSONMessage:
@@ -319,6 +323,7 @@ def set_extra_emails() -> JSONMessage:
 @APPLICATION.route(
     "/statistic-user-notification-emails", methods=["GET"], strict_slashes=False
 )
+@authenticated
 @authorized("sysmon")
 def get_statistic_emails() -> JSON:
     """Get all statistic emails"""
@@ -329,6 +334,7 @@ def get_statistic_emails() -> JSON:
 @APPLICATION.route(
     "/statistic-user-notification-emails", methods=["POST"], strict_slashes=False
 )
+@authenticated
 @authorized("sysmon")
 @root
 def set_statistic_emails() -> JSONMessage:
@@ -342,9 +348,9 @@ def set_statistic_emails() -> JSONMessage:
     return JSONMessage("The emails list has been updated.", status=200)
 
 
+@APPLICATION.route("/send_statistic_test_mail", methods=["POST"], strict_slashes=False)
 @authenticated
 @authorized("sysmon")
 @root
-@APPLICATION.route("/send_statistic_test_mail", methods=["POST"], strict_slashes=False)
 def statistic_test_mail() -> JSONMessage:
     return JSONMessage("Statistic Testmail sent.", status=200)

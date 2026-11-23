@@ -1,5 +1,5 @@
 # sysmon
-Stand: 2026-08-04, geprüft gegen Commit af6c113
+Stand: 2026-11-23, geprüft gegen Commit f222065
 
 ## Zweck
 Systems-Monitoring der Digital-Signage-Systeme. Ein Dienst sammelt periodisch
@@ -39,7 +39,7 @@ Version), `black_screen`, `baytrail`, `efi`, `icmp`, `iperf3`, `meminfo`,
   (`UserNotificationEmail`, `ExtraUserNotificationEmail`,
   `StatisticUserNotificationEmail`). ⚠️ Das entfernte Newsletter-Feature ließ die
   DB-Tabellen `newsletter`/`newsletterlistitems` verwaist zurück (bei Bedarf droppen).
-- **HTTP-Endpoints** (Auth via `his`, `@authorized("sysmon")`, `@root`), u. a.:
+- **HTTP-Endpoints** (Auth via `his`: alle Routen `@authenticated` + `@authorized("sysmon")`, Admin-Routen zusätzlich `@root`; `@APPLICATION.route` muss oberster Decorator sein), u. a.:
   `GET /checks` (alle Check-Ergebnisse), `GET /check/<system>` (Live-Check),
   `GET /screenshot/<system>` (JPEG), sowie Warningmail-/Customer-/
   Notification-Email-Endpoints. Details in `doc/apidoc.md`.
