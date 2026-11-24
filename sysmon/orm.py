@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from datetime import date, datetime
-from typing import Any
+from typing import Any, Container
 
 from peewee import JOIN
 from peewee import BooleanField
@@ -105,16 +105,30 @@ class CheckResults(SysmonModel):
     hd_free = IntegerField(null=True)   # MB
 
     @classmethod
-    def select(cls, *args, cascade: bool = False) -> ModelSelect:
-        """Selects records."""
+    def select(
+        cls, *args, cascade: bool = False, skip: Container[str] = ()
+    ) -> ModelSelect:
+        """Selects records.
+
+        When cascading, the fields named in skip are not loaded. They are None
+        on the resulting records, which therefore must not be saved.
+        """
         if not cascade:
             return super().select(*args)
 
         lpt_address = Address.alias()
+        fields = [field for field in cls._meta.sorted_fields if field.name not in skip]
         return (
             super()
             .select(
-                cls, System, Deployment, Customer, Company, Address, lpt_address, *args
+                *fields,
+                System,
+                Deployment,
+                Customer,
+                Company,
+                Address,
+                lpt_address,
+                *args,
             )
             .join(System)
             .join(

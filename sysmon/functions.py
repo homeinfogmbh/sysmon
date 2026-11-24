@@ -113,10 +113,14 @@ def get_customer_check_results(
 def get_latest_check_results(
     condition: Union[bool, Expression], date_: Optional[date] = None
 ) -> ModelSelect:
-    """Yields the latest check results for each system."""
+    """Yields the latest check results for each system.
+
+    Does not load smartctl_full, which makes up more than 95 % of the data and
+    is not part of the JSON output.
+    """
 
     return (
-        CheckResults.select(cascade=True)
+        CheckResults.select(cascade=True, skip={"smartctl_full"})
         .join_from(
             CheckResults,
             subquery := (CheckResultsAlias := CheckResults.alias())
